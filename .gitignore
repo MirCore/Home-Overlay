@@ -26,6 +26,11 @@
 # Visual Studio cache directory
 .vs/
 
+# Jetbrain Rider Cache
+.idea/
+Assets/Plugins/Editor/JetBrains*
+*.[Dd]ot[Ss]ettings
+
 # Gradle cache directory
 .gradle/
 
@@ -70,3 +75,6 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# Home-Assistant API Key
+.env
