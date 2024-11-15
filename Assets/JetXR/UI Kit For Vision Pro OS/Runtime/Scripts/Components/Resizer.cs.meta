@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: fe9cfa023f1462c4db1bf580bf15cd05
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 265406
+  packageName: UI Kit For Vision Pro OS
+  packageVersion: 1.2.0
+  assetPath: Assets/JetXR/UI Kit For Vision Pro OS/Runtime/Scripts/Components/Resizer.cs
+  uploadId: 689755

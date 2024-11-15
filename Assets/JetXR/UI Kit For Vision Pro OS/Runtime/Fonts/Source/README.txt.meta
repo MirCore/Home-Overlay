@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: b89f1eac8c71a6849aa030a95b573aff
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 265406
+  packageName: UI Kit For Vision Pro OS
+  packageVersion: 1.2.0
+  assetPath: Assets/JetXR/UI Kit For Vision Pro OS/Runtime/Fonts/Source/README.txt
+  uploadId: 689755

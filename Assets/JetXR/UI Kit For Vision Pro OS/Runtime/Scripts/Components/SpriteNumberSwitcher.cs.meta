@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 4a1559f0ce9bc9c4d8eac63b82ff9dae
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 265406
+  packageName: UI Kit For Vision Pro OS
+  packageVersion: 1.2.0
+  assetPath: Assets/JetXR/UI Kit For Vision Pro OS/Runtime/Scripts/Components/SpriteNumberSwitcher.cs
+  uploadId: 689755

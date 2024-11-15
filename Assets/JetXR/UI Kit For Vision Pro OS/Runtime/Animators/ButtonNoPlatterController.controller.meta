@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 922578b43e7c37643a9429d161720ff1
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 265406
+  packageName: UI Kit For Vision Pro OS
+  packageVersion: 1.2.0
+  assetPath: Assets/JetXR/UI Kit For Vision Pro OS/Runtime/Animators/ButtonNoPlatterController.controller
+  uploadId: 689755

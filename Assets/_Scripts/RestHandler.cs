@@ -1,29 +1,28 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
+using Managers;
 using Models;
 using Proyecto26;
 using UnityEditor;
 using UnityEngine;
 
-public class RestHandler : MonoBehaviour
+public abstract class RestHandler
 {
+    
+    
     private void Start()
     {
         string url = GameManager.Instance.HassURL;
-        string token = GameManager.Instance.Token;
+        string port = GameManager.Instance.HassPort;
+        string token = GameManager.Instance.HassToken;
+
+        Uri uri = new ($"{url}:{port}/api/");
         
-        RequestHelper get = new()
-        {
-            Uri = url,
-            Headers = new Dictionary<string, string>
-            {
-                {"Authorization", $"Bearer {token}"},
-                {"content-type", "application/json"}
-            }
-        };
+        
         RequestHelper post = new()
         {
-            Uri = Path.Combine(url, "services/input_boolean/toggle"),
+            Uri = new Uri(uri, "services/input_boolean/toggle").ToString(),
             Headers = new Dictionary<string, string>
             {
                 {"Authorization", $"Bearer {token}"},
@@ -31,14 +30,33 @@ public class RestHandler : MonoBehaviour
             },
             Body = new EntityID{ entity_id = "input_boolean.toggle"}
         };
-        /*RestClient.Get(get).Then(response => {
-            EditorUtility.DisplayDialog("Response", response.Text, "Ok");
-        });*/
         RestClient.Post(post).Then(response => {
                 Debug.Log("Response: " + response.Text);
         })
         .Catch(err => {
             Debug.LogError("Error: " + err.Message);
+        });
+    }
+
+    public static void TestConnection(string url, int port, string token)
+    {
+        Uri uri = new ($"{url.TrimEnd('/')}:{port}/api/");
+        
+        RequestHelper get = new()
+        {
+            Uri = uri.ToString(),
+            Headers = new Dictionary<string, string>
+            {
+                {"Authorization", $"Bearer {token}"},
+                {"content-type", "application/json"}
+            }
+        };
+        
+        RestClient.Get(get).Then(response => {
+            EventManager.InvokeOnConnectionTested(response.StatusCode.ToString());
+        })
+        .Catch(err => {
+            EventManager.InvokeOnConnectionTested(err.Message);
         });
     }
 }

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f75f545f0608f274bab98fa4ef4526be
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 265406
+  packageName: UI Kit For Vision Pro OS
+  packageVersion: 1.2.0
+  assetPath: Assets/JetXR/UI Kit For Vision Pro OS/Runtime/Materials/WindowBlurredOverlayBackground.mat
+  uploadId: 689755

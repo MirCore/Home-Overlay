@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 76e27ba12f5261146a7330e7a55a50f2
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 265406
+  packageName: UI Kit For Vision Pro OS
+  packageVersion: 1.2.0
+  assetPath: Assets/JetXR/UI Kit For Vision Pro OS/Runtime/Animators/VolumeButton.controller
+  uploadId: 689755

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 90cc9b7544e82924c82164b8ac31812d
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 265406
+  packageName: UI Kit For Vision Pro OS
+  packageVersion: 1.2.0
+  assetPath: Assets/JetXR/UI Kit For Vision Pro OS/Demo/Prefabs/PlayerWindow.prefab
+  uploadId: 689755

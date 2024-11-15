@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: b8a431f43ff3b364fa2b997fce685478
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 265406
+  packageName: UI Kit For Vision Pro OS
+  packageVersion: 1.2.0
+  assetPath: Assets/JetXR/UI Kit For Vision Pro OS/Demo/Prefabs/ViewerCard.prefab
+  uploadId: 689755

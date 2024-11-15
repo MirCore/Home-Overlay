@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 6c9f4287e47f67d47a37d90cd3d5a06d
+AssemblyDefinitionImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 265406
+  packageName: UI Kit For Vision Pro OS
+  packageVersion: 1.2.0
+  assetPath: Assets/JetXR/UI Kit For Vision Pro OS/Editor/com.jetxr.visionui.editor.asmdef
+  uploadId: 689755

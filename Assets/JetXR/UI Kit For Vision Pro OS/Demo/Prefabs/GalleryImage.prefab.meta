@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: cca8befc93785fc43a984e9e6f598b80
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 265406
+  packageName: UI Kit For Vision Pro OS
+  packageVersion: 1.2.0
+  assetPath: Assets/JetXR/UI Kit For Vision Pro OS/Demo/Prefabs/GalleryImage.prefab
+  uploadId: 689755

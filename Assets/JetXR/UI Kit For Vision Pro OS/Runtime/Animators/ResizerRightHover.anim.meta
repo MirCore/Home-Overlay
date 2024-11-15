@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6b257a4599f07ab40b5768993e9154fe
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 265406
+  packageName: UI Kit For Vision Pro OS
+  packageVersion: 1.2.0
+  assetPath: Assets/JetXR/UI Kit For Vision Pro OS/Runtime/Animators/ResizerRightHover.anim
+  uploadId: 689755

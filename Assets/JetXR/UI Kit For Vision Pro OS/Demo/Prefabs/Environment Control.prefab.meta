@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 4c43c680032592949ba9344742410270
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 265406
+  packageName: UI Kit For Vision Pro OS
+  packageVersion: 1.2.0
+  assetPath: Assets/JetXR/UI Kit For Vision Pro OS/Demo/Prefabs/Environment Control.prefab
+  uploadId: 689755

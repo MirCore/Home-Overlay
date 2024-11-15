@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2311e868f32126a45ba84340142a8b3c
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 265406
+  packageName: UI Kit For Vision Pro OS
+  packageVersion: 1.2.0
+  assetPath: Assets/JetXR/UI Kit For Vision Pro OS/Runtime/Materials/DarkElementBackground.mat
+  uploadId: 689755
