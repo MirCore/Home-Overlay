@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using Managers;
 using TMPro;
 using UnityEngine;
+using Utils;
 
 namespace UI
 {
@@ -15,9 +17,12 @@ namespace UI
             UpdateTitle();
         }
 
+        /// <summary>
+        /// Updates the Dropdown Title based on the Subtitle, which is the entity_id
+        /// </summary>
         public void UpdateTitle()
         {
-            HassEntity entity = GameManager.Instance.HassStates.FirstOrDefault(e => e.entity_id == Subtitle.text);
+            HassEntity entity = GameManager.Instance.HassStates[Subtitle.text];
             Title.text = entity != null ? entity.attributes.friendly_name : Subtitle.text.Split('.')[1];;
         }
     }

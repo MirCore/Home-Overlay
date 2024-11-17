@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 namespace Managers
 {
+    /// <summary>
+    /// Handles the UI stuff like tab switching and updating the header text.
+    /// </summary>
     public class UIManager : MonoBehaviour
     {
         [SerializeField] private TMP_Text HeaderText;
@@ -30,6 +33,10 @@ namespace Managers
             SettingsButton.onClick.RemoveListener(ShowSettingsTab);
         }
         
+        /// <summary>
+        /// Shows the NewDeviceTab and hides the SettingsTab.
+        /// Updates the header text to "Add new Device".
+        /// </summary>
         private void ShowNewDeviceTab()
         {
             NewDeviceTab.SetActive(true);
@@ -38,6 +45,10 @@ namespace Managers
             HeaderText.text = "Add new Device";
         }
         
+        /// <summary>
+        /// Shows the SettingsTab and hides the NewDeviceTab.
+        /// Updates the header text to "Settings".
+        /// </summary>
         private void ShowSettingsTab()
         {
             NewDeviceTab.SetActive(false);
