@@ -16,6 +16,8 @@ namespace Utils
     {
         public string friendly_name;
         public int[] rgb_color;
+        public float[] hs_color;
         public string icon;
+        public int brightness;
     }
 }

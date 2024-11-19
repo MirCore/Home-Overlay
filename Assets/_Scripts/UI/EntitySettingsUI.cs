@@ -4,13 +4,21 @@ using System.Linq;
 using Managers;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Utils;
 
 namespace UI
 {
-    public class NewDeviceUI : MonoBehaviour
+
+    public class EntitySettingsUI : MonoBehaviour
     {
+        [SerializeField] private TMP_Text TitleText;
+        [SerializeField] private TMP_Text SubtitleText;
+        [SerializeField] private ColorPicker ColorPicker;
+        
+        private HassEntity _entityState;
+        
         /// <summary>
         /// The TMP_Dropdown used to select the device type.
         /// </summary>
@@ -26,24 +34,16 @@ namespace UI
         [SerializeField] private DropdownItem SelectedEntityLabel;
         
         /// <summary>
-        /// The Button that creates a new entity.
+        /// The Button that saves the settings.
         /// </summary>
-        [SerializeField] private Button CreateEntityButton;
-        
-        /// <summary>
-        /// The Button that creates an empty new entity.
-        /// </summary>
-        [SerializeField] private Button CreateEmtpyEntityButton;
-        
-        /// <summary>
-        /// The EntitySpawner that spawns new entities.
-        /// </summary>
-        [SerializeField] private EntitySpawner EntitySpawner;
+        [SerializeField] private Button SaveButton;
         
         /// <summary>
         /// The currently selected device type.
         /// </summary>
         private EDeviceType _selectedEDeviceType;
+
+        public Entity Entity { get; private set; }
 
 
         private void OnEnable()
@@ -52,8 +52,7 @@ namespace UI
             
             TypeDropdown.onValueChanged.AddListener(OnTypeDropdownValueChanged);
             EntityDropdown.onValueChanged.AddListener(OnEntityDropdownValueChanged);
-            CreateEntityButton.onClick.AddListener(OnCreateEntityButtonClicked);
-            CreateEmtpyEntityButton.onClick.AddListener(OnCreateEmptyEntityButtonClicked);
+            SaveButton.onClick.AddListener(OnSaveButtonClicked);
             EventManager.OnHassStatesChanged += OnHassStatesChanged;
         }
 
@@ -61,11 +60,10 @@ namespace UI
         {
             TypeDropdown.onValueChanged.RemoveListener(OnTypeDropdownValueChanged);
             EntityDropdown.onValueChanged.RemoveListener(OnEntityDropdownValueChanged);
-            CreateEntityButton.onClick.RemoveListener(OnCreateEntityButtonClicked);
-            CreateEmtpyEntityButton.onClick.RemoveListener(OnCreateEmptyEntityButtonClicked);
+            SaveButton.onClick.RemoveListener(OnSaveButtonClicked);
             EventManager.OnHassStatesChanged -= OnHassStatesChanged;
         }
-
+        
         private void Start()
         {
             UpdateTypeDropdown();
@@ -81,27 +79,13 @@ namespace UI
             TypeDropdown.AddOptions(Enum.GetValues(typeof(EDeviceType)).Cast<EDeviceType>().Select(e => e.GetDisplayName()).ToList());
         }
 
-        /// <summary>
-        /// Handles the click event of the CreateEntityButton.
-        /// Spawns a new entity at the position of the CreateEntityButton with the selected entity ID.
-        /// </summary>
-        private void OnCreateEntityButtonClicked()
+        
+        private void OnSaveButtonClicked()
         {
             // Get the selected entity ID from the EntityDropdown
             string selectedEntityID = EntityDropdown.options[EntityDropdown.value].text;
-
-            // Spawn a new entity at the position of the CreateEntityButton with the selected entity ID
-            EntitySpawner.SpawnEntity(selectedEntityID, CreateEntityButton.transform);
-        }
-
-        /// <summary>
-        /// Handles the click event of the OnCreateEmptyEntityButtonClicked.
-        /// Spawns a new empty entity at the position of the CreateEmtpyEntityButton with the selected entity ID.
-        /// </summary>
-        private void OnCreateEmptyEntityButtonClicked()
-        {
-            // Spawn a new entity at the position of the CreateEmtpyEntityButton with the selected entity ID
-            EntitySpawner.SpawnEntity(null, CreateEmtpyEntityButton.transform);
+            
+            Entity.SetEntityID(selectedEntityID);
         }
         
         /// <summary>
@@ -173,6 +157,26 @@ namespace UI
         private void OnHassStatesChanged()
         {
             UpdateEntityDropdown();
+            
+            if (Entity)
+                _entityState = GameManager.Instance.GetHassState(Entity.EntityID);
+            if (_entityState == null)
+                return;
+            
+            UpdateHeader();
         }
+
+        private void UpdateHeader()
+        {
+            TitleText.text = _entityState.attributes.friendly_name;
+            SubtitleText.text = _entityState.entity_id;
+        }
+
+        public void SetEntity(Entity entity)
+        {
+            Entity = entity;
+            ColorPicker.SetEntityID(Entity.EntityID);
+        }
+        
     }
 }

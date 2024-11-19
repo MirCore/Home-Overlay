@@ -13,7 +13,8 @@ namespace Managers
         public string HassURL { get; private set; }
         public string HassPort { get; private set; }
         public string HassToken { get; private set; }
-        public readonly Dictionary<string, HassEntity> HassStates = new();
+
+        private readonly Dictionary<string, HassEntity> _hassStates = new();
 
         [SerializeField] private HassEntity[] InspectorHassStates;
 
@@ -21,6 +22,8 @@ namespace Managers
         {
             ZPlayerPrefs.Initialize("Hass", "Password");
             LoadConnectionSettings();
+
+            RestHandler.SetDefaultHeaders();
         }
 
         /// <summary>
@@ -88,14 +91,27 @@ namespace Managers
                 }
                 
                 // Update or add the entity
-                HassStates[entity.entity_id] = entity;
+                _hassStates[entity.entity_id] = entity;
             }
             
             // Invoke the event that the Hass states have changed
             EventManager.InvokeOnHassStatesChanged();
             
             // Copy the entities to the inspector field for debugging
-            InspectorHassStates = HassStates.Values.ToArray();
+            InspectorHassStates = _hassStates.Values.ToArray();
+        }
+
+        public HassEntity GetHassState(string entityID)
+        {
+            if (string.IsNullOrEmpty(entityID))
+                return null;
+            HassEntity state = _hassStates[entityID];
+            return state ?? new HassEntity();
+        }
+
+        public IEnumerable<KeyValuePair<string, HassEntity>> GetHassStates()
+        {
+            return _hassStates;
         }
     }
 }

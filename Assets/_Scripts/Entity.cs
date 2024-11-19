@@ -1,4 +1,6 @@
-﻿using Managers;
+﻿using System;
+using Managers;
+using TMPro;
 using Unity.VectorGraphics;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,20 +9,28 @@ using Utils;
 public class Entity : MonoBehaviour
 {
     [SerializeField] private Button Button;
-    [SerializeField] private SVGImage Icon;
-    private string _entityID;
+    [SerializeField] private TMP_Text Icon;
+    [SerializeField] private Button SettingsButton;
+    public string EntityID { get; private set; }
     private HassEntity _entityState;
-
+    
     private void OnEnable()
     {
         Button.onClick.AddListener(OnButtonClicked);
+        SettingsButton.onClick.AddListener(OnSettingsButtonClicked);
         EventManager.OnHassStatesChanged += OnHassStatesChanged;
     }
 
     private void OnDisable()
     {
         Button.onClick.RemoveListener(OnButtonClicked);
+        SettingsButton.onClick.RemoveListener(OnSettingsButtonClicked);
         EventManager.OnHassStatesChanged -= OnHassStatesChanged;
+    }
+
+    private void OnSettingsButtonClicked()
+    {
+        EntitySettingsWindowManager.Instance.ToggleSettingsWindow(this);
     }
 
     /// <summary>
@@ -37,38 +47,68 @@ public class Entity : MonoBehaviour
     private void UpdateIcon()
     {
         // If there is no entity ID, there is nothing to update.
-        if (_entityID == null)
+        if (EntityID == null)
+        {
+            Icon.text = MaterialDesignIcons.GetIcon(null, EDeviceType.DEFAULT);
             return;
+        }
         
         // Get the current state of the entity.
-        _entityState = GameManager.Instance.HassStates[_entityID];
+        _entityState = GameManager.Instance.GetHassState(EntityID);
         if (_entityState == null)
             return;
 
+        // Update the icon based on the entity's attributes.
+        Icon.text = MaterialDesignIcons.GetIcon(_entityState.attributes.icon, _entityState.DeviceType);
+
+        Color color;
+        
         // Update the icon color based on the entity's state.
         // If the entity is off, set the icon color to black.
         if (_entityState.state == "off")
         {
-            Icon.color = Color.black;
+            color = Color.black;
         }
         // If the entity has a valid RGB color, set the icon color to it.
         else if (_entityState.attributes.rgb_color is { Length: 3 })
         {
-            Icon.color = JsonHelpers.RGBToUnityColor(_entityState.attributes.rgb_color);
+            color = JsonHelpers.RGBToUnityColor(_entityState.attributes.rgb_color);
         }
         // Otherwise, set the icon color to white.
         else
         {
-            Icon.color = Color.white;
+            color = Color.white;
         }
+
+        if (_entityState.attributes.brightness != 0)
+        {
+            color = Color.Lerp(Color.black, color, _entityState.attributes.brightness / 255f);
+        }
+        
+        Icon.color = color;
     }
 
     /// <summary>
-    /// Toggles the light state associated with the entity ID.
+    /// Toggles the entities state associated with the entity ID.
     /// </summary>
     private void OnButtonClicked()
     {
-        RestHandler.ToggleLight(_entityID);
+        if (_entityState == null)
+            return;
+        
+        switch (_entityState.DeviceType)
+        {
+            case EDeviceType.DEFAULT:
+                break;
+            case EDeviceType.LIGHT:
+                RestHandler.ToggleLight(EntityID);
+                break;
+            case EDeviceType.SWITCH:
+                RestHandler.ToggleSwitch(EntityID);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 
     /// <summary>
@@ -77,7 +117,7 @@ public class Entity : MonoBehaviour
     /// <param name="selectedEntityID">The selected entity ID.</param>
     public void SetEntityID(string selectedEntityID)
     {
-        _entityID = selectedEntityID;
+        EntityID = selectedEntityID;
         UpdateIcon();
     }
 }

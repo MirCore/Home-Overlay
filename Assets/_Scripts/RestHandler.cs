@@ -11,6 +11,22 @@ using Uri = System.Uri;
 public abstract class RestHandler
 {
     /// <summary>
+    /// Sets the default headers for REST requests to Home Assistant.
+    /// 
+    /// The default headers include the authorization token and the content type.
+    /// </summary>
+    public static void SetDefaultHeaders()
+    {
+        string token = GameManager.Instance.HassToken;
+        
+        RestClient.DefaultRequestHeaders = new Dictionary<string, string>
+        {
+            { "Authorization", $"Bearer {token}" },
+            { "content-type", "application/json" }
+        };
+    }
+    
+    /// <summary>
     /// Tests the connection to Home Assistant.
     /// 
     /// The connection test is done by sending a GET request to the Home Assistant API.
@@ -47,16 +63,10 @@ public abstract class RestHandler
     public static void GetHassEntities()
     {
         Uri uri = new (GameManager.Instance.HassUri, "states");
-        string token = GameManager.Instance.HassToken;
         
         RequestHelper get = new()
         {
             Uri = uri.ToString(),
-            Headers = new Dictionary<string, string>
-            {
-                {"Authorization", $"Bearer {token}"},
-                {"content-type", "application/json"}
-            }
         };
         
         RestClient.Get(get)
@@ -64,36 +74,70 @@ public abstract class RestHandler
                 GameManager.Instance.OnHassStatesResponse(response.Text);
             })
             .Catch(err => {
+                Debug.LogError("Error: " + err.Message + "\n" + err.StackTrace);
+            });
+    }
+    
+    /// <summary>
+    /// Sends a POST request to the specified URI with the given entity ID.
+    /// </summary>
+    /// <param name="body">The data to include in the request body.</param>
+    /// <param name="uri">The URI to send the POST request to.</param>
+    private static void SendPostRequest(Uri uri, object body)
+    {
+        RequestHelper postRequest = new()
+        {
+            Uri = uri.ToString(),
+            Body = body
+        };
+        
+        RestClient.Post(postRequest)
+            .Then(response => {
+                GameManager.Instance.OnHassStatesResponse(response.Text);
+            })
+            .Catch(err => {
                 Debug.LogError("Error: " + err.Message + err.StackTrace);
             });
     }
-
+    
     /// <summary>
-    /// Toggles the light with the given entity ID.
+    /// Toggles the light state for the specified entity ID.
     /// </summary>
     /// <param name="entityID">The entity ID of the light to toggle.</param>
     public static void ToggleLight(string entityID)
     {
         Uri uri = new (GameManager.Instance.HassUri, "services/light/toggle");
-        string token = GameManager.Instance.HassToken;
-        
-        RequestHelper post = new()
-        {
-            Uri = uri.ToString(),
-            Headers = new Dictionary<string, string>
-            {
-                {"Authorization", $"Bearer {token}"},
-                {"content-type", "application/json"}
-            },
-            Body = new EntityID{ entity_id = entityID}
-        };
-        
-        RestClient.Post(post).Then(response => {
-                GameManager.Instance.OnHassStatesResponse(response.Text);
-            })
-            .Catch(err => {
-                Debug.LogError("Error: " + err.Message);
-            });
+        EntityID body = new() { entity_id = entityID };
+        SendPostRequest(uri, body);
+    }
+
+    /// <summary>
+    /// Toggles the switch state for the specified entity ID.
+    /// </summary>
+    /// <param name="entityID">The entity ID of the switch to toggle.</param>
+    public static void ToggleSwitch(string entityID)
+    {
+        Uri uri = new (GameManager.Instance.HassUri, "services/switch/toggle");
+        EntityID body = new() { entity_id = entityID };
+        SendPostRequest(uri, body);
+    }
+
+    public static void SetLightBrightness(string entityID, int value)
+    {
+        Uri uri = new (GameManager.Instance.HassUri, "services/light/turn_on");
+        Brightness body = new() { entity_id = entityID, brightness = value.ToString() };
+        SendPostRequest(uri, body);
+    }
+
+
+    public static void SetLightColor(string entityID, Color color)
+    {
+        Debug.Log(color);
+        int[] rgb = { (int)(color.r * 255), (int)(color.g * 255), (int)(color.b * 255) };
+        Debug.Log("r: " + rgb[0] + " g: " + rgb[1] + " b: " + rgb[2]);
+        Uri uri = new (GameManager.Instance.HassUri, "services/light/turn_on");
+        RGBColor body = new() { entity_id = entityID, rgb_color = rgb };
+        SendPostRequest(uri, body);
     }
 }
 
@@ -103,9 +147,34 @@ public abstract class RestHandler
 [Serializable]
 public class EntityID
 {
-    // ReSharper disable once InconsistentNaming
     /// <summary>
     /// The entity ID.
     /// </summary>
     public string entity_id;
+}
+
+/// <summary>
+/// Represents an entity ID.
+/// </summary>
+[Serializable]
+public class Brightness
+{
+    /// <summary>
+    /// The entity ID.
+    /// </summary>
+    public string entity_id;
+    public string brightness = null;
+}
+
+/// <summary>
+/// Represents an entity ID.
+/// </summary>
+[Serializable]
+public class RGBColor
+{
+    /// <summary>
+    /// The entity ID.
+    /// </summary>
+    public string entity_id;
+    public int[] rgb_color;
 }

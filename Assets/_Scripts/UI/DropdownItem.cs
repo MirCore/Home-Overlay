@@ -22,7 +22,7 @@ namespace UI
         /// </summary>
         public void UpdateTitle()
         {
-            HassEntity entity = GameManager.Instance.HassStates[Subtitle.text];
+            HassEntity entity = GameManager.Instance.GetHassState(Subtitle.text);
             Title.text = entity != null ? entity.attributes.friendly_name : Subtitle.text.Split('.')[1];;
         }
     }
