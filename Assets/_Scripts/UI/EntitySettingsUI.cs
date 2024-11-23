@@ -39,6 +39,11 @@ namespace UI
         [SerializeField] private Button SaveButton;
         
         /// <summary>
+        /// The Button that deletes the Entity.
+        /// </summary>
+        [SerializeField] private Button DeleteButton;
+        
+        /// <summary>
         /// The currently selected device type.
         /// </summary>
         private EDeviceType _selectedEDeviceType;
@@ -53,6 +58,7 @@ namespace UI
             TypeDropdown.onValueChanged.AddListener(OnTypeDropdownValueChanged);
             EntityDropdown.onValueChanged.AddListener(OnEntityDropdownValueChanged);
             SaveButton.onClick.AddListener(OnSaveButtonClicked);
+            DeleteButton.onClick.AddListener(OnDeleteButtonClicked);
             EventManager.OnHassStatesChanged += OnHassStatesChanged;
         }
 
@@ -61,6 +67,7 @@ namespace UI
             TypeDropdown.onValueChanged.RemoveListener(OnTypeDropdownValueChanged);
             EntityDropdown.onValueChanged.RemoveListener(OnEntityDropdownValueChanged);
             SaveButton.onClick.RemoveListener(OnSaveButtonClicked);
+            DeleteButton.onClick.RemoveListener(OnDeleteButtonClicked);
             EventManager.OnHassStatesChanged -= OnHassStatesChanged;
         }
         
@@ -86,6 +93,11 @@ namespace UI
             string selectedEntityID = EntityDropdown.options[EntityDropdown.value].text;
             
             Entity.UpdateEntityID(selectedEntityID);
+        }
+        
+        private void OnDeleteButtonClicked()
+        {
+            Entity.DeleteEntity();
         }
         
         /// <summary>

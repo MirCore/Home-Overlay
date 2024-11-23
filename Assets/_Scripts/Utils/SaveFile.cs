@@ -39,12 +39,11 @@ namespace Utils
             }
         }
 
-        public static void WriteFile(List<EntityObject> gameData)
+        private static void WriteFile(List<EntityObject> gameData)
         {
             try
             {
                 string json = JsonUtility.ToJson(new EntityObjectListWrapper { EntityObjects = gameData }, true);
-                Debug.Log(json);
                 
                 File.WriteAllText(Path, json);
                 

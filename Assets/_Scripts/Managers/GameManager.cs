@@ -78,5 +78,11 @@ namespace Managers
             HassToken = SecurePlayerPrefs.GetString("HassToken");
             HassUri = new Uri($"{HassURL.TrimEnd('/')}:{HassPort}/api/");
         }
+
+        public void RemoveEntity(EntityObject entityObject)
+        {
+            EntityObjects.Remove(entityObject);
+            SaveFile.SaveEntityObjects();
+        }
     }
 }

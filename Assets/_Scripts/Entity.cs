@@ -1,18 +1,21 @@
 ﻿using System;
-using System.Linq;
 using Managers;
 using Structs;
 using TMPro;
-using Unity.VectorGraphics;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.XR;
+using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using Utils;
 
-public class Entity : MonoBehaviour
+public class Entity : MonoBehaviour, IDragHandler
 {
     [SerializeField] private Button Button;
     [SerializeField] private TMP_Text Icon;
     [SerializeField] private Button SettingsButton;
+    private XRBaseInteractable _interactable;
     
     private HassEntity _entityState;
     public EntityObject EntityObject { get; private set; }
@@ -21,6 +24,9 @@ public class Entity : MonoBehaviour
     {
         Button.onClick.AddListener(OnButtonClicked);
         SettingsButton.onClick.AddListener(OnSettingsButtonClicked);
+        _interactable = GetComponent<XRBaseInteractable>();
+        IDragHandler foo = GetComponent<IDragHandler>();
+        _interactable.selectExited.AddListener(OnSelectExited);
         EventManager.OnHassStatesChanged += OnHassStatesChanged;
     }
 
@@ -28,7 +34,30 @@ public class Entity : MonoBehaviour
     {
         Button.onClick.RemoveListener(OnButtonClicked);
         SettingsButton.onClick.RemoveListener(OnSettingsButtonClicked);
+        _interactable.selectExited.RemoveListener(OnSelectExited);
         EventManager.OnHassStatesChanged -= OnHassStatesChanged;
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        if (XRSettings.enabled)
+            return;
+        
+        Canvas canvas = GetComponent<Canvas>();
+        RectTransform rectTransform = transform as RectTransform;
+        if (canvas != null && rectTransform != null)
+        {
+            float scaleFactor = rectTransform.localScale.magnitude;
+            Vector2 adjustedDelta = eventData.delta * scaleFactor;
+
+            rectTransform.anchoredPosition += adjustedDelta; // Adjust anchoredPosition
+            EntityObject.Position = transform.position; // Update EntityObject
+        }
+    }
+    
+    private void OnSelectExited(SelectExitEventArgs eventData)
+    {
+        EntityObject.Position = transform.position;
     }
 
     private void OnSettingsButtonClicked()
@@ -136,5 +165,11 @@ public class Entity : MonoBehaviour
         EntityObject.EntityID = entityID;
         
         UpdateIcon();
+    }
+
+    public void DeleteEntity()
+    {
+        GameManager.Instance.RemoveEntity(EntityObject);
+        Destroy(gameObject);
     }
 }
