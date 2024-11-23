@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using Managers;
+using Structs;
 using TMPro;
 using Unity.VectorGraphics;
 using UnityEngine;
@@ -11,9 +13,10 @@ public class Entity : MonoBehaviour
     [SerializeField] private Button Button;
     [SerializeField] private TMP_Text Icon;
     [SerializeField] private Button SettingsButton;
-    public string EntityID { get; private set; }
-    private HassEntity _entityState;
     
+    private HassEntity _entityState;
+    public EntityObject EntityObject { get; private set; }
+
     private void OnEnable()
     {
         Button.onClick.AddListener(OnButtonClicked);
@@ -46,15 +49,21 @@ public class Entity : MonoBehaviour
     /// </summary>
     private void UpdateIcon()
     {
+        if (EntityObject == null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        
         // If there is no entity ID, there is nothing to update.
-        if (EntityID == null)
+        if (EntityObject.EntityID == null)
         {
             Icon.text = MaterialDesignIcons.GetIcon(null, EDeviceType.DEFAULT);
             return;
         }
         
         // Get the current state of the entity.
-        _entityState = GameManager.Instance.GetHassState(EntityID);
+        _entityState = HassStates.GetHassState(EntityObject.EntityID);
         if (_entityState == null)
             return;
 
@@ -101,10 +110,10 @@ public class Entity : MonoBehaviour
             case EDeviceType.DEFAULT:
                 break;
             case EDeviceType.LIGHT:
-                RestHandler.ToggleLight(EntityID);
+                RestHandler.ToggleLight(EntityObject.EntityID);
                 break;
             case EDeviceType.SWITCH:
-                RestHandler.ToggleSwitch(EntityID);
+                RestHandler.ToggleSwitch(EntityObject.EntityID);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -114,10 +123,18 @@ public class Entity : MonoBehaviour
     /// <summary>
     /// Sets the entity ID and updates the icon accordingly.
     /// </summary>
-    /// <param name="selectedEntityID">The selected entity ID.</param>
-    public void SetEntityID(string selectedEntityID)
+    /// <param name="entityObject">The selected entityObject.</param>
+    public void SetEntityObject(EntityObject entityObject)
     {
-        EntityID = selectedEntityID;
+        EntityObject = entityObject;
+        
+        UpdateIcon();
+    }
+
+    public void UpdateEntityID(string entityID)
+    {
+        EntityObject.EntityID = entityID;
+        
         UpdateIcon();
     }
 }

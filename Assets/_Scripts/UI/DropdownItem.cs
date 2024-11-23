@@ -22,8 +22,11 @@ namespace UI
         /// </summary>
         public void UpdateTitle()
         {
-            HassEntity entity = GameManager.Instance.GetHassState(Subtitle.text);
-            Title.text = entity != null ? entity.attributes.friendly_name : Subtitle.text.Split('.')[1];;
+            HassEntity entity = HassStates.GetHassState(Subtitle.text);
+            if (entity != null)
+                Title.text = entity.attributes.friendly_name;
+            else if (Subtitle.text.Split('.').Length > 1)
+                Title.text = Subtitle.text.Split('.')[1];
         }
     }
 }

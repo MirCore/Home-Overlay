@@ -91,7 +91,7 @@ namespace UI
             string selectedEntityID = EntityDropdown.options[EntityDropdown.value].text;
 
             // Spawn a new entity at the position of the CreateEntityButton with the selected entity ID
-            EntitySpawner.SpawnEntity(selectedEntityID, CreateEntityButton.transform);
+            EntitySpawner.SpawnNewEntity(selectedEntityID, CreateEntityButton.transform.position);
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace UI
         private void OnCreateEmptyEntityButtonClicked()
         {
             // Spawn a new entity at the position of the CreateEmtpyEntityButton with the selected entity ID
-            EntitySpawner.SpawnEntity(null, CreateEmtpyEntityButton.transform);
+            EntitySpawner.SpawnNewEntity(null, CreateEmtpyEntityButton.transform.position);
         }
         
         /// <summary>
@@ -126,7 +126,7 @@ namespace UI
 
             // Get a list of all the entities with the selected device type
             List<string> subtitleList = new ();
-            foreach (KeyValuePair<string, HassEntity> entity in GameManager.Instance.GetHassStates())
+            foreach (KeyValuePair<string, HassEntity> entity in HassStates.GetHassStates())
             {
                 // Skip entities with device type DEFAULT, as these are not compatible
                 if (entity.Value.DeviceType == EDeviceType.DEFAULT)

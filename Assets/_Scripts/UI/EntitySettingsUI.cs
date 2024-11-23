@@ -85,7 +85,7 @@ namespace UI
             // Get the selected entity ID from the EntityDropdown
             string selectedEntityID = EntityDropdown.options[EntityDropdown.value].text;
             
-            Entity.SetEntityID(selectedEntityID);
+            Entity.UpdateEntityID(selectedEntityID);
         }
         
         /// <summary>
@@ -110,7 +110,7 @@ namespace UI
 
             // Get a list of all the entities with the selected device type
             List<string> subtitleList = new ();
-            foreach (KeyValuePair<string, HassEntity> entity in GameManager.Instance.GetHassStates())
+            foreach (KeyValuePair<string, HassEntity> entity in HassStates.GetHassStates())
             {
                 // Skip entities with device type DEFAULT, as these are not compatible
                 if (entity.Value.DeviceType == EDeviceType.DEFAULT)
@@ -159,7 +159,7 @@ namespace UI
             UpdateEntityDropdown();
             
             if (Entity)
-                _entityState = GameManager.Instance.GetHassState(Entity.EntityID);
+                _entityState = HassStates.GetHassState(Entity.EntityObject.EntityID);
             if (_entityState == null)
                 return;
             
@@ -175,7 +175,7 @@ namespace UI
         public void SetEntity(Entity entity)
         {
             Entity = entity;
-            ColorPicker.SetEntityID(Entity.EntityID);
+            ColorPicker.SetEntityID(Entity.EntityObject.EntityID);
         }
         
     }

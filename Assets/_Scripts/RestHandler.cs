@@ -71,7 +71,7 @@ public abstract class RestHandler
         
         RestClient.Get(get)
             .Then(response => {
-                GameManager.Instance.OnHassStatesResponse(response.Text);
+                HassStates.OnHassStatesResponse(response.Text);
             })
             .Catch(err => {
                 Debug.LogError("Error: " + err.Message + "\n" + err.StackTrace);
@@ -93,7 +93,7 @@ public abstract class RestHandler
         
         RestClient.Post(postRequest)
             .Then(response => {
-                GameManager.Instance.OnHassStatesResponse(response.Text);
+                HassStates.OnHassStatesResponse(response.Text);
             })
             .Catch(err => {
                 Debug.LogError("Error: " + err.Message + err.StackTrace);

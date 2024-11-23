@@ -79,7 +79,7 @@ public class ColorPicker : MonoBehaviour
 
     private void UpdateSliders()
     {
-        HassEntity entityState = GameManager.Instance.GetHassState(_entityID);
+        HassEntity entityState = HassStates.GetHassState(_entityID);
         if (entityState == null)
             return;
 
