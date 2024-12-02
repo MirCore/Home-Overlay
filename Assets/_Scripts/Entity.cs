@@ -57,6 +57,8 @@ public class Entity : MonoBehaviour, IDragHandler
     
     private void OnSelectExited(SelectExitEventArgs eventData)
     {
+        if (EntityObject == null)
+            return;
         EntityObject.Position = transform.position;
     }
 

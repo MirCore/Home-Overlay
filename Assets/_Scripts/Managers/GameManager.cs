@@ -33,6 +33,8 @@ namespace Managers
         private void LoadEntityObjects()
         {
             EntityObjects = SaveFile.ReadFile();
+            if (EntityObjects == null)
+                return;
             foreach (EntityObject entityObject in EntityObjects)
             {
                 EntitySpawner.SpawnSavedEntity(entityObject.Position, entityObject);
@@ -76,7 +78,8 @@ namespace Managers
             HassURL = SecurePlayerPrefs.GetString("HassURL");
             HassPort = SecurePlayerPrefs.GetString("HassPort");
             HassToken = SecurePlayerPrefs.GetString("HassToken");
-            HassUri = new Uri($"{HassURL.TrimEnd('/')}:{HassPort}/api/");
+            if (HassURL != "")
+                HassUri = new Uri($"{HassURL.TrimEnd('/')}:{HassPort}/api/");
         }
 
         public void RemoveEntity(EntityObject entityObject)

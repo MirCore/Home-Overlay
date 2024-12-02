@@ -62,7 +62,10 @@ public abstract class RestHandler
     /// </summary>
     public static void GetHassEntities()
     {
-        Uri uri = new (GameManager.Instance.HassUri, "states");
+        Uri baseUri = GameManager.Instance.HassUri;
+        if (baseUri == null)
+            return;
+        Uri uri = new (baseUri, "states");
         
         RequestHelper get = new()
         {
