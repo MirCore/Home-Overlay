@@ -1,5 +1,7 @@
 using System.Collections;
+using System.Text;
 using Managers;
+using SimpleFileBrowser;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,6 +28,9 @@ namespace UI
         /// </summary>
         [SerializeField] private TMP_InputField TokenInputField;
 
+        
+        [SerializeField] private Button LoadTokenButton;
+        
         /// <summary>
         /// The button to test the connection.
         /// </summary>
@@ -64,11 +69,11 @@ namespace UI
             SaveSuccessField.SetActive(false);
             
             // Load the saved URL
-            if (GameManager.Instance.HassURL != null)
+            if (GameManager.Instance.HassURL != "")
                 URLInputField.text = GameManager.Instance.HassURL;
 
             // Load the saved port
-            if (GameManager.Instance.HassPort != null)
+            if (GameManager.Instance.HassPort != "")
                 PortInputField.text = GameManager.Instance.HassPort;
 
             // Load the saved token
@@ -77,6 +82,7 @@ namespace UI
 
         private void OnEnable()
         {
+            LoadTokenButton.onClick.AddListener(OnLoadTokenButtonClicked);
             TestConnectionButton.onClick.AddListener(OnTestConnectionButtonClicked);
             SaveButton.onClick.AddListener(OnSaveButtonClicked);
             EventManager.OnConnectionTested += OnConnectionTested;
@@ -84,9 +90,15 @@ namespace UI
 
         private void OnDisable()
         {
+            LoadTokenButton.onClick.RemoveListener(OnLoadTokenButtonClicked);
             TestConnectionButton.onClick.RemoveListener(OnTestConnectionButtonClicked);
             SaveButton.onClick.RemoveListener(OnSaveButtonClicked);
             EventManager.OnConnectionTested -= OnConnectionTested;
+        }
+
+        private void OnLoadTokenButtonClicked()
+        {
+            FileBrowserUtility.LoadStringFromFile(this);
         }
 
         /// <summary>
@@ -114,8 +126,14 @@ namespace UI
         private void OnTestConnectionButtonClicked()
         {
             int.TryParse(PortInputField.text, out int port);
+            if (port == 0)
+                port = 8123;
             
-            GameManager.TestConnection(URLInputField.text, port, TokenInputField.text);
+            string url = URLInputField.text;
+            if (url == "")
+                url = "http://homeassistant.local/";
+            
+            GameManager.TestConnection(url, port, TokenInputField.text);
             
             ConnectSuccessField.SetActive(false);
             ConnectFailField.SetActive(false);
@@ -127,7 +145,14 @@ namespace UI
         private void OnSaveButtonClicked()
         {
             int.TryParse(PortInputField.text, out int port);
-            GameManager.Instance.SaveConnectionSettings(URLInputField.text, port, TokenInputField.text);
+            if (port == 0)
+                port = 8123;
+            
+            string url = URLInputField.text;
+            if (url == "")
+                url = "http://homeassistant.local/";
+            
+            GameManager.Instance.SaveConnectionSettings(url, port, TokenInputField.text);
             SaveSuccessField.SetActive(true);
             
             // Start coroutine to deactivate the field after 3 seconds
@@ -146,6 +171,11 @@ namespace UI
 
             // Deactivate the field
             SaveSuccessField.SetActive(false);
+        }
+
+        public void OnTokenLoadedFromFile(byte[] bytes)
+        {
+            TokenInputField.text = Encoding.UTF8.GetString(bytes);
         }
     }
 }
