@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Meta.XR.MRUtilityKit;
 using Structs;
 using UnityEngine;
 using Utils;
@@ -20,6 +21,7 @@ namespace Managers
         /// The EntitySpawner that spawns new entities.
         /// </summary>
         [SerializeField] private EntitySpawner EntitySpawner;
+        [field: SerializeField] public EffectMesh EffectMesh { get; private set; }
 
         private void OnEnable()
         {

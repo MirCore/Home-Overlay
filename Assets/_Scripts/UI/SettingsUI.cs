@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Text;
 using Managers;
+using Meta.XR.MRUtilityKit;
 using SimpleFileBrowser;
 using TMPro;
 using UnityEngine;
@@ -40,6 +41,8 @@ namespace UI
         /// The button to save the settings.
         /// </summary>
         [SerializeField] private Button SaveButton;
+        
+        [SerializeField] private Toggle ToggleEffectMeshButton;
 
         /// <summary>
         /// The game object to show when the connection is successful.
@@ -85,6 +88,7 @@ namespace UI
             LoadTokenButton.onClick.AddListener(OnLoadTokenButtonClicked);
             TestConnectionButton.onClick.AddListener(OnTestConnectionButtonClicked);
             SaveButton.onClick.AddListener(OnSaveButtonClicked);
+            ToggleEffectMeshButton.onValueChanged.AddListener(OnToggleEffectMeshButtonClicked);
             EventManager.OnConnectionTested += OnConnectionTested;
         }
 
@@ -93,12 +97,18 @@ namespace UI
             LoadTokenButton.onClick.RemoveListener(OnLoadTokenButtonClicked);
             TestConnectionButton.onClick.RemoveListener(OnTestConnectionButtonClicked);
             SaveButton.onClick.RemoveListener(OnSaveButtonClicked);
+            ToggleEffectMeshButton.onValueChanged.RemoveListener(OnToggleEffectMeshButtonClicked);
             EventManager.OnConnectionTested -= OnConnectionTested;
         }
 
         private void OnLoadTokenButtonClicked()
         {
             FileBrowserUtility.LoadStringFromFile(this);
+        }
+        
+        private void OnToggleEffectMeshButtonClicked(bool value)
+        {
+            GameManager.Instance.EffectMesh.HideMesh = !value;
         }
 
         /// <summary>
