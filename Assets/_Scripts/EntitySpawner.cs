@@ -7,6 +7,7 @@ using Utils;
 public class EntitySpawner : MonoBehaviour
 {
     [SerializeField] private Entity EntityPrefab;
+    [SerializeField] private Transform HassUITranslation;
 
     /// <summary>
     /// Spawns a new entity at the specified transform position and rotation.
@@ -16,9 +17,9 @@ public class EntitySpawner : MonoBehaviour
     public void SpawnSavedEntity(Vector3 position, EntityObject entityObject)
     {
         // Instantiate the entity at the given position and rotation
-        Entity newEntity = Instantiate(EntityPrefab, position, Quaternion.identity);
+        Entity newEntity = Instantiate(EntityPrefab, HassUITranslation, false);
         
-        newEntity.transform.position = entityObject.Position;
+        newEntity.transform.localPosition = entityObject.Position;
         
         // Set the entity ID to the new entity
         newEntity.SetEntityObject(entityObject);
@@ -32,7 +33,7 @@ public class EntitySpawner : MonoBehaviour
     public void SpawnNewEntity(string selectedEntityID, Vector3 position)
     {
         // Instantiate the entity at the given position and rotation
-        Entity newEntity = Instantiate(EntityPrefab, position, Quaternion.identity);
+        Entity newEntity = Instantiate(EntityPrefab, HassUITranslation, false);
         
         // Slightly offset the position of the new entity
         Vector3 newPosition = newEntity.transform.position - newEntity.transform.forward * 0.1f;
@@ -42,7 +43,7 @@ public class EntitySpawner : MonoBehaviour
         GameManager.Instance.EntityObjects.Add(entityObject);
         SaveFile.SaveEntityObjects();
         
-        newEntity.transform.position = entityObject.Position;
+        newEntity.transform.localPosition = entityObject.Position;
         
         // Set the entity ID to the new entity
         newEntity.SetEntityObject(entityObject);

@@ -2,6 +2,8 @@
   "dependencies": {
     "com.meta.xr.mrutilitykit": "71.0.0",
     "com.meta.xr.sdk.core": "71.0.0",
+    "com.meta.xr.sdk.interaction": "71.0.0",
+    "com.meta.xr.sdk.interaction.ovr": "71.0.0",
     "com.unity.collab-proxy": "2.5.2",
     "com.unity.ide.rider": "3.0.34",
     "com.unity.inputsystem": "1.11.2",
