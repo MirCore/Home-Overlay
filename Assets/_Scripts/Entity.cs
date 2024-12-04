@@ -51,7 +51,9 @@ public class Entity : MonoBehaviour, IDragHandler
             Vector2 adjustedDelta = eventData.delta * scaleFactor;
 
             rectTransform.anchoredPosition += adjustedDelta; // Adjust anchoredPosition
-            EntityObject.Position = transform.localPosition; // Update EntityObject
+            if (EntityObject == null)
+                return;
+            EntityObject.Position = transform.localPosition;
         }
     }
     
