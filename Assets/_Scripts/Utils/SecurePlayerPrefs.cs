@@ -24,5 +24,14 @@
 
             return value;
         }
+
+        // Retrieves a string value from PlayerPrefs
+        public static int GetInt(string key, int defaultValue = 0)
+        {
+            // Get the value
+            int value = ZPlayerPrefs.GetInt(key, defaultValue);
+
+            return value;
+        }
     }
 }

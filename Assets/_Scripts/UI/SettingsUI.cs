@@ -1,11 +1,14 @@
 using System.Collections;
+using System.Net;
 using System.Text;
+using System.Web;
 using Managers;
 using Meta.XR.MRUtilityKit;
 using SimpleFileBrowser;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Utils;
 
 namespace UI
 {
@@ -76,8 +79,8 @@ namespace UI
                 URLInputField.text = GameManager.Instance.HassURL;
 
             // Load the saved port
-            if (GameManager.Instance.HassPort != "")
-                PortInputField.text = GameManager.Instance.HassPort;
+            if (GameManager.Instance.HassPort != 0)
+                PortInputField.text = GameManager.Instance.HassPort.ToString();
 
             // Load the saved token
             TokenInputField.text = GameManager.Instance.HassToken;
@@ -115,9 +118,9 @@ namespace UI
         /// Called when the connection test is done.
         /// </summary>
         /// <param name="status">The status of the connection test.</param>
-        private void OnConnectionTested(string status)
+        private void OnConnectionTested(int status)
         {
-            if (status is "200" or "201")
+            if (status is 200 or 201)
             {
                 ConnectSuccessField.SetActive(true);
                 ConnectFailField.SetActive(false);
@@ -126,7 +129,7 @@ namespace UI
             {
                 ConnectSuccessField.SetActive(false);
                 ConnectFailField.SetActive(true);
-                ErrorCodeText.text = $"Connection error: {status}";
+                ErrorCodeText.text = $"Connection error: {status} {HttpStatusCodes.GetDescription(status)}";
             }
         }
 

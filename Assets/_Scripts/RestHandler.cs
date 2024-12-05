@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using Managers;
 using Proyecto26;
 using UnityEngine;
@@ -50,10 +51,19 @@ public abstract class RestHandler
         };
         
         RestClient.Get(get).Then(response => {
-            EventManager.InvokeOnConnectionTested(response.StatusCode.ToString());
+            EventManager.InvokeOnConnectionTested((int)response.StatusCode);
         })
         .Catch(err => {
-            EventManager.InvokeOnConnectionTested(err.Message);
+            if (err is RequestException requestException)
+            {
+                int statusCode = (int)requestException.StatusCode;
+                EventManager.InvokeOnConnectionTested(statusCode);
+            }
+            else
+            {
+                EventManager.InvokeOnConnectionTested(err.HResult);
+                Debug.LogError("Error: " + err.Message + "\n" + err.StackTrace);
+            }
         });
     }
 

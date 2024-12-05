@@ -11,25 +11,55 @@ namespace Managers
     {
         public Uri HassUri { get; private set; }
         public string HassURL { get; private set; }
-        public string HassPort { get; private set; }
+        public int HassPort { get; private set; }
         public string HassToken { get; private set; }
-
+        
+        /// <summary>
+        /// Only used for debugging in the inspector.
+        /// </summary>
         [SerializeField] public HassEntity[] InspectorHassStates;
+        
         [SerializeField] internal List<EntityObject> EntityObjects;
         
         /// <summary>
         /// The EntitySpawner that spawns new entities.
         /// </summary>
         [SerializeField] private EntitySpawner EntitySpawner;
+
+        [SerializeField] private GameObject HassUI;
         [field: SerializeField] public EffectMesh EffectMesh { get; private set; }
 
         private void OnEnable()
         {
+            // Initialize PlayerPrefs
             ZPlayerPrefs.Initialize("Hass", "Password");
+            
+            // Load saved connection settings
             LoadConnectionSettings();
-            LoadEntityObjects();
+        }
 
+        private void Start()
+        {
+            // If no connection settings are saved, show the settings/connect tab
+            // Otherwise, test the connection
+            if (HassURL == "" || HassPort == 0 || HassToken == "")
+            {
+                UIManager.Instance.ShowSettingsTab();
+                EventManager.InvokeOnConnectionTested(412); // 412 Precondition Failed
+            }
+            else
+            {
+                TestConnection(HassURL, HassPort, HassToken);
+                EventManager.OnConnectionTested += OnInitialConnectionTested;
+            }
+        }
+
+        private void OnInitialConnectionTested(int obj)
+        {
+            EventManager.OnConnectionTested -= OnInitialConnectionTested;
+            
             RestHandler.SetDefaultHeaders();
+            LoadEntityObjects();
         }
 
         private void LoadEntityObjects()
@@ -78,7 +108,7 @@ namespace Managers
         private void LoadConnectionSettings()
         {
             HassURL = SecurePlayerPrefs.GetString("HassURL");
-            HassPort = SecurePlayerPrefs.GetString("HassPort");
+            HassPort = SecurePlayerPrefs.GetInt("HassPort");
             HassToken = SecurePlayerPrefs.GetString("HassToken");
             if (HassURL != "")
                 HassUri = new Uri($"{HassURL.TrimEnd('/')}:{HassPort}/api/");
