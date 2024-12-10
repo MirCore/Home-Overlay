@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+#if QUEST_BUILD
 using Meta.XR.MRUtilityKit;
+#endif
 using Structs;
 using UnityEngine;
 using Utils;
@@ -27,7 +29,10 @@ namespace Managers
         [SerializeField] private EntitySpawner EntitySpawner;
 
         [SerializeField] private GameObject HassUI;
+        
+#if QUEST_BUILD
         [field: SerializeField] public EffectMesh EffectMesh { get; private set; }
+#endif
 
         private void OnEnable()
         {

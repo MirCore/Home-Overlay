@@ -1,10 +1,13 @@
+#if QUEST_BUILD
 using Meta.XR.MRUtilityKit;
+#endif
 using UnityEngine;
 
 namespace Managers
 {
     public class RoomManager : MonoBehaviour
     {
+#if QUEST_BUILD
         [SerializeField] private MRUK MRUtilityKit; 
         [SerializeField] private GameObject HassUI; 
         
@@ -19,5 +22,7 @@ namespace Managers
                 HassUI.transform.rotation = Quaternion.Euler(0, mrukRoom.FloorAnchor.transform.rotation.eulerAngles.y + 180, 0);
             }
         }
+#endif
+
     }
 }

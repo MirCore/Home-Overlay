@@ -111,7 +111,9 @@ namespace UI
         
         private void OnToggleEffectMeshButtonClicked(bool value)
         {
+#if QUEST_BUILD
             GameManager.Instance.EffectMesh.HideMesh = !value;
+#endif
         }
 
         /// <summary>
