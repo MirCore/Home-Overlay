@@ -1,4 +1,4 @@
-#if QUEST_BUILD
+#if QUEST_BUILD && FALSE
 using Meta.XR.MRUtilityKit;
 #endif
 using UnityEngine;
@@ -7,7 +7,7 @@ namespace Managers
 {
     public class RoomManager : MonoBehaviour
     {
-#if QUEST_BUILD
+#if QUEST_BUILD && FALSE
         [SerializeField] private MRUK MRUtilityKit; 
         [SerializeField] private GameObject HassUI; 
         

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-#if QUEST_BUILD
+#if QUEST_BUILD && FALSE
 using Meta.XR.MRUtilityKit;
 #endif
 using Structs;
@@ -30,7 +30,7 @@ namespace Managers
 
         [SerializeField] private GameObject HassUI;
         
-#if QUEST_BUILD
+#if QUEST_BUILD && FALSE
         [field: SerializeField] public EffectMesh EffectMesh { get; private set; }
 #endif
 

@@ -3,7 +3,7 @@ using System.Net;
 using System.Text;
 using System.Web;
 using Managers;
-#if QUEST_BUILD
+#if QUEST_BUILD && FALSE
 using Meta.XR.MRUtilityKit;
 #endif
 using SimpleFileBrowser;
@@ -113,7 +113,7 @@ namespace UI
         
         private void OnToggleEffectMeshButtonClicked(bool value)
         {
-#if QUEST_BUILD
+#if QUEST_BUILD && FALSE
             GameManager.Instance.EffectMesh.HideMesh = !value;
 #endif
         }
