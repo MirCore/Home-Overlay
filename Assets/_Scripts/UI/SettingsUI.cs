@@ -3,7 +3,9 @@ using System.Net;
 using System.Text;
 using System.Web;
 using Managers;
+#if QUEST_BUILD
 using Meta.XR.MRUtilityKit;
+#endif
 using SimpleFileBrowser;
 using TMPro;
 using UnityEngine;
