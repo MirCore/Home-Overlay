@@ -36,7 +36,7 @@ public class EntitySpawner : MonoBehaviour
         Entity newEntity = Instantiate(EntityPrefab, HassUITranslation, false);
         
         // Slightly offset the position of the new entity
-        Vector3 newPosition = newEntity.transform.position - newEntity.transform.forward * 0.1f;
+        Vector3 newPosition = position - newEntity.transform.forward * 0.1f;
 
         string id = ((DateTimeOffset)DateTime.Now).ToUnixTimeMilliseconds().ToString();
         EntityObject entityObject = new (id, selectedEntityID, newPosition);
