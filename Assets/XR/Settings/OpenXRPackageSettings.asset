@@ -118,7 +118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1927c045052a06d49a9b21fdcaa26db6, type: 3}
   m_Name: MetaXRFeature Standalone
   m_EditorClassIdentifier: 
-  m_enabled: 1
+  m_enabled: 0
   nameUi: Meta XR Feature
   version: 0.0.1
   featureIdInternal: com.meta.openxr.feature.metaxr
@@ -605,6 +605,28 @@ MonoBehaviour:
   company: Unity Technologies
   priority: 0
   required: 0
+--- !u!114 &-3385493947460003377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5a1f07dc5afe854f9f12a4194aca3fb, type: 3}
+  m_Name: iPhone
+  m_EditorClassIdentifier: 
+  features:
+  - {fileID: 8110644118182405351}
+  m_renderMode: 1
+  m_autoColorSubmissionMode: 1
+  m_colorSubmissionModes:
+    m_List: 00000000
+  m_depthSubmissionMode: 0
+  m_optimizeBufferDiscards: 0
+  m_symmetricProjection: 0
+  m_foveatedRenderingApi: 0
 --- !u!114 &-3257871577807833234
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1018,13 +1040,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f0ebc320a151d3408ea1e9fce54d40e, type: 3}
   m_Name: OpenXRPackageSettings
   m_EditorClassIdentifier: 
-  Keys: 010000000700000019000000240000000e000000
+  Keys: 010000000700000019000000240000000e00000004000000
   Values:
   - {fileID: 6622563926228747295}
   - {fileID: 8719693052439873982}
   - {fileID: -5111023973351131987}
   - {fileID: 7384225668827184863}
   - {fileID: 3055846522855963477}
+  - {fileID: -3385493947460003377}
 --- !u!114 &129338808944814257
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1784,10 +1807,6 @@ MonoBehaviour:
   - {fileID: 5090179472438450809}
   - {fileID: -487219616427443054}
   - {fileID: 4120143195889401197}
-  - {fileID: -2847772224766553330}
-  - {fileID: -8551081787285530121}
-  - {fileID: 135626422426693594}
-  - {fileID: 1744431523592780787}
   - {fileID: -6762494201479605840}
   - {fileID: 6224026144173419186}
   - {fileID: 345063224933352757}
@@ -1984,6 +2003,26 @@ MonoBehaviour:
   company: Unity
   priority: 0
   required: 0
+--- !u!114 &8110644118182405351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b213d3e3c7f3109449eb46a4c8ee42f0, type: 3}
+  m_Name: XrPerformanceSettingsFeature iPhone
+  m_EditorClassIdentifier: 
+  m_enabled: 0
+  nameUi: XR Performance Settings
+  version: 1.0.0
+  featureIdInternal: com.unity.openxr.feature.extension.performance_settings
+  openxrExtensionStrings: XR_EXT_performance_settings
+  company: Unity
+  priority: 0
+  required: 0
 --- !u!114 &8497894770758894275
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2080,11 +2119,6 @@ MonoBehaviour:
   - {fileID: 4325406480261906702}
   - {fileID: -8149349567965707638}
   - {fileID: -4328575223466224466}
-  - {fileID: -2676677636079799085}
-  - {fileID: -8571171009225285791}
-  - {fileID: -1167473423973897832}
-  - {fileID: -3955352655590223141}
-  - {fileID: 5244640247149481321}
   - {fileID: 1461418693834794671}
   - {fileID: 6277342501167295129}
   - {fileID: 6696971132871767128}

@@ -37,6 +37,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _BaseColorValue: 1
     - _ColorMask: 15
     - _Stencil: 0
     - _StencilComp: 8
@@ -51,4 +52,6 @@ Material:
     - _FrameColor: {r: 1, g: 1, b: 1, a: 1}
     - _LightColor: {r: 0.36862746, g: 0.36862746, b: 0.36862746, a: 0.2980392}
     - _MultColor: {r: 1, g: 1, b: 1, a: 0.36078432}
+    - _StaticColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.9}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1

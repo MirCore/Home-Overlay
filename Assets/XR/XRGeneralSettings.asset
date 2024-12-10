@@ -104,7 +104,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2dc886499c26824283350fa532d087d, type: 3}
   m_Name: XRGeneralSettings
   m_EditorClassIdentifier: 
-  Keys: 01000000070000001c000000040000000e00000019000000
+  Keys: 01000000070000001c000000040000000e0000001900000024000000
   Values:
   - {fileID: -6517218471499782410}
   - {fileID: -8196854396901781169}
@@ -112,6 +112,7 @@ MonoBehaviour:
   - {fileID: -6546576050900071261}
   - {fileID: 3671550965327740455}
   - {fileID: 8312281498597746418}
+  - {fileID: 1804403024690005938}
 --- !u!114 &332800863423338148
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -125,6 +126,37 @@ MonoBehaviour:
   m_Name: Lumin Settings
   m_EditorClassIdentifier: 
   m_LoaderManagerInstance: {fileID: 4897379186331661704}
+  m_InitManagerOnStart: 1
+--- !u!114 &1304529995774783606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4c3631f5e58749a59194e0cf6baf6d5, type: 3}
+  m_Name: VisionOS Providers
+  m_EditorClassIdentifier: 
+  m_RequiresSettingsUpdate: 0
+  m_AutomaticLoading: 0
+  m_AutomaticRunning: 0
+  m_Loaders:
+  - {fileID: 11400000, guid: 377ea8dd2cb3a4a5bb9f5ab3afe4bef3, type: 2}
+--- !u!114 &1804403024690005938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d236b7d11115f2143951f1e14045df39, type: 3}
+  m_Name: VisionOS Settings
+  m_EditorClassIdentifier: 
+  m_LoaderManagerInstance: {fileID: 1304529995774783606}
   m_InitManagerOnStart: 1
 --- !u!114 &3428388118024481725
 MonoBehaviour:
@@ -142,7 +174,7 @@ MonoBehaviour:
   m_AutomaticLoading: 0
   m_AutomaticRunning: 0
   m_Loaders:
-  - {fileID: 11400000, guid: 28fe04729daeb2345bebc951fad25769, type: 2}
+  - {fileID: 11400000, guid: 0bcb4ff1d9f974e44a30e0b2070207a4, type: 2}
 --- !u!114 &3671550965327740455
 MonoBehaviour:
   m_ObjectHideFlags: 0
