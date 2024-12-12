@@ -6732,7 +6732,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_InteractionManager: {fileID: 0}
   m_Colliders:
-  - {fileID: 6445279868825454558}
+  - {fileID: 0}
   m_InteractionLayers:
     m_Bits: 1
   m_DistanceCalculationMode: 0
@@ -6791,7 +6791,7 @@ MonoBehaviour:
   m_StartingHoverFilters: []
   m_StartingSelectFilters: []
   m_StartingInteractionStrengthFilters: []
-  m_AttachTransform: {fileID: 193893558760037059}
+  m_AttachTransform: {fileID: 0}
   m_SecondaryAttachTransform: {fileID: 0}
   m_UseDynamicAttach: 1
   m_MatchAttachPosition: 1
@@ -10526,6 +10526,10 @@ PrefabInstance:
       propertyPath: objectToTransform
       value: 
       objectReference: {fileID: 9146635325501866575}
+    - target: {fileID: 5020847554820376867, guid: 61ce27f6d0f27444db5113b39157c25a, type: 3}
+      propertyPath: WindowTransform
+      value: 
+      objectReference: {fileID: 7459248295827017688}
     - target: {fileID: 5228035954289236869, guid: 61ce27f6d0f27444db5113b39157c25a, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -10619,19 +10623,9 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 61ce27f6d0f27444db5113b39157c25a, type: 3}
---- !u!224 &193893558760037059 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 5613761278956149935, guid: 61ce27f6d0f27444db5113b39157c25a, type: 3}
-  m_PrefabInstance: {fileID: 5717547368537572972}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &564489311446605289 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5228035954289236869, guid: 61ce27f6d0f27444db5113b39157c25a, type: 3}
-  m_PrefabInstance: {fileID: 5717547368537572972}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &6445279868825454558 stripped
-BoxCollider:
-  m_CorrespondingSourceObject: {fileID: 1597358319074771378, guid: 61ce27f6d0f27444db5113b39157c25a, type: 3}
   m_PrefabInstance: {fileID: 5717547368537572972}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6589115770808331064
