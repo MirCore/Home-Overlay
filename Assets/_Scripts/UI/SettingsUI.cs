@@ -36,6 +36,7 @@ namespace UI
 
         
         [SerializeField] private Button LoadTokenButton;
+        [SerializeField] private Button PasteTokenButton;
         
         /// <summary>
         /// The button to test the connection.
@@ -91,6 +92,7 @@ namespace UI
         private void OnEnable()
         {
             LoadTokenButton.onClick.AddListener(OnLoadTokenButtonClicked);
+            PasteTokenButton.onClick.AddListener(OnPasteTokenButtonClicked);
             TestConnectionButton.onClick.AddListener(OnTestConnectionButtonClicked);
             SaveButton.onClick.AddListener(OnSaveButtonClicked);
             ToggleEffectMeshButton.onValueChanged.AddListener(OnToggleEffectMeshButtonClicked);
@@ -100,10 +102,24 @@ namespace UI
         private void OnDisable()
         {
             LoadTokenButton.onClick.RemoveListener(OnLoadTokenButtonClicked);
+            PasteTokenButton.onClick.RemoveListener(OnPasteTokenButtonClicked);
             TestConnectionButton.onClick.RemoveListener(OnTestConnectionButtonClicked);
             SaveButton.onClick.RemoveListener(OnSaveButtonClicked);
             ToggleEffectMeshButton.onValueChanged.RemoveListener(OnToggleEffectMeshButtonClicked);
             EventManager.OnConnectionTested -= OnConnectionTested;
+        }
+
+        private void OnPasteTokenButtonClicked()
+        {
+            string clipboard = GUIUtility.systemCopyBuffer;
+
+            if (string.IsNullOrEmpty(clipboard))
+            {
+                TextEditor te = new ();
+                te.Paste();
+                clipboard = te.text;
+            }
+            TokenInputField.text = clipboard;
         }
 
         private void OnLoadTokenButtonClicked()

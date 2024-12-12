@@ -27,7 +27,7 @@ MonoBehaviour:
     m_Bits: 0
   m_DisabledTrackers: []
   m_AdditionalTextureFormats: 
-  m_DefaultVolumeCameraWindowConfiguration: {fileID: 11400000, guid: 780e9fdf3d43042578153145466820cf, type: 2}
+  m_DefaultVolumeCameraWindowConfiguration: {fileID: 11400000, guid: a52c3e66cc0c5448abadcc206a4e9b01, type: 2}
   m_AutoCreateVolumeCamera: 1
   m_TransmitDebugInfo: 0
   m_EnableFallbackShaderConversion: 1
