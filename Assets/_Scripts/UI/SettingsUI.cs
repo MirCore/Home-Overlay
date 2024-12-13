@@ -124,7 +124,23 @@ namespace UI
 
         private void OnLoadTokenButtonClicked()
         {
-            FileBrowserUtility.LoadStringFromFile(this);
+            string fileType = NativeFilePicker.ConvertExtensionToFileType("txt");
+            // Pick a file
+            NativeFilePicker.Permission permission = NativeFilePicker.PickFile( ( path ) =>
+            {
+                if( path == null )
+                    Debug.Log( "Operation cancelled" );
+                else
+                {
+                    byte[] file = System.IO.File.ReadAllBytes(path);
+                    OnTokenLoadedFromFile(file);
+                    Debug.Log("Picked file: " + path);
+                }
+            },  fileType );
+
+            Debug.Log( "Permission result: " + permission );
+            
+            //FileBrowserUtility.LoadStringFromFile(this);
         }
         
         private void OnToggleEffectMeshButtonClicked(bool value)
