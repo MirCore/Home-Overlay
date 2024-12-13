@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66bc3ce4885990c40a88f80fe0ad0101, type: 3}
   m_Name: DarkSkin
   m_EditorClassIdentifier: 
-  m_font: {fileID: 12800000, guid: eda771e5f7bf1e04da50303d441ddcd2, type: 3}
+  m_font: {fileID: 11400000, guid: 3d5db73b273dc5c4082b1b21c03d8263, type: 2}
   m_fontSize: 14
   m_rowHeight: 30
   m_rowSpacing: 8

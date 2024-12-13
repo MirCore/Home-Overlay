@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: bee21da28a492b4468d06787d785a70f
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 176732
+  packageName: Text to TextMesh Pro Upgrade Tool
+  packageVersion: 1.1.6
+  assetPath: Assets/Plugins/TextToTMP/Editor/ComponentProperties.cs
+  uploadId: 647827

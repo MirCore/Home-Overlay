@@ -1,4 +1,4 @@
-﻿//#define WIN_DIR_CHECK_WITHOUT_TIMEOUT // When uncommented, Directory.Exists won't be wrapped inside a Task/Thread on Windows but we won't be able to set a timeout for unreachable directories/drives
+//#define WIN_DIR_CHECK_WITHOUT_TIMEOUT // When uncommented, Directory.Exists won't be wrapped inside a Task/Thread on Windows but we won't be able to set a timeout for unreachable directories/drives
 
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -440,7 +440,7 @@ namespace SimpleFileBrowser
 		private readonly List<FileBrowserQuickLink> allQuickLinks = new List<FileBrowserQuickLink>( 8 );
 
 		[SerializeField]
-		private Text titleText;
+		private TMPro.TMP_Text titleText;
 
 		[SerializeField]
 		private Image titleBackground;
@@ -458,7 +458,7 @@ namespace SimpleFileBrowser
 		private Button moreOptionsButton;
 
 		[SerializeField]
-		private InputField pathInputField;
+		private TMPro.TMP_InputField pathInputField;
 
 		[SerializeField]
 		private RectTransform pathInputFieldSlotTop;
@@ -467,7 +467,7 @@ namespace SimpleFileBrowser
 		private RectTransform pathInputFieldSlotBottom;
 
 		[SerializeField]
-		private InputField searchInputField;
+		private TMPro.TMP_InputField searchInputField;
 
 		[SerializeField]
 		private RectTransform quickLinksContainer;
@@ -485,18 +485,18 @@ namespace SimpleFileBrowser
 		private RecycledListView listView;
 
 		[SerializeField]
-		private InputField filenameInputField;
+		private TMPro.TMP_InputField filenameInputField;
 
 		[SerializeField]
-		private Text filenameInputFieldOverlayText;
+		private TMPro.TMP_Text filenameInputFieldOverlayText;
 
 		[SerializeField]
 		private Image filenameImage;
 
 		[SerializeField]
-		private Dropdown filtersDropdown;
+		private TMPro.TMP_Dropdown filtersDropdown;
 		private RectTransform filtersDropdownContainer;
-		private Text filterItemTemplate;
+		private TMPro.TMP_Text filterItemTemplate;
 
 		[SerializeField]
 		private Toggle showHiddenFilesToggle;
@@ -505,7 +505,7 @@ namespace SimpleFileBrowser
 		private Button submitButton;
 
 		[SerializeField]
-		private Text submitButtonText;
+		private TMPro.TMP_Text submitButtonText;
 
 		[SerializeField]
 		private Button cancelButton;
@@ -748,7 +748,7 @@ namespace SimpleFileBrowser
 
 				filtersDropdown.RefreshShownValue();
 
-				Text placeholder = filenameInputField.placeholder as Text;
+				TMPro.TMP_Text placeholder = filenameInputField.placeholder as TMPro.TMP_Text;
 				if( placeholder )
 					placeholder.gameObject.SetActive( m_pickerMode != PickMode.Folders );
 			}

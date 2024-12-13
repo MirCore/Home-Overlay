@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: c5fa576cf7fecbb469dfc7253dcdd024
+timeCreated: 1708263430
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 176732
+  packageName: Text to TextMesh Pro Upgrade Tool
+  packageVersion: 1.1.6
+  assetPath: Assets/Plugins/TextToTMP/Other/TMP_InputFieldOnSubmitEvent.cs
+  uploadId: 647827

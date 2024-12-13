@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: dee70862253a04c4e9103b206c84d7c2
+AssemblyDefinitionImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 176732
+  packageName: Text to TextMesh Pro Upgrade Tool
+  packageVersion: 1.1.6
+  assetPath: Assets/Plugins/TextToTMP/Editor/TextToTMP.Editor.asmdef
+  uploadId: 647827
