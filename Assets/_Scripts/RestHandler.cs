@@ -37,8 +37,20 @@ public abstract class RestHandler
     /// <param name="port">The port number of Home Assistant.</param>
     /// <param name="token">The authorization token of Home Assistant.</param>
     public static void TestConnection(string url, int port, string token)
-    {
-        Uri uri = new ($"{url.TrimEnd('/')}:{port}/api/");
+    {    
+        Uri uri;
+
+        // Validate and construct the URI
+        try
+        {
+            uri = new Uri($"{url.TrimEnd('/')}:{port}/api/");
+        }
+        catch (UriFormatException ex)
+        {
+            Debug.LogError($"Invalid URI: {ex.Message}");
+            EventManager.InvokeOnConnectionTested(400); // Use 400 Bad Request for invalid URI
+            return;
+        }
         
         RequestHelper get = new()
         {

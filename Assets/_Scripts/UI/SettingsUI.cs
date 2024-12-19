@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Net;
 using System.Text;
 using System.Web;
+using AOT;
 using Managers;
 #if QUEST_BUILD && FALSE
 using Meta.XR.MRUtilityKit;
@@ -11,6 +13,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils;
+
+#if UNITY_VISIONOS && !UNITY_EDITOR
+using System.Runtime.InteropServices;
+#endif
 
 namespace UI
 {
@@ -97,6 +103,9 @@ namespace UI
             SaveButton.onClick.AddListener(OnSaveButtonClicked);
             ToggleEffectMeshButton.onValueChanged.AddListener(OnToggleEffectMeshButtonClicked);
             EventManager.OnConnectionTested += OnConnectionTested;
+            
+            SetNativeCallback(SettingsCallbackFromNative);
+            OpenSwiftUISettingsWindow("SettingsWindow", GameManager.Instance.HassURL, GameManager.Instance.HassPort.ToString(), GameManager.Instance.HassToken);
         }
 
         private void OnDisable()
@@ -107,6 +116,9 @@ namespace UI
             SaveButton.onClick.RemoveListener(OnSaveButtonClicked);
             ToggleEffectMeshButton.onValueChanged.RemoveListener(OnToggleEffectMeshButtonClicked);
             EventManager.OnConnectionTested -= OnConnectionTested;
+            
+            SetNativeCallback(null);
+            CloseSwiftUIWindow("SettingsWindow");
         }
 
         private void OnPasteTokenButtonClicked()
@@ -182,7 +194,13 @@ namespace UI
             if (url == "")
                 url = "http://homeassistant.local/";
             
-            GameManager.TestConnection(url, port, TokenInputField.text);
+            TestConnection(url, port, TokenInputField.text);
+        }
+        
+        private void TestConnection(string url, int portInt, string token)
+        {
+            Debug.Log("Testing connection at " + url + ":" + portInt + " with token " + token);
+            RestHandler.TestConnection(url, portInt, token);
             
             ConnectSuccessField.SetActive(false);
             ConnectFailField.SetActive(false);
@@ -201,14 +219,19 @@ namespace UI
             if (url == "")
                 url = "http://homeassistant.local/";
             
-            GameManager.Instance.SaveConnectionSettings(url, port, TokenInputField.text);
+            SaveConnectionSettings(url, port, TokenInputField.text);
+        }
+
+        private void SaveConnectionSettings(string url, int port, string token)
+        {
+            GameManager.Instance.SaveConnectionSettings(url, port, token);
             SaveSuccessField.SetActive(true);
             
             // Start coroutine to deactivate the field after 3 seconds
             StartCoroutine(DeactivateAfterDelay(3f));
         }
-        
-        
+
+
         /// <summary>
         /// Deactivates the save success field after a delay.
         /// </summary>
@@ -226,5 +249,62 @@ namespace UI
         {
             TokenInputField.text = Encoding.UTF8.GetString(bytes);
         }
+        
+        
+        private delegate void SwiftCallbackDelegate(string command, string url, string port, string token);
+
+        // This attribute is required for methods that are going to be called from native code
+        // via a function pointer.
+        [MonoPInvokeCallback(typeof(SwiftCallbackDelegate))]
+        private static void SettingsCallbackFromNative(string command, string url, string port, string token)
+        {
+            // MonoPInvokeCallback methods will leak exceptions and cause crashes; always use a try/catch in these methods
+            try
+            {
+                Debug.Log($"Received Command: {command}");
+                Debug.Log($"Received URL: {url}");
+                Debug.Log($"Received Port: {port}");
+                Debug.Log($"Received Token: {token}");
+
+                // This could be stored in a static field or a singleton.
+                // If you need to deal with multiple windows and need to distinguish between them,
+                // you could add an ID to this callback and use that to distinguish windows.
+                SettingsUI self = FindFirstObjectByType<SettingsUI>();
+                
+                
+                int.TryParse(port, out int portInt);
+
+                switch (command)
+                {
+                    case "test connection":
+                        self.TestConnection(url, portInt, token);
+                        return;
+                    case "save connection":
+                        self.SaveConnectionSettings(url, portInt, token);
+                        return;
+                }
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception);
+            }
+        }
+
+#if UNITY_VISIONOS && !UNITY_EDITOR
+        [DllImport("__Internal")]
+        static extern void SetNativeCallback(SwiftCallbackDelegate swiftCallback);
+
+        [DllImport("__Internal")]
+        static extern void OpenSwiftUISettingsWindow(string name, string url, string port, string token);
+
+        [DllImport("__Internal")]
+        static extern void CloseSwiftUIWindow(string name);
+
+#else
+        static void SetNativeCallback(SwiftCallbackDelegate swiftCallback) {}
+        static void OpenSwiftUISettingsWindow(string name, string url, string port, string token) {}
+        static void CloseSwiftUIWindow(string name) {}
+
+#endif
     }
 }

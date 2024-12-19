@@ -208,7 +208,7 @@ namespace IngameDebugConsole
 			Vector2 size = transformComponent.sizeDelta;
 			if( isExpanded )
 			{
-				logText.SetTMPHorizontalOverflow( HorizontalWrapMode.Wrap );
+				//logText.SetTMPHorizontalOverflow( HorizontalWrapMode.Wrap );
 				size.y = listView.SelectedItemHeight;
 
 				if( !copyLogButton.gameObject.activeSelf )
@@ -221,7 +221,7 @@ namespace IngameDebugConsole
 			}
 			else
 			{
-				logText.SetTMPHorizontalOverflow( HorizontalWrapMode.Overflow );
+				//logText.SetTMPHorizontalOverflow( HorizontalWrapMode.Overflow );
 				size.y = listView.ItemHeight;
 
 				if( copyLogButton.gameObject.activeSelf )
@@ -347,15 +347,15 @@ namespace IngameDebugConsole
 		public float CalculateExpandedHeight( DebugLogEntry logEntry, DebugLogEntryTimestamp? logEntryTimestamp )
 		{
 			string text = logText.text;
-			HorizontalWrapMode wrapMode = logText.GetTMPHorizontalOverflow();
+			//HorizontalWrapMode wrapMode = logText.GetTMPHorizontalOverflow();
 
 			SetText( logEntry, logEntryTimestamp, true );
-			logText.SetTMPHorizontalOverflow( HorizontalWrapMode.Wrap );
+			//logText.SetTMPHorizontalOverflow( HorizontalWrapMode.Wrap );
 
 			float result = logText.preferredHeight + copyLogButtonHeight;
 
 			logText.text = text;
-			logText.SetTMPHorizontalOverflow( wrapMode );
+			//logText.SetTMPHorizontalOverflow( wrapMode );
 
 			return Mathf.Max( listView.ItemHeight, result );
 		}

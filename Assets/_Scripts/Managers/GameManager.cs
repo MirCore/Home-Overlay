@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using AOT;
 #if QUEST_BUILD && FALSE
 using Meta.XR.MRUtilityKit;
 #endif
 using Structs;
+using Unity.PolySpatial;
 using UnityEngine;
 using Utils;
+
 
 namespace Managers
 {
@@ -41,6 +44,11 @@ namespace Managers
             
             // Load saved connection settings
             LoadConnectionSettings();
+            
+        }
+
+        private void OnDisable()
+        {
         }
 
         private void Start()
@@ -57,6 +65,7 @@ namespace Managers
                 TestConnection(HassURL, HassPort, HassToken);
                 EventManager.OnConnectionTested += OnInitialConnectionTested;
             }
+            
         }
 
         private void OnInitialConnectionTested(int obj)
@@ -115,8 +124,16 @@ namespace Managers
             HassURL = SecurePlayerPrefs.GetString("HassURL");
             HassPort = SecurePlayerPrefs.GetInt("HassPort");
             HassToken = SecurePlayerPrefs.GetString("HassToken");
-            if (HassURL != "")
+
+            if (HassURL == "") return;
+            try
+            {
                 HassUri = new Uri($"{HassURL.TrimEnd('/')}:{HassPort}/api/");
+            }
+            catch (UriFormatException)
+            {
+                Debug.LogError("The URL is not valid.");
+            }
         }
 
         public void RemoveEntity(EntityObject entityObject)
