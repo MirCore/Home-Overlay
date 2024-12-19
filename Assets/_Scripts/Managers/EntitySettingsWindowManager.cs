@@ -42,8 +42,8 @@ namespace Managers
         {
             EntitySettingsUI newSettingsWindow = Instantiate(EntitySettingsWindowPrefab, entity.transform.position, entity.transform.rotation);
 
-            // Find the parent Canvas of the entity
-            Canvas entityCanvas = entity.transform.GetComponentInParent<Canvas>();
+            // Find the Canvas of the entity
+            Canvas entityCanvas = entity.transform.GetComponentInChildren<Canvas>();
             if (entityCanvas)
             {
                 RectTransform entityCanvasRect = entityCanvas.GetComponent<RectTransform>();
@@ -52,15 +52,17 @@ namespace Managers
                 if (entityCanvasRect != null && entitySettingsWindowRect != null)
                 {
                     // Ensure the settings window is within the same Canvas hierarchy
-                    newSettingsWindow.transform.SetParent(entityCanvas.transform, false);
+                    newSettingsWindow.transform.SetParent(entity.transform, true);
 
                     // Calculate the new position: directly to the left of the canvas
-                    float offset = entityCanvasRect.rect.width / 2 + entitySettingsWindowRect.rect.width / 2;
+                    float offset = entityCanvasRect.rect.width * entityCanvasRect.transform.localScale.x / 2 + entitySettingsWindowRect.rect.width * entitySettingsWindowRect.transform.localScale.x / 2;
+                    //float offset = entity.GetComponent<MeshRenderer>().bounds.size.x / 2 + newSettingsWindow.GetComponent<MeshRenderer>().bounds.size.x / 2;
                     entitySettingsWindowRect.anchoredPosition = new Vector2(offset, 0);
-
-                    // Optional: Adjust pivot or alignment if needed
-                    entitySettingsWindowRect.pivot = new Vector2(0, 0.5f); // Set pivot to the right-middle
                 }
+            }
+            else
+            {
+                Debug.Log("No Canvas found for entity: " + entity.name);
             }
 
             _entitySettingsWindows.Add(newSettingsWindow);
