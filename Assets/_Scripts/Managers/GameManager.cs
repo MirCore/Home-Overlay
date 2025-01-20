@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using AOT;
 #if QUEST_BUILD && FALSE
 using Meta.XR.MRUtilityKit;
 #endif
 using Structs;
-using Unity.PolySpatial;
 using UnityEngine;
 using Utils;
 
@@ -85,6 +85,8 @@ namespace Managers
             {
                 EntitySpawner.SpawnSavedEntity(entityObject.Position, entityObject);
             }
+
+            EventManager.InvokeOnAppStateLoaded();
         }
 
         /// <summary>
@@ -140,6 +142,14 @@ namespace Managers
         {
             EntityObjects.Remove(entityObject);
             SaveFile.SaveEntityObjects();
+        }
+
+        public void AddEntity(EntityObject eo, Entity entity)
+        {
+            EntityObject entityObject = EntityObjects.FirstOrDefault(e => e == eo);
+
+            if (entityObject != null)
+                entityObject.Entity = entity;
         }
     }
 }

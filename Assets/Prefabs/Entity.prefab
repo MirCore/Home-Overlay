@@ -1212,7 +1212,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5020847554820376867, guid: 61ce27f6d0f27444db5113b39157c25a, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5020847554820376867, guid: 61ce27f6d0f27444db5113b39157c25a, type: 3}
+      propertyPath: ScaleFactor
+      value: 0.001
       objectReference: {fileID: 0}
     - target: {fileID: 5020847554820376867, guid: 61ce27f6d0f27444db5113b39157c25a, type: 3}
       propertyPath: WindowTransform

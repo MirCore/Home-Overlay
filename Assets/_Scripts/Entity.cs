@@ -160,6 +160,7 @@ public class Entity : MonoBehaviour, IDragHandler
     public void SetEntityObject(EntityObject entityObject)
     {
         EntityObject = entityObject;
+        GameManager.Instance.AddEntity(EntityObject, this);
         
         UpdateIcon();
     }

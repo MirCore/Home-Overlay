@@ -31,7 +31,7 @@ namespace UI
         /// <summary>
         /// The DropdownItem that shows the currently selected entity.
         /// </summary>
-        [SerializeField] private DropdownItem SelectedEntityLabel;
+        [SerializeField] private FriendlyNameHandler SelectedEntityLabel;
         
         /// <summary>
         /// The Button that saves the settings.
@@ -53,7 +53,8 @@ namespace UI
 
         private void OnEnable()
         {
-            GetHassEntities();
+            if (Entity != null)
+                GetHassEntities();
             
             TypeDropdown.onValueChanged.AddListener(OnTypeDropdownValueChanged);
             EntityDropdown.onValueChanged.AddListener(OnEntityDropdownValueChanged);

@@ -199,7 +199,7 @@ namespace UI
         
         private void TestConnection(string url, int portInt, string token)
         {
-            Debug.Log("Testing connection at " + url + ":" + portInt + " with token " + token);
+            //Debug.Log("Testing connection at " + url + ":" + portInt + " with token " + token);
             RestHandler.TestConnection(url, portInt, token);
             
             ConnectSuccessField.SetActive(false);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Managers;
 using UnityEngine;
 using Utils;
 
@@ -11,6 +12,7 @@ namespace Structs
         [SerializeField] private string _id;
         [SerializeField] private string _entityID;
         [SerializeField] private Vector3 _position;
+        private Entity _entity;
 
         public EntityObject(string id, string entityID, Vector3 transformPosition)
         {
@@ -35,6 +37,11 @@ namespace Structs
                 SaveFile.SaveEntityObjects();
             }
         }
+
+        public Entity Entity { 
+            get => _entity;
+            set => _entity = value;
+        }
     
         public Vector3 Position {
             get => _position;
@@ -46,6 +53,17 @@ namespace Structs
                 _position = value;
                 SaveFile.SaveEntityObjects();
             }
+        }
+
+        public void DeleteEntity()
+        {
+            if (_entity != null)
+            {
+                _entity.DeleteEntity();
+                _entity = null;
+            }
+            else
+                GameManager.Instance.RemoveEntity(this);
         }
     }
 

@@ -1,13 +1,10 @@
-﻿using System;
-using System.Linq;
-using Managers;
+﻿using Structs;
 using TMPro;
 using UnityEngine;
-using Utils;
 
 namespace UI
 {
-    public class DropdownItem : MonoBehaviour
+    public class FriendlyNameHandler : MonoBehaviour
     {
         [SerializeField] private TMP_Text Title;
         [SerializeField] private TMP_Text Subtitle;
@@ -27,6 +24,13 @@ namespace UI
                 Title.text = entity.attributes.friendly_name;
             else if (Subtitle.text.Split('.').Length > 1)
                 Title.text = Subtitle.text.Split('.')[1];
+        }
+
+        public void SetNewEntity(EntityObject entityObject)
+        {
+            Subtitle.text = entityObject.EntityID;
+            
+            UpdateTitle();
         }
     }
 }

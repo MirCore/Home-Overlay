@@ -27,6 +27,11 @@ namespace Managers
             SettingsButton.onClick.AddListener(ShowSettingsTab);
         }
 
+        private void Start()
+        {
+            ShowOverviewTab();
+        }
+
         private void OnDisable()
         {
             OverviewButton.onClick.RemoveListener(ShowOverviewTab);

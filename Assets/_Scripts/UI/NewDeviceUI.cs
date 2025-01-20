@@ -21,9 +21,9 @@ namespace UI
         /// </summary>
         [SerializeField] private TMP_Dropdown EntityDropdown;
         /// <summary>
-        /// The DropdownItem that shows the currently selected entity.
+        /// The FriendlyNameHandler that shows the currently selected entity.
         /// </summary>
-        [SerializeField] private DropdownItem SelectedEntityLabel;
+        [SerializeField] private FriendlyNameHandler SelectedEntityLabel;
         
         /// <summary>
         /// The Button that creates a new entity.
@@ -165,6 +165,7 @@ namespace UI
         private static void GetHassEntities()
         {
             RestHandler.GetHassEntities();
+            Debug.Log("getting hass entities");
         }
 
         /// <summary>
