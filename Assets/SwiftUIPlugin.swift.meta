@@ -40,7 +40,7 @@ PluginImporter:
         AddToEmbeddedBinaries: false
         CPU: ARM64
         CompileFlags: 
-        FrameworkDependencies: 
+        FrameworkDependencies: ImageCaptureCore;
     Win:
       enabled: 0
       settings:

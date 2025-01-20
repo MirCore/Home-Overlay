@@ -47,7 +47,7 @@ namespace JetXR.VisionUI
 
             isHover = true;
 
-            if (!isDrag)
+            if (!isDrag && animator)
                 animator.SetBool(hoveredBool, isHover);
         }
 
@@ -58,7 +58,7 @@ namespace JetXR.VisionUI
 
             isHover = false;
 
-            if (!isDrag)
+            if (!isDrag && animator)
                 animator.SetBool(hoveredBool, isHover);
         }
 
@@ -81,7 +81,7 @@ namespace JetXR.VisionUI
 
             isDrag = false;
 
-            if (!isHover)
+            if (!isHover && animator)
                 animator.SetBool(hoveredBool, isHover);
         }
 
@@ -121,7 +121,7 @@ namespace JetXR.VisionUI
 
             boxCollider.size = defaultColliderSize;
 
-            if (!isHover)
+            if (!isHover && animator)
                 animator.SetBool(hoveredBool, isHover);
 
             isDrag = false;

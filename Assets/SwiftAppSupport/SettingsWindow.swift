@@ -57,7 +57,7 @@ struct SettingsWindow: View {
             }
         }
         .onAppear {
-            // Call the public function that was defined in SwiftUISamplePlugin
+            // Call the public function that was defined in SwiftUIPlugin
             // inside UnityFramework
             CallCSharpCallback("appeared")
             url = GetHassUrl().isEmpty ? url : GetHassUrl()

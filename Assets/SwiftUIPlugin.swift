@@ -104,6 +104,11 @@ func openSwiftUISettingsWindow(_ cname: UnsafePointer<CChar>, _ cUrl: UnsafePoin
     hassPort = String(cString: cPort);
     hassToken = String(cString: cToken);
 
+    if (hassPort == "0")
+    {
+        hassPort = "8123";
+    }
+    
     let name = String(cString: cname)
     print("############ OPEN WINDOW \(name)")
     openWindow(id: name)
