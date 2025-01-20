@@ -47,7 +47,7 @@ namespace Utils
                 
                 File.WriteAllText(Path, json);
                 
-                Debug.Log(Application.persistentDataPath);
+                //Debug.Log(Application.persistentDataPath);
             }
             
             catch (Exception e)

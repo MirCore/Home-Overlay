@@ -75,6 +75,7 @@ namespace UI
         {
             UpdateTypeDropdown();
             UpdateEntityDropdown();
+            UpdateHeader();
         }
 
         /// <summary>
@@ -170,16 +171,16 @@ namespace UI
         {
             UpdateEntityDropdown();
             
-            if (Entity)
-                _entityState = HassStates.GetHassState(Entity.EntityObject.EntityID);
-            if (_entityState == null)
-                return;
-            
             UpdateHeader();
         }
 
         private void UpdateHeader()
         {
+            if (Entity)
+                _entityState = HassStates.GetHassState(Entity.EntityObject.EntityID);
+            if (_entityState == null)
+                return;
+            
             TitleText.text = _entityState.attributes.friendly_name;
             SubtitleText.text = _entityState.entity_id;
         }

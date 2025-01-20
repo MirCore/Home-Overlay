@@ -37,7 +37,8 @@ public abstract class MaterialDesignIcons
 
     private static void InitiateCodepointsCollection()
     {
-        string[] codepoints = File.ReadAllLines(Path.Combine(Application.dataPath, "mdi/codepoints"));
+        TextAsset mdi = Resources.Load<TextAsset>("codepoints");
+        string[] codepoints = mdi.text.Split('\n');
         _codepointsCollection = codepoints
             .Select(codepoint => new CodepointData(codepoint))
             .Where(data => data.Code != null) // Exclude invalid entries
