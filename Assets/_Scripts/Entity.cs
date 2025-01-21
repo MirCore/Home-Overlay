@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Managers;
 using Structs;
 using TMPro;
@@ -26,6 +27,7 @@ public class Entity : MonoBehaviour, IDragHandler
     private ARPlaneManager _arPlaneManager;
     private ARAnchorManager _arAnchorManager;
     private ARRaycastManager _raycastManager;
+    private ARAnchor _anchor;
     private List<ARRaycastHit> raycastHits = new List<ARRaycastHit>();
 
     private void OnEnable()
@@ -55,6 +57,9 @@ public class Entity : MonoBehaviour, IDragHandler
         if (XRSettings.enabled)
             return;
         
+        CreateAnchor();
+        Debug.Log("ondrag");
+        
         Canvas canvas = GetComponent<Canvas>();
         RectTransform rectTransform = transform as RectTransform;
         if (canvas != null && rectTransform != null)
@@ -67,6 +72,7 @@ public class Entity : MonoBehaviour, IDragHandler
                 return;
             EntityObject.Position = transform.localPosition;
         }
+        
     }
     
     private void OnSelectExited(SelectExitEventArgs eventData)
@@ -74,6 +80,14 @@ public class Entity : MonoBehaviour, IDragHandler
         if (EntityObject == null)
             return;
 
+        CreateAnchor();
+        Debug.Log("onselectexited");
+
+        EntityObject.Position = transform.localPosition;
+    }
+
+    private void CreateAnchor()
+    {
         ARPlane nearestPlane = null;
 
         // Directions to cast rays
@@ -87,6 +101,8 @@ public class Entity : MonoBehaviour, IDragHandler
             Vector3.right
         };
 
+        Debug.Log("casting rays");
+
         float shortestDistance = float.MaxValue;
         Pose? nearestPose = null;
 
@@ -95,35 +111,58 @@ public class Entity : MonoBehaviour, IDragHandler
             // Perform raycast in the current direction
             if (_raycastManager.Raycast(new Ray(transform.position, direction), raycastHits, TrackableType.PlaneWithinPolygon))
             {
-                foreach (ARRaycastHit hit in raycastHits)
+                foreach (ARRaycastHit hit in raycastHits.Where(hit => hit.distance < shortestDistance))
                 {
-                    if (hit.distance < shortestDistance)
-                    {
-                        shortestDistance = hit.distance;
-                        nearestPose = hit.pose;
-                        nearestPlane = hit.trackable as ARPlane;
-                    }
+                    shortestDistance = hit.distance;
+                    nearestPose = hit.pose;
+                    nearestPlane = hit.trackable as ARPlane;
                 }
             }
         }
+
+        ARAnchor oldAnchor = _anchor;
         
         if (nearestPlane != null)
         {
             Debug.Log("Found nearest plane: " + nearestPlane.name + "with ID: " + nearestPlane.trackableId);
-            ARAnchor anchor = _arAnchorManager.AttachAnchor(nearestPlane, new Pose(transform.position, Quaternion.identity));
-            
-            if (anchor != null)
-            {
-                transform.SetParent(anchor.transform, true);
-                Debug.Log("Anchor created and object attached at raycast hit position.");
-            }
-            else
-                Debug.LogWarning("Failed to create anchor at raycast hit.");
+            _anchor = _arAnchorManager.AttachAnchor(nearestPlane, new Pose(transform.position, transform.rotation));
         }
         else
+        {
             Debug.LogWarning("No plane found near the position.");
+            
+            CreateAnchorAsync();
+        }
         
-        EntityObject.Position = transform.localPosition;
+        if (_anchor != null)
+        {
+            transform.SetParent(_anchor.transform, true);
+            Debug.Log("Anchor created and object attached at raycast hit position.");
+            if (oldAnchor != null)
+                Destroy(oldAnchor.gameObject);
+        }
+        else
+            Debug.LogWarning("Failed to create anchor");
+    }
+
+    private async void CreateAnchorAsync()
+    {
+        Result<ARAnchor> result = await _arAnchorManager.TryAddAnchorAsync(new Pose(transform.position, transform.rotation));
+        if (result.status.IsSuccess())
+        {
+            ARAnchor oldAnchor = _anchor;
+            _anchor = result.value;
+        
+            if (_anchor != null)
+            {
+                transform.SetParent(_anchor.transform, true);
+                Debug.Log("Anchor created and object attached at raycast hit position.");
+                if (oldAnchor != null)
+                    Destroy(oldAnchor.gameObject);
+            }
+            else
+                Debug.LogWarning("Failed to create anchor");
+        }
     }
 
     private void OnSettingsButtonClicked()
