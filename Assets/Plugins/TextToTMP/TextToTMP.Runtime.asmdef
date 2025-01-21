@@ -1,6 +1,0 @@
-﻿{
-	"name": "TextToTMP.Runtime",
-    "references": [
-        "Unity.TextMeshPro"
-    ]
-}

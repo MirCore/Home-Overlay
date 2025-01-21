@@ -7,6 +7,7 @@ using Meta.XR.MRUtilityKit;
 #endif
 using Structs;
 using UnityEngine;
+using UnityEngine.XR.ARFoundation;
 using Utils;
 
 
@@ -18,7 +19,10 @@ namespace Managers
         public string HassURL { get; private set; }
         public int HassPort { get; private set; }
         public string HassToken { get; private set; }
-        
+        [field: SerializeField] public ARPlaneManager ARPlaneManager { get; private set; }
+        [field: SerializeField] public ARAnchorManager ARAnchorManager { get; private set; }
+        [field: SerializeField] public ARRaycastManager ARRaycastManager { get; private set; }
+
         /// <summary>
         /// Only used for debugging in the inspector.
         /// </summary>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Managers;
 using Structs;
 using TMPro;
@@ -6,6 +7,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.XR;
+using UnityEngine.XR.ARFoundation;
+using UnityEngine.XR.ARSubsystems;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using Utils;
@@ -20,8 +23,17 @@ public class Entity : MonoBehaviour, IDragHandler
     private HassEntity _entityState;
     public EntityObject EntityObject { get; private set; }
 
+    private ARPlaneManager _arPlaneManager;
+    private ARAnchorManager _arAnchorManager;
+    private ARRaycastManager _raycastManager;
+    private List<ARRaycastHit> raycastHits = new List<ARRaycastHit>();
+
     private void OnEnable()
     {
+        _arPlaneManager = GameManager.Instance.ARPlaneManager;
+        _arAnchorManager = GameManager.Instance.ARAnchorManager;
+        _raycastManager = GameManager.Instance.ARRaycastManager;
+        
         Button.onClick.AddListener(OnButtonClicked);
         SettingsButton.onClick.AddListener(OnSettingsButtonClicked);
         _interactable = GetComponent<XRBaseInteractable>();
@@ -61,6 +73,56 @@ public class Entity : MonoBehaviour, IDragHandler
     {
         if (EntityObject == null)
             return;
+
+        ARPlane nearestPlane = null;
+
+        // Directions to cast rays
+        Vector3[] directions = new Vector3[]
+        {
+            Vector3.forward,
+            Vector3.back,
+            Vector3.up,
+            Vector3.down,
+            Vector3.left,
+            Vector3.right
+        };
+
+        float shortestDistance = float.MaxValue;
+        Pose? nearestPose = null;
+
+        foreach (Vector3 direction in directions)
+        {
+            // Perform raycast in the current direction
+            if (_raycastManager.Raycast(new Ray(transform.position, direction), raycastHits, TrackableType.PlaneWithinPolygon))
+            {
+                foreach (ARRaycastHit hit in raycastHits)
+                {
+                    if (hit.distance < shortestDistance)
+                    {
+                        shortestDistance = hit.distance;
+                        nearestPose = hit.pose;
+                        nearestPlane = hit.trackable as ARPlane;
+                    }
+                }
+            }
+        }
+        
+        if (nearestPlane != null)
+        {
+            Debug.Log("Found nearest plane: " + nearestPlane.name + "with ID: " + nearestPlane.trackableId);
+            ARAnchor anchor = _arAnchorManager.AttachAnchor(nearestPlane, new Pose(transform.position, Quaternion.identity));
+            
+            if (anchor != null)
+            {
+                transform.SetParent(anchor.transform, true);
+                Debug.Log("Anchor created and object attached at raycast hit position.");
+            }
+            else
+                Debug.LogWarning("Failed to create anchor at raycast hit.");
+        }
+        else
+            Debug.LogWarning("No plane found near the position.");
+        
         EntityObject.Position = transform.localPosition;
     }
 
