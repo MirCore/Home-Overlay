@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using AOT;
@@ -49,10 +50,36 @@ namespace Managers
             // Load saved connection settings
             LoadConnectionSettings();
             
+            ARAnchorManager.trackablesChanged.AddListener(OnAnchorChanged);
         }
 
         private void OnDisable()
         {
+            ARAnchorManager.trackablesChanged.RemoveListener(OnAnchorChanged);
+        }
+
+        /// <summary>
+        /// Listens for when AR anchors are added to the scene, and deletes any anchors that aren't associated with an EntityObject.
+        /// </summary>
+        private void OnAnchorChanged(ARTrackablesChangedEventArgs<ARAnchor> changes)
+        {
+            foreach (ARAnchor addedAnchor in changes.added.Where(addedAnchor =>
+                         !EntityObjects.Exists(e => e.AnchorID == addedAnchor.trackableId.ToString())))
+            {
+                StartCoroutine(DeleteAnchorNextFrame(addedAnchor));
+            }
+        }
+
+        /// <summary>
+        /// Deletes an anchor on the next frame after it is added, after the anchor has been fully initialized.
+        /// This is necessary because the anchor isn't fully initialized until the next frame after it is added,
+        /// and attempting to delete it immediately will fail.
+        /// </summary>
+        /// <param name="anchor">The anchor to delete.</param>
+        private IEnumerator DeleteAnchorNextFrame(ARAnchor anchor)
+        {
+            yield return new WaitForEndOfFrame();
+            ARAnchorManager.TryRemoveAnchor(anchor);
         }
 
         private void Start()

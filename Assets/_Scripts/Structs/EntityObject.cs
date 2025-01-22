@@ -12,6 +12,7 @@ namespace Structs
         [SerializeField] private string _id;
         [SerializeField] private string _entityID;
         [SerializeField] private Vector3 _position;
+        [SerializeField] private string _anchorID;
         private Entity _entity;
 
         public EntityObject(string id, string entityID, Vector3 transformPosition)
@@ -52,6 +53,15 @@ namespace Structs
             
                 _position = value;
                 SaveFile.SaveEntityObjects();
+            }
+        }
+
+        public string AnchorID {
+            get => _anchorID;
+            set
+            {
+            _anchorID = value;
+            SaveFile.SaveEntityObjects();
             }
         }
 

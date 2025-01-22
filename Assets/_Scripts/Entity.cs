@@ -24,17 +24,13 @@ public class Entity : MonoBehaviour, IDragHandler
     private HassEntity _entityState;
     public EntityObject EntityObject { get; private set; }
 
-    private ARPlaneManager _arPlaneManager;
     private ARAnchorManager _arAnchorManager;
-    private ARRaycastManager _raycastManager;
     private ARAnchor _anchor;
-    private List<ARRaycastHit> raycastHits = new List<ARRaycastHit>();
 
     private void OnEnable()
     {
-        _arPlaneManager = GameManager.Instance.ARPlaneManager;
         _arAnchorManager = GameManager.Instance.ARAnchorManager;
-        _raycastManager = GameManager.Instance.ARRaycastManager;
+        _arAnchorManager.trackablesChanged.AddListener(OnAnchorChanged);
         
         Button.onClick.AddListener(OnButtonClicked);
         SettingsButton.onClick.AddListener(OnSettingsButtonClicked);
@@ -46,10 +42,27 @@ public class Entity : MonoBehaviour, IDragHandler
 
     private void OnDisable()
     {
+        _arAnchorManager.trackablesChanged.RemoveListener(OnAnchorChanged);
+        
         Button.onClick.RemoveListener(OnButtonClicked);
         SettingsButton.onClick.RemoveListener(OnSettingsButtonClicked);
         _interactable.selectExited.RemoveListener(OnSelectExited);
         EventManager.OnHassStatesChanged -= OnHassStatesChanged;
+    }
+
+    /// <summary>
+    /// Listens for when AR anchors are added to the scene, and parents this entity to the first anchor that matches the EntityObject's AnchorID.
+    /// </summary>
+    private void OnAnchorChanged(ARTrackablesChangedEventArgs<ARAnchor> changes)
+    {
+        if (_anchor != null)
+            return;
+        
+        foreach (ARAnchor addedAnchor in changes.added.Where(addedAnchor => EntityObject.AnchorID == addedAnchor.trackableId.ToString()))
+        {
+            SetParentToAnchor(addedAnchor);
+            Debug.Log("Entity parented to added anchor");
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -57,7 +70,7 @@ public class Entity : MonoBehaviour, IDragHandler
         if (XRSettings.enabled)
             return;
         
-        CreateAnchor();
+        CreateAnchorAsync();
         Debug.Log("ondrag");
         
         Canvas canvas = GetComponent<Canvas>();
@@ -80,88 +93,52 @@ public class Entity : MonoBehaviour, IDragHandler
         if (EntityObject == null)
             return;
 
-        CreateAnchor();
-        Debug.Log("onselectexited");
+        CreateAnchorAsync();
 
-        EntityObject.Position = transform.localPosition;
+        EntityObject.Position = transform.position;
     }
 
-    private void CreateAnchor()
+    /// <summary>
+    /// Sets the parent of the entity to the specified ARAnchor.
+    /// </summary>
+    /// <param name="newAnchor">The new anchor to attach to.</param>
+    private void SetParentToAnchor(ARAnchor newAnchor)
     {
-        ARPlane nearestPlane = null;
-
-        // Directions to cast rays
-        Vector3[] directions = new Vector3[]
-        {
-            Vector3.forward,
-            Vector3.back,
-            Vector3.up,
-            Vector3.down,
-            Vector3.left,
-            Vector3.right
-        };
-
-        Debug.Log("casting rays");
-
-        float shortestDistance = float.MaxValue;
-        Pose? nearestPose = null;
-
-        foreach (Vector3 direction in directions)
-        {
-            // Perform raycast in the current direction
-            if (_raycastManager.Raycast(new Ray(transform.position, direction), raycastHits, TrackableType.PlaneWithinPolygon))
-            {
-                foreach (ARRaycastHit hit in raycastHits.Where(hit => hit.distance < shortestDistance))
-                {
-                    shortestDistance = hit.distance;
-                    nearestPose = hit.pose;
-                    nearestPlane = hit.trackable as ARPlane;
-                }
-            }
-        }
-
-        ARAnchor oldAnchor = _anchor;
-        
-        if (nearestPlane != null)
-        {
-            Debug.Log("Found nearest plane: " + nearestPlane.name + "with ID: " + nearestPlane.trackableId);
-            _anchor = _arAnchorManager.AttachAnchor(nearestPlane, new Pose(transform.position, transform.rotation));
-        }
-        else
-        {
-            Debug.LogWarning("No plane found near the position.");
-            
-            CreateAnchorAsync();
-        }
-        
-        if (_anchor != null)
-        {
-            transform.SetParent(_anchor.transform, true);
-            Debug.Log("Anchor created and object attached at raycast hit position.");
-            if (oldAnchor != null)
-                Destroy(oldAnchor.gameObject);
-        }
-        else
-            Debug.LogWarning("Failed to create anchor");
+        _anchor = newAnchor;
+        // Set the entity's parent to the anchor
+        transform.SetParent(_anchor.transform, false);
+        // Align the entity's position with the anchor
+        transform.position = _anchor.transform.position;
+        // Update the AnchorID in the entity object
+        EntityObject.AnchorID = _anchor.trackableId.ToString();
+        //Debug.Log("Attached to anchor: " + EntityObject.AnchorID);
     }
 
+    /// <summary>
+    /// Asynchronously creates an ARAnchor at the entity's current pose.
+    /// </summary>
     private async void CreateAnchorAsync()
     {
+        // Attempt to add a new anchor at the current position and rotation
         Result<ARAnchor> result = await _arAnchorManager.TryAddAnchorAsync(new Pose(transform.position, transform.rotation));
-        if (result.status.IsSuccess())
+        if (!result.status.IsSuccess())
         {
-            ARAnchor oldAnchor = _anchor;
-            _anchor = result.value;
-        
-            if (_anchor != null)
-            {
-                transform.SetParent(_anchor.transform, true);
-                Debug.Log("Anchor created and object attached at raycast hit position.");
-                if (oldAnchor != null)
-                    Destroy(oldAnchor.gameObject);
-            }
-            else
-                Debug.LogWarning("Failed to create anchor");
+            // Log a warning if the anchor creation fails
+            Debug.LogWarning("Failed to create anchor");
+            return;
+        }
+
+        ARAnchor oldAnchor = _anchor; // Store reference to the old anchor
+        ARAnchor newAnchor = result.value; // Get the newly created anchor
+
+        SetParentToAnchor(newAnchor); // Re-parent the entity to the new anchor
+
+        if (oldAnchor != null)
+        {
+            // Remove the old anchor if it exists
+            bool deleted = _arAnchorManager.TryRemoveAnchor(oldAnchor);
+            //if (deleted)
+            //    Debug.Log("Deleted old anchor");
         }
     }
 
@@ -262,6 +239,18 @@ public class Entity : MonoBehaviour, IDragHandler
     {
         EntityObject = entityObject;
         GameManager.Instance.AddEntity(EntityObject, this);
+
+        if (EntityObject.AnchorID != null)
+        {
+            TrackableId trackableId = new (EntityObject.AnchorID);
+            if (_arAnchorManager.GetAnchor(trackableId) != null)
+            {
+                ARAnchor anchor = _arAnchorManager.GetAnchor(trackableId);
+                SetParentToAnchor(anchor);
+            }
+            else
+                Debug.Log("no anchor loaded");
+        }
         
         UpdateIcon();
     }
