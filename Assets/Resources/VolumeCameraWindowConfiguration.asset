@@ -16,6 +16,6 @@ MonoBehaviour:
   m_OutputDimensions: {x: 1, y: 1, z: 1}
   m_WindowResizeLimit: 0
   m_MinWindowSize: {x: 0, y: 0, z: 0}
-  m_MaxWindowSize: {x: 0, y: 0, z: 0}
+  m_MaxWindowSize: {x: 1, y: 1, z: 1}
   m_WorldAlignment: 1
   m_IsUniformScale: 0

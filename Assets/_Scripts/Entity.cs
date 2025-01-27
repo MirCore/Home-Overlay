@@ -144,6 +144,7 @@ public class Entity : MonoBehaviour, IDragHandler
 
     private void OnSettingsButtonClicked()
     {
+        Debug.Log("SettingsButton clicked");
         EntitySettingsWindowManager.Instance.ToggleSettingsWindow(this);
     }
 
@@ -232,27 +233,38 @@ public class Entity : MonoBehaviour, IDragHandler
     }
 
     /// <summary>
-    /// Sets the entity ID and updates the icon accordingly.
+    /// Sets the entity object and updates the icon and anchor accordingly.
     /// </summary>
-    /// <param name="entityObject">The selected entityObject.</param>
+    /// <param name="entityObject">The entity object to be associated with this entity.</param>
     public void SetEntityObject(EntityObject entityObject)
     {
+        // Assign the provided entity object to the current entity
         EntityObject = entityObject;
-        GameManager.Instance.AddEntity(EntityObject, this);
 
-        if (EntityObject.AnchorID != null)
-        {
-            TrackableId trackableId = new (EntityObject.AnchorID);
-            if (_arAnchorManager.GetAnchor(trackableId) != null)
-            {
-                ARAnchor anchor = _arAnchorManager.GetAnchor(trackableId);
-                SetParentToAnchor(anchor);
-            }
-            else
-                Debug.Log("no anchor loaded");
-        }
+        // Add the entity object to the GameManager's list of entities
+        GameManager.Instance.AddEntity(EntityObject, this);
         
+        // Update the icon to reflect the current state of the entity
         UpdateIcon();
+
+        // If the entity object does not have an anchor ID, exit the method
+        if (string.IsNullOrEmpty(EntityObject.AnchorID))
+            return;
+        
+        // Retrieve the anchor using the anchor ID
+        TrackableId trackableId = new(EntityObject.AnchorID);
+        ARAnchor anchor = _arAnchorManager.GetAnchor(trackableId);
+
+        // If an anchor is found, set the entity's parent to the anchor
+        if (anchor != null)
+        {
+            SetParentToAnchor(anchor);
+        }
+        else
+        {
+            // Log a message if no anchor is found
+            Debug.Log("No anchor loaded");
+        }
     }
 
     public void UpdateEntityID(string entityID)

@@ -14,10 +14,10 @@ public class EntitySpawner : MonoBehaviour
     /// </summary>
     /// <param name="position">The transform at which the entity will be spawned.</param>
     /// <param name="entityObject"></param>
-    public void SpawnSavedEntity(Vector3 position, EntityObject entityObject)
+    public void SpawnSavedEntity(EntityObject entityObject)
     {
         // Instantiate the entity at the given position and rotation
-        Entity newEntity = Instantiate(EntityPrefab, HassUITranslation, false);
+        Entity newEntity = Instantiate(EntityPrefab);
         
         newEntity.transform.localPosition = entityObject.Position;
         

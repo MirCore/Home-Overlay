@@ -82,28 +82,15 @@ namespace Managers
             ARAnchorManager.TryRemoveAnchor(anchor);
         }
 
-        private void Start()
-        {
-            // If no connection settings are saved, show the settings/connect tab
-            // Otherwise, test the connection
-            if (HassURL == "" || HassPort == 0 || HassToken == "")
-            {
-                UIManager.Instance.ShowSettingsTab();
-                EventManager.InvokeOnConnectionTested(412); // 412 Precondition Failed
-            }
-            else
-            {
-                TestConnection(HassURL, HassPort, HassToken);
-                EventManager.OnConnectionTested += OnInitialConnectionTested;
-            }
-            
-        }
-
-        private void OnInitialConnectionTested(int obj)
+        private void OnInitialConnectionTested(int statusCode)
         {
             EventManager.OnConnectionTested -= OnInitialConnectionTested;
-            
-            RestHandler.SetDefaultHeaders();
+
+            if (statusCode is 200 or 201)
+            {
+                RestHandler.SetDefaultHeaders();
+                RestHandler.GetHassEntities();
+            }
             LoadEntityObjects();
         }
 
@@ -114,7 +101,7 @@ namespace Managers
                 return;
             foreach (EntityObject entityObject in EntityObjects)
             {
-                EntitySpawner.SpawnSavedEntity(entityObject.Position, entityObject);
+                EntitySpawner.SpawnSavedEntity(entityObject);
             }
 
             EventManager.InvokeOnAppStateLoaded();
@@ -126,7 +113,7 @@ namespace Managers
         /// <param name="url">The base URL of Home Assistant.</param>
         /// <param name="port">The port number of Home Assistant.</param>
         /// <param name="token">The authorization token of Home Assistant.</param>
-        public static void TestConnection(string url, int port, string token)
+        private static void TestConnection(string url, int port, string token)
         {
             RestHandler.TestConnection(url, port, token);
         }
@@ -158,14 +145,29 @@ namespace Managers
             HassPort = SecurePlayerPrefs.GetInt("HassPort");
             HassToken = SecurePlayerPrefs.GetString("HassToken");
 
-            if (HassURL == "") return;
-            try
+            if (HassURL != "")
             {
-                HassUri = new Uri($"{HassURL.TrimEnd('/')}:{HassPort}/api/");
+                try
+                {
+                    HassUri = new Uri($"{HassURL.TrimEnd('/')}:{HassPort}/api/");
+                }
+                catch (UriFormatException)
+                {
+                    Debug.LogError("The URL is not valid.");
+                }
             }
-            catch (UriFormatException)
+            
+            // If no connection settings are saved, show the settings/connect tab
+            // Otherwise, test the connection
+            if (HassURL == "" || HassPort == 0 || HassToken == "")
             {
-                Debug.LogError("The URL is not valid.");
+                UIManager.Instance.ShowSettingsTab();
+                EventManager.InvokeOnConnectionTested(412); // 412 Precondition Failed
+            }
+            else
+            {
+                TestConnection(HassURL, HassPort, HassToken);
+                EventManager.OnConnectionTested += OnInitialConnectionTested;
             }
         }
 

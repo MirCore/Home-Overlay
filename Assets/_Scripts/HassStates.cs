@@ -36,7 +36,7 @@ public static class HassStates
     /// <param name="responseText">The response text from Home Assistant containing entity states.</param>
     public static void OnHassStatesResponse(string responseText)
     {
-        Debug.Log(responseText);
+        //Debug.Log(responseText);
             
         // Parse the response text into an array of HassEntity objects
         HassEntity[] hassEntities = JsonHelper.ArrayFromJson<HassEntity>(responseText);

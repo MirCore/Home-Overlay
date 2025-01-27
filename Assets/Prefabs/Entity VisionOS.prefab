@@ -8,6 +8,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1945006615124247817, guid: 041e365d826fae54ebe1a9e9f90af801, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1945006615124247817, guid: 041e365d826fae54ebe1a9e9f90af801, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2186237181206790716, guid: 041e365d826fae54ebe1a9e9f90af801, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -110
+      objectReference: {fileID: 0}
+    - target: {fileID: 2186237181206790716, guid: 041e365d826fae54ebe1a9e9f90af801, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 110
+      objectReference: {fileID: 0}
+    - target: {fileID: 2385399119326122437, guid: 041e365d826fae54ebe1a9e9f90af801, type: 3}
+      propertyPath: m_IgnoreReversedGraphics
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2587957683938953497, guid: 041e365d826fae54ebe1a9e9f90af801, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -52,6 +72,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Entity VisionOS
       objectReference: {fileID: 0}
+    - target: {fileID: 5795887628443142606, guid: 041e365d826fae54ebe1a9e9f90af801, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5795887628443142606, guid: 041e365d826fae54ebe1a9e9f90af801, type: 3}
+      propertyPath: DoubleSided
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -59,9 +87,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5632409585664690677, guid: 041e365d826fae54ebe1a9e9f90af801, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5570451647140814912}
-    - targetCorrespondingSourceObject: {fileID: 5632409585664690677, guid: 041e365d826fae54ebe1a9e9f90af801, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 4603335030082643556}
     - targetCorrespondingSourceObject: {fileID: 5950242595631931543, guid: 041e365d826fae54ebe1a9e9f90af801, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6350947055666940625}
@@ -135,19 +160,6 @@ MonoBehaviour:
   - Order: -4
     Renderer: {fileID: 6718680789038175296}
     ApplyToDescendants: 0
---- !u!114 &4603335030082643556
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7204607210941000847}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 107245759e8844572be0d88b0052d2ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_BlendFactor: 1
 --- !u!1 &7535278858998030397 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4990848797107094855, guid: 041e365d826fae54ebe1a9e9f90af801, type: 3}
