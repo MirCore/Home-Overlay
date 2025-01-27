@@ -69,7 +69,7 @@ namespace UI
 
         private void OnHighlightEntityButtonPressed(EntityObject entity)
         {
-            Debug.LogError(typeof(NotImplementedException));
+            entity.Entity.HighlightEntity();
         }
 
         private void OnDeleteEntityButtonPressed(EntityObject entity)

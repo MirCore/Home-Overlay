@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Managers;
@@ -26,6 +27,11 @@ public class Entity : MonoBehaviour, IDragHandler
 
     private ARAnchorManager _arAnchorManager;
     private ARAnchor _anchor;
+    
+    /// <summary>
+    /// A coroutine that is currently setting the color of the button temporarily.
+    /// </summary>
+    private IEnumerator _setButtonColorTemporarilyCoroutine;
 
     private void OnEnable()
     {
@@ -278,5 +284,57 @@ public class Entity : MonoBehaviour, IDragHandler
     {
         GameManager.Instance.RemoveEntity(EntityObject);
         Destroy(gameObject);
+    }
+
+
+    /// <summary>
+    /// Temporarily highlights the entity by changing the color of its button to red.
+    /// The highlighting is done by starting a coroutine that changes the color of the button to red
+    /// and then waits for the specified duration and then changes the color back to the original color.
+    /// </summary>
+    public void HighlightEntity()
+    {
+        if (_setButtonColorTemporarilyCoroutine != null)
+            return;
+
+        _setButtonColorTemporarilyCoroutine = SetButtonColorTemporarily(Color.red, 10f);
+        StartCoroutine(_setButtonColorTemporarilyCoroutine);
+    }
+    
+    /// <summary>
+    /// Temporarily sets the color of the entity's button to the given color for the given duration.
+    /// </summary>
+    /// <param name="color">The color to set the button to.</param>
+    /// <param name="duration">The duration of the color change in seconds.</param>
+    private IEnumerator SetButtonColorTemporarily(Color color, float duration)
+    {
+        // Store the original color of the button
+        Color originalColor = Button.targetGraphic.color;
+        
+        // Change the color of the button to the given color
+        Button.targetGraphic.color = color;
+        
+        // Store the original color block and normal color of the button
+        ColorBlock colorBlock = Button.colors;
+        Color originalNormalColor = colorBlock.normalColor;
+        
+        // Change the normal color of the button to a semi-transparent version of the original normal color
+        // Apply the changed color block to the button
+        colorBlock.normalColor = new Color(originalNormalColor.r, originalNormalColor.g, originalNormalColor.b, 0.5f);
+        Button.colors = colorBlock;
+        
+        // Wait for the specified duration
+        yield return new WaitForSeconds(duration);
+        
+        // Change the color of the button back to the original color
+        Button.targetGraphic.color = originalColor;
+        
+        // Change the normal color of the button back to the original normal color
+        // Apply the changed color block to the button
+        colorBlock.normalColor = originalNormalColor;
+        Button.colors = colorBlock;
+        
+        // Set the flag to indicate that the coroutine has finished
+        _setButtonColorTemporarilyCoroutine = null;
     }
 }
