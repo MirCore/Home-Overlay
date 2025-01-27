@@ -2,6 +2,7 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.XR.Interaction.Toolkit.UI;
 using Utils;
 
 namespace Managers
@@ -12,24 +13,36 @@ namespace Managers
     public class UIManager : Singleton<UIManager>
     {
         [SerializeField] private TMP_Text HeaderText;
+
+        [SerializeField] private GameObject MainUI;
+        [SerializeField] private GameObject HomeButtonUI;
+        [SerializeField] private Button HomeButton;
+        [SerializeField] private Button CloseMainUIButton;
+        private LazyFollow _mainUILazyFollow;
+        
+        [Header("Tabs")]
         [SerializeField] private GameObject OverviewTab;
         [SerializeField] private GameObject NewDeviceTab;
         [SerializeField] private GameObject SettingsTab;
+        
+        [Header("Sidebar")]
         [SerializeField] private Button OverviewButton;
         [SerializeField] private Button NewDeviceButton;
         [SerializeField] private Button SettingsButton;
 
         private void OnEnable()
         {
-            ShowOverviewTab();
+            HideMainMenu();
             OverviewButton.onClick.AddListener(ShowOverviewTab);
             NewDeviceButton.onClick.AddListener(ShowNewDeviceTab);
             SettingsButton.onClick.AddListener(ShowSettingsTab);
+            HomeButton.onClick.AddListener(ShowMainUI);
+            CloseMainUIButton.onClick.AddListener(HideMainMenu);
         }
 
         private void Start()
         {
-            ShowOverviewTab();
+            HideMainMenu();
         }
 
         private void OnDisable()
@@ -37,6 +50,30 @@ namespace Managers
             OverviewButton.onClick.RemoveListener(ShowOverviewTab);
             NewDeviceButton.onClick.RemoveListener(ShowNewDeviceTab);
             SettingsButton.onClick.RemoveListener(ShowSettingsTab);
+            HomeButton.onClick.RemoveListener(ShowMainUI);
+            CloseMainUIButton.onClick.RemoveListener(HideMainMenu);
+        }
+
+        private void HideMainMenu()
+        {
+            MainUI.SetActive(false);
+            HomeButtonUI.SetActive(true);
+            
+            if (_mainUILazyFollow == null)
+                _mainUILazyFollow = MainUI.GetComponentInParent<LazyFollow>();
+            if (_mainUILazyFollow != null)
+                _mainUILazyFollow.positionFollowMode = LazyFollow.PositionFollowMode.Follow;
+        }
+
+        private void ShowMainUI()
+        {
+            MainUI.SetActive(true);
+            HomeButtonUI.SetActive(false);
+            
+            if (_mainUILazyFollow == null)
+                _mainUILazyFollow = MainUI.GetComponentInParent<LazyFollow>();
+            if (_mainUILazyFollow != null)
+                _mainUILazyFollow.positionFollowMode = LazyFollow.PositionFollowMode.None;
         }
 
         /// <summary>
@@ -83,6 +120,8 @@ namespace Managers
             NewDeviceTab.SetActive(false);
             
             tab.SetActive(true);
+
+            ShowMainUI();
         }
     
     }
