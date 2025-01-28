@@ -36,7 +36,7 @@ namespace Managers
             OverviewButton.onClick.AddListener(ShowOverviewTab);
             NewDeviceButton.onClick.AddListener(ShowNewDeviceTab);
             SettingsButton.onClick.AddListener(ShowSettingsTab);
-            HomeButton.onClick.AddListener(ShowMainUI);
+            HomeButton.onClick.AddListener(OnHomeButtonClicked);
             CloseMainUIButton.onClick.AddListener(HideMainMenu);
         }
 
@@ -50,30 +50,13 @@ namespace Managers
             OverviewButton.onClick.RemoveListener(ShowOverviewTab);
             NewDeviceButton.onClick.RemoveListener(ShowNewDeviceTab);
             SettingsButton.onClick.RemoveListener(ShowSettingsTab);
-            HomeButton.onClick.RemoveListener(ShowMainUI);
+            HomeButton.onClick.RemoveListener(OnHomeButtonClicked);
             CloseMainUIButton.onClick.RemoveListener(HideMainMenu);
         }
 
-        private void HideMainMenu()
+        private void OnHomeButtonClicked()
         {
-            MainUI.SetActive(false);
-            HomeButtonUI.SetActive(true);
-            
-            if (_mainUILazyFollow == null)
-                _mainUILazyFollow = MainUI.GetComponentInParent<LazyFollow>();
-            if (_mainUILazyFollow != null)
-                _mainUILazyFollow.positionFollowMode = LazyFollow.PositionFollowMode.Follow;
-        }
-
-        private void ShowMainUI()
-        {
-            MainUI.SetActive(true);
-            HomeButtonUI.SetActive(false);
-            
-            if (_mainUILazyFollow == null)
-                _mainUILazyFollow = MainUI.GetComponentInParent<LazyFollow>();
-            if (_mainUILazyFollow != null)
-                _mainUILazyFollow.positionFollowMode = LazyFollow.PositionFollowMode.None;
+            ShowOverviewTab();
         }
 
         /// <summary>
@@ -110,20 +93,44 @@ namespace Managers
         }
 
         /// <summary>
-        /// Shows the specified tab and hides the other tabs.
+        /// Shows the specified tab and hides all other tabs.
+        /// Also makes sure the main UI is visible and the home button is hidden.
         /// </summary>
         /// <param name="tab">The tab to show.</param>
         private void ShowTab(GameObject tab)
         {
+            // Hide all other tabs
             OverviewTab.SetActive(false);
             SettingsTab.SetActive(false);
             NewDeviceTab.SetActive(false);
             
+            // Show the selected tab
             tab.SetActive(true);
-
-            ShowMainUI();
+            
+            // Show the main UI and hide the home button
+            MainUI.SetActive(true);
+            HomeButtonUI.SetActive(false);
+            
+            // Disable lazy follow while the main UI is open
+            if (_mainUILazyFollow == null)
+                _mainUILazyFollow = MainUI.GetComponentInParent<LazyFollow>();
+            if (_mainUILazyFollow != null)
+                _mainUILazyFollow.positionFollowMode = LazyFollow.PositionFollowMode.None;
         }
-    
-    }
 
+        /// <summary>
+        /// Hides the main UI and shows the home button.
+        /// Also activates the position follow mode of the LazyFollow.
+        /// </summary>
+        private void HideMainMenu()
+        {
+            MainUI.SetActive(false);
+            HomeButtonUI.SetActive(true);
+            
+            if (_mainUILazyFollow == null)
+                _mainUILazyFollow = MainUI.GetComponentInParent<LazyFollow>();
+            if (_mainUILazyFollow != null)
+                _mainUILazyFollow.positionFollowMode = LazyFollow.PositionFollowMode.Follow;
+        }
+    }
 }

@@ -351,6 +351,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4941414870061594646, guid: be9c36158e6684f43b637e6a0a3172c2, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6596615111711837346}
+    - targetCorrespondingSourceObject: {fileID: 4941414870061594646, guid: be9c36158e6684f43b637e6a0a3172c2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 28905911160780773}
     - targetCorrespondingSourceObject: {fileID: 5660116542633549964, guid: be9c36158e6684f43b637e6a0a3172c2, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1235069653785268208}
@@ -456,6 +459,33 @@ MonoBehaviour:
   - Order: 0
     Renderer: {fileID: 408063263973019949}
     ApplyToDescendants: 1
+--- !u!114 &28905911160780773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5174573069086653137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a2d7d89889b4d94fa1f8d6fe49788e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Target: {fileID: 0}
+  m_TargetOffset: {x: 0, y: 0, z: 0.5}
+  m_FollowInLocalSpace: 0
+  m_ApplyTargetInLocalSpace: 0
+  m_MovementSpeed: 2
+  m_MovementSpeedVariancePercentage: 0.25
+  m_SnapOnEnable: 1
+  m_PositionFollowMode: 0
+  m_MinDistanceAllowed: 0.01
+  m_MaxDistanceAllowed: 0.3
+  m_TimeUntilThresholdReachesMaxDistance: 3
+  m_RotationFollowMode: 1
+  m_MinAngleAllowed: 0.1
+  m_MaxAngleAllowed: 5
+  m_TimeUntilThresholdReachesMaxAngle: 3
 --- !u!1 &5607102960305758795 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5660116542633549964, guid: be9c36158e6684f43b637e6a0a3172c2, type: 3}
