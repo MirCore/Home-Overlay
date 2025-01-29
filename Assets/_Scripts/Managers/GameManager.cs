@@ -8,6 +8,7 @@ using Meta.XR.MRUtilityKit;
 #endif
 using Structs;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.XR.ARFoundation;
 using Utils;
 
@@ -24,10 +25,6 @@ namespace Managers
         [field: SerializeField] public ARAnchorManager ARAnchorManager { get; private set; }
         [field: SerializeField] public ARRaycastManager ARRaycastManager { get; private set; }
 
-        /// <summary>
-        /// Only used for debugging in the inspector.
-        /// </summary>
-        [SerializeField] public HassEntity[] InspectorHassStates;
         
         [SerializeField] internal List<EntityObject> EntityObjects;
         
@@ -37,6 +34,13 @@ namespace Managers
         [SerializeField] private EntitySpawner EntitySpawner;
 
         [SerializeField] private GameObject HassUI;
+        
+        [Header("Debugging")]
+        public bool DebugLogPostResponses;
+        /// <summary>
+        /// Only used for debugging in the inspector.
+        /// </summary>
+        [SerializeField] public HassEntity[] InspectorHassStates;
         
 #if QUEST_BUILD && FALSE
         [field: SerializeField] public EffectMesh EffectMesh { get; private set; }

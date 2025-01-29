@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Managers;
 using Proyecto26;
@@ -7,14 +8,25 @@ using UnityEngine;
 
 public static class HassStates
 {
+    /// <summary>
+    /// A dictionary of all Home Assistant entities. The key is the entity ID and the value is the HassEntity object.
+    /// </summary>
     private static readonly Dictionary<string, HassEntity> HassStatesDict = new();
         
-
+    /// <summary>
+    /// Gets a dictionary of all Home Assistant entities. The key is the entity ID and the value is the HassEntity object.
+    /// </summary>
+    /// <returns>A dictionary of HassEntity objects.</returns>
     public static Dictionary<string, HassEntity> GetHassStates()
     {
         return HassStatesDict;
     }
         
+    /// <summary>
+    /// Gets the HassEntity object from the specified entity ID.
+    /// </summary>
+    /// <param name="entityID">The entity ID of the HassEntity object to retrieve.</param>
+    /// <returns>The HassEntity object associated with the entity ID, or null if no entity is found.</returns>
     public static HassEntity GetHassState(string entityID)
     {
         if (string.IsNullOrEmpty(entityID))
@@ -67,6 +79,7 @@ public static class HassStates
 }
     
 [Serializable]
+[SuppressMessage("ReSharper", "InconsistentNaming")]
 public class HassEntity
 {
     public string entity_id;
@@ -76,11 +89,18 @@ public class HassEntity
 }
 
 [Serializable]
+[SuppressMessage("ReSharper", "InconsistentNaming")]
 public class HassEntityAttributes
 {
-    public string friendly_name;
+    public int min_color_temp_kelvin;
+    public int max_color_temp_kelvin;
+    public string[] supported_color_modes;
+    public string color_mode;
+    public int brightness;
+    public int color_temp_kelvin;
+    public int color_temp;
     public int[] rgb_color;
     public float[] hs_color;
     public string icon;
-    public int brightness;
+    public string friendly_name;
 }

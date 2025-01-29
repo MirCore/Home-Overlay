@@ -69,5 +69,19 @@ namespace Managers
 
             newSettingsWindow.SetEntity(entity);
         }
+
+        public void UpdateEntitySettingsWindow(Entity entity)
+        {
+            EntitySettingsUI entitySettingsUI = _entitySettingsWindows.Find(w => w.Entity == entity);
+            if (entitySettingsUI)
+            {
+                entitySettingsUI.gameObject.SetActive(false);
+                entitySettingsUI.gameObject.SetActive(true);
+            }
+            else
+            {
+                SpawnNewWindow(entity);
+            }
+        }
     }
 }

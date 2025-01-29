@@ -9,8 +9,10 @@ namespace UI
 {
     public class SortingLayerAttacher : MonoBehaviour
     {
+#pragma warning disable 414
         [SerializeField] private int SortingLayer = 0;
         [SerializeField] private bool ApplyToChildren = false;
+#pragma warning restore 414
         
 #if PLATFORM_VISIONOS
         private VisionOSSortingGroup _sortingGroup;

@@ -150,7 +150,6 @@ public class Entity : MonoBehaviour, IDragHandler
 
     private void OnSettingsButtonClicked()
     {
-        Debug.Log("SettingsButton clicked");
         EntitySettingsWindowManager.Instance.ToggleSettingsWindow(this);
     }
 
@@ -278,6 +277,7 @@ public class Entity : MonoBehaviour, IDragHandler
         EntityObject.EntityID = entityID;
         
         UpdateIcon();
+        EntitySettingsWindowManager.Instance.UpdateEntitySettingsWindow(this);
     }
 
     public void DeleteEntity()
@@ -336,5 +336,15 @@ public class Entity : MonoBehaviour, IDragHandler
         
         // Set the flag to indicate that the coroutine has finished
         _setButtonColorTemporarilyCoroutine = null;
+    }
+
+    public EDeviceType GetDeviceType()
+    {
+        return _entityState.DeviceType;
+    }
+
+    public void ReloadSettingsWindow()
+    {
+        EntitySettingsWindowManager.Instance.UpdateEntitySettingsWindow(this);
     }
 }

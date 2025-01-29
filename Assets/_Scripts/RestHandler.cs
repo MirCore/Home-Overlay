@@ -84,6 +84,8 @@ public abstract class RestHandler
     /// </summary>
     public static void GetHassEntities()
     {
+        if (!RestClient.DefaultRequestHeaders.ContainsKey("Authorization"))
+            return;
         Uri baseUri = GameManager.Instance.HassUri;
         if (baseUri == null)
             return;
@@ -119,6 +121,8 @@ public abstract class RestHandler
         RestClient.Post(postRequest)
             .Then(response => {
                 HassStates.OnHassStatesResponse(response.Text);
+                if (GameManager.Instance.DebugLogPostResponses)
+                    Debug.Log(response.Text);
             })
             .Catch(err => {
                 Debug.LogError("Error: " + err.Message + err.StackTrace);
@@ -164,6 +168,13 @@ public abstract class RestHandler
         RGBColor body = new() { entity_id = entityID, rgb_color = rgb };
         SendPostRequest(uri, body);
     }
+
+    public static void SetLightTemperature(string entityID, int kelvin)
+    {
+        Uri uri = new (GameManager.Instance.HassUri, "services/light/turn_on");
+        Kelvin body = new() { entity_id = entityID, kelvin = kelvin.ToString() };
+        SendPostRequest(uri, body);
+    }
 }
 
 /// <summary>
@@ -189,6 +200,19 @@ public class Brightness
     /// </summary>
     public string entity_id;
     public string brightness = null;
+}
+
+/// <summary>
+/// Represents an entity ID.
+/// </summary>
+[Serializable]
+public class Kelvin
+{
+    /// <summary>
+    /// The entity ID.
+    /// </summary>
+    public string entity_id;
+    public string kelvin = null;
 }
 
 /// <summary>

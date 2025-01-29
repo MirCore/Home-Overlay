@@ -10,33 +10,19 @@ using Utils;
 
 namespace UI
 {
-
     public class EntitySettingsUI : MonoBehaviour
     {
+        [Header("Header")]
         [SerializeField] private TMP_Text TitleText;
         [SerializeField] private TMP_Text SubtitleText;
+        
+        [Header("Color Picker")]
         [SerializeField] private ColorPicker ColorPicker;
         
-        private HassEntity _entityState;
         
-        /// <summary>
-        /// The TMP_Dropdown used to select the device type.
-        /// </summary>
-        [SerializeField] private TMP_Dropdown TypeDropdown;
-        
-        /// <summary>
-        /// The TMP_Dropdown used to select the entity.
-        /// </summary>
-        [SerializeField] private TMP_Dropdown EntityDropdown;
-        /// <summary>
-        /// The DropdownItem that shows the currently selected entity.
-        /// </summary>
-        [SerializeField] private FriendlyNameHandler SelectedEntityLabel;
-        
-        /// <summary>
-        /// The Button that saves the settings.
-        /// </summary>
-        [SerializeField] private Button SaveButton;
+        [Header("Entity Settings")]
+        [SerializeField] private Button ChangeEntityButton;
+        [SerializeField] private EntityPicker EntityPicker;
         
         /// <summary>
         /// The Button that deletes the Entity.
@@ -47,6 +33,8 @@ namespace UI
         /// The currently selected device type.
         /// </summary>
         private EDeviceType _selectedEDeviceType;
+        
+        private HassEntity _entityState;
 
         public Entity Entity { get; private set; }
 
@@ -55,107 +43,35 @@ namespace UI
         {
             if (Entity != null)
                 GetHassEntities();
+            EntityPicker.gameObject.SetActive(false);
+            UpdateHeader();
+            LoadElements();
             
-            TypeDropdown.onValueChanged.AddListener(OnTypeDropdownValueChanged);
-            EntityDropdown.onValueChanged.AddListener(OnEntityDropdownValueChanged);
-            SaveButton.onClick.AddListener(OnSaveButtonClicked);
+            ChangeEntityButton.gameObject.SetActive(true);
+            ChangeEntityButton.onClick.AddListener(OnChangeEntityButtonClicked);
             DeleteButton.onClick.AddListener(OnDeleteButtonClicked);
             EventManager.OnHassStatesChanged += OnHassStatesChanged;
         }
 
         private void OnDisable()
         {
-            TypeDropdown.onValueChanged.RemoveListener(OnTypeDropdownValueChanged);
-            EntityDropdown.onValueChanged.RemoveListener(OnEntityDropdownValueChanged);
-            SaveButton.onClick.RemoveListener(OnSaveButtonClicked);
+            ChangeEntityButton.onClick.RemoveListener(OnChangeEntityButtonClicked);
             DeleteButton.onClick.RemoveListener(OnDeleteButtonClicked);
             EventManager.OnHassStatesChanged -= OnHassStatesChanged;
         }
-        
-        private void Start()
-        {
-            UpdateTypeDropdown();
-            UpdateEntityDropdown();
-            UpdateHeader();
-        }
 
-        /// <summary>
-        /// Updates the options of the TypeDropdown.
-        /// </summary>
-        private void UpdateTypeDropdown()
+        private void OnChangeEntityButtonClicked()
         {
-            TypeDropdown.ClearOptions();
-            TypeDropdown.AddOptions(Enum.GetValues(typeof(EDeviceType)).Cast<EDeviceType>().Select(e => e.GetDisplayName()).ToList());
+            ChangeEntityButton.gameObject.SetActive(false);
+            EntityPicker.gameObject.SetActive(true);
+            EntityPicker.SetEntity(Entity);
         }
-
-        
-        private void OnSaveButtonClicked()
-        {
-            // Get the selected entity ID from the EntityDropdown
-            string selectedEntityID = EntityDropdown.options[EntityDropdown.value].text;
-            
-            Entity.UpdateEntityID(selectedEntityID);
-        }
-        
+ 
         private void OnDeleteButtonClicked()
         {
             Entity.DeleteEntity();
         }
         
-        /// <summary>
-        /// Handles the change in the EntityDropdown selection.
-        /// Updates the selected entity ID and the title of the SelectedEntityLabel.
-        /// </summary>
-        /// <param name="index">The index of the selected item in the EntityDropdown.</param>
-        private void OnEntityDropdownValueChanged(int index)
-        {
-            SelectedEntityLabel.UpdateTitle();
-        }
-
-        /// <summary>
-        /// Updates the EntityDropdown based on the selected device type.
-        /// 
-        /// If the selected device type is DEFAULT, all entities are shown.
-        /// Otherwise, only entities with the selected device type are shown.
-        /// </summary>
-        private void UpdateEntityDropdown()
-        {
-            EntityDropdown.ClearOptions();
-
-            // Get a list of all the entities with the selected device type
-            List<string> subtitleList = new ();
-            foreach (KeyValuePair<string, HassEntity> entity in HassStates.GetHassStates())
-            {
-                // Skip entities with device type DEFAULT, as these are not compatible
-                if (entity.Value.DeviceType == EDeviceType.DEFAULT)
-                    continue;
-                
-                // Add the entity ID to the list if it matches the selected device type
-                if (_selectedEDeviceType == EDeviceType.DEFAULT || entity.Value.DeviceType == _selectedEDeviceType)
-                    subtitleList.Add(entity.Key);
-            }
-
-            // Add the entity IDs to the dropdown
-            EntityDropdown.AddOptions(subtitleList);
-
-            // Update the selected entity label
-            SelectedEntityLabel.UpdateTitle();
-        }
-
-        /// <summary>
-        /// Handles the change in the TypeDropdown selection.
-        /// Updates the selected device type and refreshes the entity dropdown accordingly.
-        /// </summary>
-        /// <param name="index">The index of the selected item in the TypeDropdown.</param>
-        private void OnTypeDropdownValueChanged(int index)
-        {
-            // Update the selected device type based on the dropdown index
-            _selectedEDeviceType = (EDeviceType)index;
-            
-            // Refresh the entity dropdown to reflect the new device type selection
-            UpdateEntityDropdown();
-        }
-
         /// <summary>
         /// Gets the Home Assistant Entities via the RestHandler.
         /// The result is then passed to the OnHassStatesChanged method.
@@ -170,27 +86,53 @@ namespace UI
         /// </summary>
         private void OnHassStatesChanged()
         {
-            UpdateEntityDropdown();
-            
             UpdateHeader();
+            LoadElements();
         }
 
         private void UpdateHeader()
         {
-            if (Entity)
-                _entityState = HassStates.GetHassState(Entity.EntityObject.EntityID);
-            if (_entityState == null)
-                return;
-            
+            if (LoadEntityState()) return;
+
             TitleText.text = _entityState.attributes.friendly_name;
             SubtitleText.text = _entityState.entity_id;
+        }
+
+        /// <summary>
+        /// Loads the entity state associated with the current entity.
+        /// If the entity state is null, returns true.
+        /// </summary>
+        /// <returns>True if the entity state is null, false otherwise.</returns>
+        private bool LoadEntityState()
+        {
+            if (Entity)
+                _entityState = HassStates.GetHassState(Entity.EntityObject.EntityID);
+            return _entityState == null;
         }
 
         public void SetEntity(Entity entity)
         {
             Entity = entity;
             ColorPicker.SetEntityID(Entity.EntityObject.EntityID);
+            UpdateHeader();
+            LoadElements();
         }
-        
+
+        private void LoadElements()
+        {
+            if (LoadEntityState()) 
+                return;
+
+
+            if (_entityState.DeviceType == EDeviceType.LIGHT && _entityState.attributes.supported_color_modes.Length != 0)
+            {
+                ColorPicker.gameObject.SetActive(true);
+                ColorPicker.SetMode(_entityState.attributes.supported_color_modes);
+            }
+            else
+            {
+                ColorPicker.gameObject.SetActive(false);
+            }
+        }
     }
 }
