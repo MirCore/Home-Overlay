@@ -37,11 +37,6 @@ public static class HassStates
         return state;
     }
 
-    public static void UpdateState(HassEntity entity)
-    {
-        HassStatesDict[entity.entity_id] = entity;
-    }
-
     /// <summary>
     /// Handles the response from Home Assistant and updates the state entities.
     /// </summary>
@@ -57,10 +52,10 @@ public static class HassStates
         foreach (HassEntity entity in hassEntities)
         {
             // Get the type from the entity ID
-            string type = entity.entity_id.Split('.')[0].ToUpper();
+            string type = entity.entity_id.Split('.')[0];
                 
             // Try to parse the type as an EDeviceType
-            if (Enum.TryParse(type, out EDeviceType deviceType))
+            if (Enum.TryParse(type, true, out EDeviceType deviceType))
             {
                 // Set the device type if it was parsed successfully
                 entity.DeviceType = deviceType;
@@ -92,6 +87,8 @@ public class HassEntity
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 public class HassEntityAttributes
 {
+    public string unit_of_measurement;
+    public string device_class;
     public int min_color_temp_kelvin;
     public int max_color_temp_kelvin;
     public string[] supported_color_modes;

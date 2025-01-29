@@ -435,14 +435,14 @@ GameObject:
   m_Component:
   - component: {fileID: 2587957683938953497}
   - component: {fileID: 5795887628443142606}
-  - component: {fileID: 7087155375670451024}
+  - component: {fileID: 54477021383180761}
   - component: {fileID: 7176693283665524736}
   - component: {fileID: 4444872116195269533}
   - component: {fileID: 7170121203659495414}
   - component: {fileID: 3110856517121051150}
   - component: {fileID: 7290590148348775472}
   m_Layer: 0
-  m_Name: Entity
+  m_Name: EntityButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -495,7 +495,7 @@ MonoBehaviour:
   FlipBackFaceUV: 0
   DoubleSided: 0
   AutoUpdate: 1
---- !u!114 &7087155375670451024
+--- !u!114 &54477021383180761
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -504,12 +504,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 5632409585664690677}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97ae705e0bec470c977f4553ab15cc16, type: 3}
+  m_Script: {fileID: 11500000, guid: fe805125aa9f4538b6b3b1127660bac2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Button: {fileID: 8909964121112961152}
+  HighlightImage: {fileID: 6513151547911117981}
   Icon: {fileID: 5706165741701347998}
   SettingsButton: {fileID: 7826700952682389099}
+  Button: {fileID: 8909964121112961152}
 --- !u!33 &7176693283665524736
 MeshFilter:
   m_ObjectHideFlags: 0

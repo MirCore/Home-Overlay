@@ -99,6 +99,31 @@ public abstract class RestHandler
         RestClient.Get(get)
             .Then(response => {
                 HassStates.OnHassStatesResponse(response.Text);
+                if (GameManager.Instance.DebugLogGetHassEntities)
+                    Debug.Log(response.Text);
+            })
+            .Catch(err => {
+                Debug.LogError("Error: " + err.Message + "\n" + err.StackTrace);
+            });
+    }
+
+    /// <summary>
+    /// Gets the Home Assistant entities.
+    /// </summary>
+    public static void GetHassStates()
+    {
+        
+        Uri baseUri = GameManager.Instance.HassUri;
+        Uri uri = new (baseUri, "states");
+        
+        RequestHelper get = new()
+        {
+            Uri = uri.ToString(),
+        };
+        
+        RestClient.Get(get)
+            .Then(response => {
+                HassStates.OnHassStatesResponse(response.Text);
             })
             .Catch(err => {
                 Debug.LogError("Error: " + err.Message + "\n" + err.StackTrace);

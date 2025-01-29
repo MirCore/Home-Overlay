@@ -24,8 +24,12 @@ namespace Managers
         [field: SerializeField] public ARPlaneManager ARPlaneManager { get; private set; }
         [field: SerializeField] public ARAnchorManager ARAnchorManager { get; private set; }
         [field: SerializeField] public ARRaycastManager ARRaycastManager { get; private set; }
-
         
+        [FormerlySerializedAs("RefreshRate")]
+        [Tooltip("The refresh rate of the Home Assistant API in seconds.")]
+        [SerializeField] private int HassStateRefreshRate = 10;
+
+
         [SerializeField] internal List<EntityObject> EntityObjects;
         
         /// <summary>
@@ -37,6 +41,7 @@ namespace Managers
         
         [Header("Debugging")]
         public bool DebugLogPostResponses;
+        public bool DebugLogGetHassEntities;
         /// <summary>
         /// Only used for debugging in the inspector.
         /// </summary>
@@ -55,11 +60,31 @@ namespace Managers
             LoadConnectionSettings();
             
             ARAnchorManager.trackablesChanged.AddListener(OnAnchorChanged);
+            EventManager.OnConnectionTested += OnConnectionTested;
         }
 
         private void OnDisable()
         {
             ARAnchorManager.trackablesChanged.RemoveListener(OnAnchorChanged);
+            EventManager.OnConnectionTested -= OnConnectionTested;
+        }
+
+        private void OnConnectionTested(int response)
+        {
+            if (response is 200 or 201)
+            {
+                StartCoroutine(GetHassStatesPeriodically());
+            }
+        }
+        
+        // ReSharper disable Unity.PerformanceAnalysis
+        private IEnumerator GetHassStatesPeriodically()
+        {
+            while (true)
+            {
+                yield return new WaitForSeconds(HassStateRefreshRate);
+                RestHandler.GetHassStates();
+            }
         }
 
         /// <summary>

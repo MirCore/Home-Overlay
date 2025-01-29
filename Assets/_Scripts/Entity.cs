@@ -15,14 +15,14 @@ using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using Utils;
 
-public class Entity : MonoBehaviour, IDragHandler
+public class Entity : MonoBehaviour
 {
-    [SerializeField] private Button Button;
+    [SerializeField] private Image HighlightImage;
     [SerializeField] private TMP_Text Icon;
     [SerializeField] private Button SettingsButton;
     private XRBaseInteractable _interactable;
     
-    private HassEntity _entityState;
+    protected HassEntity EntityState;
     public EntityObject EntityObject { get; private set; }
 
     private ARAnchorManager _arAnchorManager;
@@ -33,24 +33,21 @@ public class Entity : MonoBehaviour, IDragHandler
     /// </summary>
     private IEnumerator _setButtonColorTemporarilyCoroutine;
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
         _arAnchorManager = GameManager.Instance.ARAnchorManager;
         _arAnchorManager.trackablesChanged.AddListener(OnAnchorChanged);
         
-        Button.onClick.AddListener(OnButtonClicked);
         SettingsButton.onClick.AddListener(OnSettingsButtonClicked);
         _interactable = GetComponent<XRBaseInteractable>();
-        IDragHandler foo = GetComponent<IDragHandler>();
         _interactable.selectExited.AddListener(OnSelectExited);
         EventManager.OnHassStatesChanged += OnHassStatesChanged;
     }
 
-    private void OnDisable()
+    protected virtual void OnDisable()
     {
         _arAnchorManager.trackablesChanged.RemoveListener(OnAnchorChanged);
         
-        Button.onClick.RemoveListener(OnButtonClicked);
         SettingsButton.onClick.RemoveListener(OnSettingsButtonClicked);
         _interactable.selectExited.RemoveListener(OnSelectExited);
         EventManager.OnHassStatesChanged -= OnHassStatesChanged;
@@ -69,29 +66,6 @@ public class Entity : MonoBehaviour, IDragHandler
             SetParentToAnchor(addedAnchor);
             Debug.Log("Entity parented to added anchor");
         }
-    }
-
-    public void OnDrag(PointerEventData eventData)
-    {
-        if (XRSettings.enabled)
-            return;
-        
-        CreateAnchorAsync();
-        Debug.Log("ondrag");
-        
-        Canvas canvas = GetComponent<Canvas>();
-        RectTransform rectTransform = transform as RectTransform;
-        if (canvas != null && rectTransform != null)
-        {
-            float scaleFactor = rectTransform.localScale.magnitude;
-            Vector2 adjustedDelta = eventData.delta * scaleFactor;
-
-            rectTransform.anchoredPosition += adjustedDelta; // Adjust anchoredPosition
-            if (EntityObject == null)
-                return;
-            EntityObject.Position = transform.localPosition;
-        }
-        
     }
     
     private void OnSelectExited(SelectExitEventArgs eventData)
@@ -175,30 +149,30 @@ public class Entity : MonoBehaviour, IDragHandler
         // If there is no entity ID, there is nothing to update.
         if (EntityObject.EntityID == null)
         {
-            Icon.text = MaterialDesignIcons.GetIcon(null, EDeviceType.DEFAULT);
+            Icon.text = MaterialDesignIcons.GetIcon(null, null);
             return;
         }
         
         // Get the current state of the entity.
-        _entityState = HassStates.GetHassState(EntityObject.EntityID);
-        if (_entityState == null)
+        EntityState = HassStates.GetHassState(EntityObject.EntityID);
+        if (EntityState == null)
             return;
 
         // Update the icon based on the entity's attributes.
-        Icon.text = MaterialDesignIcons.GetIcon(_entityState.attributes.icon, _entityState.DeviceType);
+        Icon.text = MaterialDesignIcons.GetIcon(EntityState.attributes.icon, EntityState);
 
         Color color;
         
         // Update the icon color based on the entity's state.
         // If the entity is off, set the icon color to black.
-        if (_entityState.state == "off")
+        if (EntityState.state == "off")
         {
             color = Color.black;
         }
         // If the entity has a valid RGB color, set the icon color to it.
-        else if (_entityState.attributes.rgb_color is { Length: 3 })
+        else if (EntityState.attributes.rgb_color is { Length: 3 })
         {
-            color = JsonHelpers.RGBToUnityColor(_entityState.attributes.rgb_color);
+            color = JsonHelpers.RGBToUnityColor(EntityState.attributes.rgb_color);
         }
         // Otherwise, set the icon color to white.
         else
@@ -206,35 +180,12 @@ public class Entity : MonoBehaviour, IDragHandler
             color = Color.white;
         }
 
-        if (_entityState.attributes.brightness != 0)
+        if (EntityState.attributes.brightness != 0)
         {
-            color = Color.Lerp(Color.black, color, _entityState.attributes.brightness / 255f);
+            color = Color.Lerp(Color.black, color, EntityState.attributes.brightness / 255f);
         }
         
         Icon.color = color;
-    }
-
-    /// <summary>
-    /// Toggles the entities state associated with the entity ID.
-    /// </summary>
-    private void OnButtonClicked()
-    {
-        if (_entityState == null)
-            return;
-        
-        switch (_entityState.DeviceType)
-        {
-            case EDeviceType.DEFAULT:
-                break;
-            case EDeviceType.LIGHT:
-                RestHandler.ToggleLight(EntityObject.EntityID);
-                break;
-            case EDeviceType.SWITCH:
-                RestHandler.ToggleSwitch(EntityObject.EntityID);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
     }
 
     /// <summary>
@@ -251,6 +202,7 @@ public class Entity : MonoBehaviour, IDragHandler
         
         // Update the icon to reflect the current state of the entity
         UpdateIcon();
+        UpdateEntity();
 
         // If the entity object does not have an anchor ID, exit the method
         if (string.IsNullOrEmpty(EntityObject.AnchorID))
@@ -277,7 +229,13 @@ public class Entity : MonoBehaviour, IDragHandler
         EntityObject.EntityID = entityID;
         
         UpdateIcon();
+        UpdateEntity();
         EntitySettingsWindowManager.Instance.UpdateEntitySettingsWindow(this);
+    }
+
+    protected virtual void UpdateEntity()
+    {
+        
     }
 
     public void DeleteEntity()
@@ -309,30 +267,16 @@ public class Entity : MonoBehaviour, IDragHandler
     private IEnumerator SetButtonColorTemporarily(Color color, float duration)
     {
         // Store the original color of the button
-        Color originalColor = Button.targetGraphic.color;
+        Color originalColor = HighlightImage.color;
         
         // Change the color of the button to the given color
-        Button.targetGraphic.color = color;
-        
-        // Store the original color block and normal color of the button
-        ColorBlock colorBlock = Button.colors;
-        Color originalNormalColor = colorBlock.normalColor;
-        
-        // Change the normal color of the button to a semi-transparent version of the original normal color
-        // Apply the changed color block to the button
-        colorBlock.normalColor = new Color(originalNormalColor.r, originalNormalColor.g, originalNormalColor.b, 0.5f);
-        Button.colors = colorBlock;
+        HighlightImage.color = color;
         
         // Wait for the specified duration
         yield return new WaitForSeconds(duration);
         
         // Change the color of the button back to the original color
-        Button.targetGraphic.color = originalColor;
-        
-        // Change the normal color of the button back to the original normal color
-        // Apply the changed color block to the button
-        colorBlock.normalColor = originalNormalColor;
-        Button.colors = colorBlock;
+        HighlightImage.color = originalColor;
         
         // Set the flag to indicate that the coroutine has finished
         _setButtonColorTemporarilyCoroutine = null;
@@ -340,7 +284,7 @@ public class Entity : MonoBehaviour, IDragHandler
 
     public EDeviceType GetDeviceType()
     {
-        return _entityState.DeviceType;
+        return EntityState.DeviceType;
     }
 
     public void ReloadSettingsWindow()

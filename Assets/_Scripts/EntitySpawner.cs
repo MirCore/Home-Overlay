@@ -6,18 +6,32 @@ using Utils;
 
 public class EntitySpawner : MonoBehaviour
 {
-    [SerializeField] private Entity EntityPrefab;
+    [SerializeField] private Entity EntityButtonPrefab;
+    [SerializeField] private Entity EntitySensorPrefab;
     [SerializeField] private Transform HassUITranslation;
 
     /// <summary>
     /// Spawns a new entity at the specified transform position and rotation.
     /// </summary>
-    /// <param name="position">The transform at which the entity will be spawned.</param>
     /// <param name="entityObject"></param>
     public void SpawnSavedEntity(EntityObject entityObject)
     {
+        // Get the type from the entity ID
+        string type = entityObject.EntityID.Split('.')[0];
+                
+        // Try to parse the type as an EDeviceType
+        Enum.TryParse(type, true, out EDeviceType deviceType);
+
         // Instantiate the entity at the given position and rotation
-        Entity newEntity = Instantiate(EntityPrefab);
+        Entity newEntity;
+        if (deviceType is EDeviceType.LIGHT or EDeviceType.SWITCH)
+        {
+            newEntity = Instantiate(EntityButtonPrefab, entityObject.Position, Quaternion.identity);
+        }
+        else
+        {
+            newEntity = Instantiate(EntitySensorPrefab, entityObject.Position, Quaternion.identity);
+        }
         
         newEntity.transform.localPosition = entityObject.Position;
         
@@ -32,9 +46,23 @@ public class EntitySpawner : MonoBehaviour
     /// <param name="position">The transform at which the entity will be spawned.</param>
     public void SpawnNewEntity(string selectedEntityID, Vector3 position)
     {
+        // Get the type from the entity ID
+        string type = selectedEntityID.Split('.')[0];
+                
+        // Try to parse the type as an EDeviceType
+        Enum.TryParse(type, true, out EDeviceType deviceType);
+
         // Instantiate the entity at the given position and rotation
-        Entity newEntity = Instantiate(EntityPrefab, HassUITranslation, false);
-        
+        Entity newEntity;
+        if (deviceType is EDeviceType.LIGHT or EDeviceType.SWITCH)
+        {
+            newEntity = Instantiate(EntityButtonPrefab, HassUITranslation, false);
+        }
+        else
+        {
+            newEntity = Instantiate(EntitySensorPrefab, HassUITranslation, false);
+        }
+
         // Slightly offset the position of the new entity
         Vector3 newPosition = position - newEntity.transform.forward * 0.1f;
 

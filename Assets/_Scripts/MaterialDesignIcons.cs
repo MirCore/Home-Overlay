@@ -10,7 +10,7 @@ public abstract class MaterialDesignIcons
 {
     private static CodepointData[] _codepointsCollection;
 
-    public static string GetIcon(string hassIconName, EDeviceType entityStateDeviceType)
+    public static string GetIcon(string hassIconName, HassEntity entity)
     {
         if (_codepointsCollection == null)
             InitiateCodepointsCollection();
@@ -19,13 +19,30 @@ public abstract class MaterialDesignIcons
 
         if (string.IsNullOrEmpty(hassIconName))
         {
-            iconName = entityStateDeviceType switch
+            switch (entity.DeviceType)
             {
-                EDeviceType.DEFAULT => "help",
-                EDeviceType.LIGHT => "lightbulb",
-                EDeviceType.SWITCH => "toggle-switch-variant-off",
-                _ => throw new ArgumentOutOfRangeException(nameof(entityStateDeviceType), entityStateDeviceType, null)
-            };
+                case EDeviceType.DEFAULT:
+                    iconName = "help";
+                    break;
+                case EDeviceType.LIGHT:
+                    iconName = "lightbulb";
+                    break;
+                case EDeviceType.SWITCH:
+                    iconName = "toggle-switch-variant-off";
+                    break;
+                case EDeviceType.BINARY_SENSOR or EDeviceType.SENSOR:
+                    Enum.TryParse(entity.attributes.device_class, true, out ESensorDeviceClass sensorClass);
+                    iconName = sensorClass switch
+                    {
+                        ESensorDeviceClass.ENERGY or ESensorDeviceClass.POWER => "lightning-bolt",
+                        ESensorDeviceClass.TEMPERATURE => "thermometer",
+                        _ => "radar"
+                    };
+
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(entity), entity, null);
+            }
         }
         else
         {
