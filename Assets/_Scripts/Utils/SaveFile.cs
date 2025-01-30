@@ -14,11 +14,12 @@ namespace Utils
         // (This is a "hardcoded" secret key. )
         private static readonly byte[] SavedKey = { 0xE6, 0xDA, 0x48, 0x8E, 0xD2, 0x15, 0x8A, 0x26, 0x2E, 0xA4, 0x7D, 0x78, 0x96 ,0x0 ,0xCD, 0x90 };
         
-        private static readonly string Path = Application.persistentDataPath + "/saveData.json";
+        private static readonly string SaveDataPath = Application.persistentDataPath + "/saveData.json";
+        private static readonly string HassConfigPath = Application.persistentDataPath + "/hassConfig.json";
         
         public static List<EntityObject> ReadFile()
         {
-            if (!File.Exists(Path))
+            if (!File.Exists(SaveDataPath))
             {
                 Debug.Log("No file found");
                 return null;
@@ -26,11 +27,33 @@ namespace Utils
             try
             {
                 // Read the entire file into a String value.
-                string json = File.ReadAllText(Path);
+                string json = File.ReadAllText(SaveDataPath);
                 EntityObjectListWrapper wrapper = JsonUtility.FromJson<EntityObjectListWrapper>(json);
             
                 // Deserialize the JSON data into a pattern matching the GameData class.
                 return wrapper.EntityObjects ?? new List<EntityObject>();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public static HassConfig ReadHassConfig()
+        {
+            if (!File.Exists(HassConfigPath))
+            {
+                Debug.Log("No file found");
+                return null;
+            }
+            try
+            {
+                // Read the entire file into a String value.
+                string json = File.ReadAllText(HassConfigPath);
+                HassConfig hassConfig = JsonUtility.FromJson<HassConfig>(json);
+
+                return hassConfig;
             }
             catch (Exception e)
             {
@@ -45,7 +68,7 @@ namespace Utils
             {
                 string json = JsonUtility.ToJson(new EntityObjectListWrapper { EntityObjects = gameData }, true);
                 
-                File.WriteAllText(Path, json);
+                File.WriteAllText(SaveDataPath, json);
                 
                 //Debug.Log(Application.persistentDataPath);
             }
@@ -61,10 +84,33 @@ namespace Utils
         {
             WriteFile(GameManager.Instance.EntityObjects);
         }
-        
+
+        public static void SaveHassConfig()
+        {
+            WriteFile(GameManager.Instance.HassConfig);
+        }
+
+        private static void WriteFile(HassConfig hassConfig)
+        {
+            try
+            {
+                string json = JsonUtility.ToJson(hassConfig);
+                
+                File.WriteAllText(HassConfigPath, json);
+                
+                //Debug.Log(Application.persistentDataPath);
+            }
+            
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
         public static EntityObject ReadEncryptedFile()
         {
-            if (!File.Exists(Path))
+            if (!File.Exists(SaveDataPath))
             {
                 Debug.Log("No file found");
                 return null;
@@ -72,7 +118,7 @@ namespace Utils
             try
             {
                 // Create FileStream for opening files.
-                using FileStream dataStream = new (Path, FileMode.Open);
+                using FileStream dataStream = new (SaveDataPath, FileMode.Open);
             
                 // Create new AES instance.
                 using Aes aes = Aes.Create();
@@ -117,7 +163,7 @@ namespace Utils
 #endif
                 
                 // Create a FileStream for creating files.
-                using FileStream dataStream = new FileStream(Path, FileMode.Create);
+                using FileStream dataStream = new FileStream(SaveDataPath, FileMode.Create);
 
                 // Create new AES instance.
                 using Aes aes = Aes.Create();

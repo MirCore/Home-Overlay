@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using AOT;
+using Microsoft.Win32.SafeHandles;
 #if QUEST_BUILD && FALSE
 using Meta.XR.MRUtilityKit;
 #endif
@@ -24,13 +25,15 @@ namespace Managers
         [field: SerializeField] public ARPlaneManager ARPlaneManager { get; private set; }
         [field: SerializeField] public ARAnchorManager ARAnchorManager { get; private set; }
         [field: SerializeField] public ARRaycastManager ARRaycastManager { get; private set; }
-        
+
         [Tooltip("The refresh rate of the Home Assistant API in seconds.")]
         [SerializeField] private int HassStateRefreshRate = 10;
         
         private DateTime _lastHassStateRefresh;
 
         [SerializeField] internal List<EntityObject> EntityObjects;
+        
+        [field: SerializeField] public HassConfig HassConfig { get; private set; }
         
         /// <summary>
         /// The EntitySpawner that spawns new entities.
@@ -80,6 +83,7 @@ namespace Managers
         {
             if (response is 200 or 201)
             {
+                RestHandler.GetHassConfig();
                 StartCoroutine(GetHassStatesPeriodically());
             }
         }
@@ -90,7 +94,7 @@ namespace Managers
             while (true)
             {
                 yield return new WaitForSeconds(HassStateRefreshRate);
-                RestHandler.GetHassStates();
+                RestHandler.GetHassEntities();
             }
         }
 
@@ -127,7 +131,13 @@ namespace Managers
                 RestHandler.SetDefaultHeaders();
                 RestHandler.GetHassEntities();
             }
+            LoadHassConfig();
             LoadEntityObjects();
+        }
+
+        private void LoadHassConfig()
+        {
+            HassConfig = SaveFile.ReadHassConfig();
         }
 
         private void LoadEntityObjects()
@@ -224,6 +234,12 @@ namespace Managers
         public bool HassStatesRecentlyUpdated()
         {
             return _lastHassStateRefresh.AddSeconds((float)HassStateRefreshRate / 2) > DateTime.Now;
+        }
+
+        public void OnHassConfigLoaded(HassConfig config)
+        {
+            HassConfig = config;
+            SaveFile.SaveHassConfig();
         }
     }
 }

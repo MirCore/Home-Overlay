@@ -79,6 +79,9 @@ public abstract class RestHandler
         });
     }
 
+    #region Get
+
+
     /// <summary>
     /// Gets the Home Assistant entities.
     /// </summary>
@@ -88,50 +91,45 @@ public abstract class RestHandler
             return;
         if (!RestClient.DefaultRequestHeaders.ContainsKey("Authorization"))
             return;
-        Uri baseUri = GameManager.Instance.HassUri;
-        if (baseUri == null)
+        if (GameManager.Instance.HassUri == null)
             return;
-        Uri uri = new (baseUri, "states");
         
         RequestHelper get = new()
         {
-            Uri = uri.ToString(),
+            Uri = new Uri(GameManager.Instance.HassUri, "states").ToString(),
         };
         
         RestClient.Get(get)
             .Then(response => {
                 HassStates.OnHassStatesResponse(response.Text);
-                if (GameManager.Instance.DebugLogGetHassEntities)
-                    Debug.Log(response.Text);
             })
             .Catch(err => {
                 Debug.LogError("Error: " + err.Message + "\n" + err.StackTrace);
             });
     }
 
-    /// <summary>
-    /// Gets the Home Assistant entities.
-    /// </summary>
-    public static void GetHassStates()
+    public static void GetHassConfig()
     {
         if (GameManager.Instance.HassStatesRecentlyUpdated())
             return;
-        Uri baseUri = GameManager.Instance.HassUri;
-        Uri uri = new (baseUri, "states");
         
         RequestHelper get = new()
         {
-            Uri = uri.ToString(),
+            Uri = new Uri(GameManager.Instance.HassUri, "config").ToString(),
         };
         
         RestClient.Get(get)
             .Then(response => {
-                HassStates.OnHassStatesResponse(response.Text);
+                HassStates.OnHassConfigResponse(response.Text);
             })
             .Catch(err => {
                 Debug.LogError("Error: " + err.Message + "\n" + err.StackTrace);
             });
     }
+    
+    #endregion
+
+    #region Post
     
     /// <summary>
     /// Sends a POST request to the specified URI with the given entity ID.
@@ -203,6 +201,8 @@ public abstract class RestHandler
         Kelvin body = new() { entity_id = entityID, kelvin = kelvin.ToString() };
         SendPostRequest(uri, body);
     }
+
+    #endregion
 }
 
 /// <summary>

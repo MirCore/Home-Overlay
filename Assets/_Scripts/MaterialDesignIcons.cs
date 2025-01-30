@@ -10,19 +10,22 @@ public abstract class MaterialDesignIcons
 {
     private static CodepointData[] _codepointsCollection;
 
-    public static string GetIcon(string hassIconName, HassEntity entity)
+    public static string GetIcon(HassEntity entity)
     {
         if (_codepointsCollection == null)
             InitiateCodepointsCollection();
 
         string iconName;
 
-        if (string.IsNullOrEmpty(hassIconName))
+        if (string.IsNullOrEmpty(entity.attributes.icon))
         {
             switch (entity.DeviceType)
             {
                 case EDeviceType.DEFAULT:
                     iconName = "help";
+                    break;
+                case EDeviceType.CLIMATE:
+                    iconName = "thermostat";
                     break;
                 case EDeviceType.LIGHT:
                     iconName = "lightbulb";
@@ -30,7 +33,7 @@ public abstract class MaterialDesignIcons
                 case EDeviceType.SWITCH:
                     iconName = "toggle-switch-variant-off";
                     break;
-                case EDeviceType.BINARY_SENSOR or EDeviceType.SENSOR:
+                case EDeviceType.SENSOR:
                     Enum.TryParse(entity.attributes.device_class, true, out ESensorDeviceClass sensorClass);
                     iconName = sensorClass switch
                     {
@@ -38,7 +41,9 @@ public abstract class MaterialDesignIcons
                         ESensorDeviceClass.TEMPERATURE => "thermometer",
                         _ => "radar"
                     };
-
+                    break;
+                case EDeviceType.BINARY_SENSOR:
+                    iconName = entity.state == "on" ? "check-circle" : "circle-outline";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(entity), entity, null);
@@ -46,10 +51,17 @@ public abstract class MaterialDesignIcons
         }
         else
         {
-            iconName = hassIconName.Split(":")[1];
+            iconName = entity.attributes.icon.Split(":")[1];
         }
 
         return (from data in _codepointsCollection where data.Name == iconName select data.Code).FirstOrDefault();
+    }
+
+    public static string GetIconByName(string mdiName)
+    {
+        if (_codepointsCollection == null)
+            InitiateCodepointsCollection();
+        return (from data in _codepointsCollection where data.Name == mdiName select data.Code).FirstOrDefault();
     }
 
     private static void InitiateCodepointsCollection()

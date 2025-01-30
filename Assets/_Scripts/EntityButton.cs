@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
+using Utils;
 
 public class EntityButton : Entity
 {
@@ -12,6 +13,11 @@ public class EntityButton : Entity
         base.OnEnable();
         
         Button.onClick.AddListener(OnButtonClicked);
+    }
+
+    protected override void UpdateEntity()
+    {
+        UpdateIcon();
     }
 
     /// <summary>
@@ -35,5 +41,43 @@ public class EntityButton : Entity
             default:
                 throw new ArgumentOutOfRangeException();
         }
+    }
+    
+    /// <summary>
+    /// Updates the icon color based on the entity's state and attributes.
+    /// </summary>
+    private void UpdateIcon()
+    {
+        if (EntityState == null)
+            return;
+        
+        // Update the icon based on the entity's attributes.
+        Icon.text = MaterialDesignIcons.GetIcon(EntityState);
+
+        Color color;
+        
+        // Update the icon color based on the entity's state.
+        // If the entity is off, set the icon color to black.
+        if (EntityState.state == "off")
+        {
+            color = Color.black;
+        }
+        // If the entity has a valid RGB color, set the icon color to it.
+        else if (EntityState.attributes.rgb_color is { Length: 3 })
+        {
+            color = JsonHelpers.RGBToUnityColor(EntityState.attributes.rgb_color);
+        }
+        // Otherwise, set the icon color to white.
+        else
+        {
+            color = Color.white;
+        }
+
+        if (EntityState.attributes.brightness != 0)
+        {
+            color = Color.Lerp(Color.black, color, EntityState.attributes.brightness / 255f);
+        }
+        
+        Icon.color = color;
     }
 }

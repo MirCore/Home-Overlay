@@ -15,10 +15,10 @@ using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using Utils;
 
-public class Entity : MonoBehaviour
+public abstract class Entity : MonoBehaviour
 {
     [SerializeField] private Image HighlightImage;
-    [SerializeField] private TMP_Text Icon;
+    [SerializeField] internal TMP_Text Icon;
     [SerializeField] private Button SettingsButton;
     private XRBaseInteractable _interactable;
     
@@ -132,61 +132,12 @@ public class Entity : MonoBehaviour
     /// </summary>
     private void OnHassStatesChanged()
     {
-        UpdateIcon();
-    }
-
-    /// <summary>
-    /// Updates the icon color based on the entity's state and attributes.
-    /// </summary>
-    private void UpdateIcon()
-    {
-        if (EntityObject == null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        
-        // If there is no entity ID, there is nothing to update.
-        if (EntityObject.EntityID == null)
-        {
-            Icon.text = MaterialDesignIcons.GetIcon(null, null);
-            return;
-        }
-        
         // Get the current state of the entity.
-        EntityState = HassStates.GetHassState(EntityObject.EntityID);
-        if (EntityState == null)
-            return;
+        EntityState ??= HassStates.GetHassState(EntityObject.EntityID);
 
-        // Update the icon based on the entity's attributes.
-        Icon.text = MaterialDesignIcons.GetIcon(EntityState.attributes.icon, EntityState);
-
-        Color color;
-        
-        // Update the icon color based on the entity's state.
-        // If the entity is off, set the icon color to black.
-        if (EntityState.state == "off")
-        {
-            color = Color.black;
-        }
-        // If the entity has a valid RGB color, set the icon color to it.
-        else if (EntityState.attributes.rgb_color is { Length: 3 })
-        {
-            color = JsonHelpers.RGBToUnityColor(EntityState.attributes.rgb_color);
-        }
-        // Otherwise, set the icon color to white.
-        else
-        {
-            color = Color.white;
-        }
-
-        if (EntityState.attributes.brightness != 0)
-        {
-            color = Color.Lerp(Color.black, color, EntityState.attributes.brightness / 255f);
-        }
-        
-        Icon.color = color;
+        UpdateEntity();
     }
+
 
     /// <summary>
     /// Sets the entity object and updates the icon and anchor accordingly.
@@ -196,12 +147,20 @@ public class Entity : MonoBehaviour
     {
         // Assign the provided entity object to the current entity
         EntityObject = entityObject;
-
         // Add the entity object to the GameManager's list of entities
         GameManager.Instance.AddEntity(EntityObject, this);
         
+        // If there is no entity ID, there is nothing to update.
+        if (EntityObject.EntityID == null)
+        {
+            Icon.text = "";
+            return;
+        }
+        
+        // Get the current state of the entity.
+        EntityState ??= HassStates.GetHassState(EntityObject.EntityID);
+        
         // Update the icon to reflect the current state of the entity
-        UpdateIcon();
         UpdateEntity();
 
         // If the entity object does not have an anchor ID, exit the method
@@ -228,15 +187,14 @@ public class Entity : MonoBehaviour
     {
         EntityObject.EntityID = entityID;
         
-        UpdateIcon();
+        // Get the current state of the entity.
+        EntityState = HassStates.GetHassState(EntityObject.EntityID);
+        
         UpdateEntity();
         EntitySettingsWindowManager.Instance.UpdateEntitySettingsWindow(this);
     }
 
-    protected virtual void UpdateEntity()
-    {
-        
-    }
+    protected abstract void UpdateEntity();
 
     public void DeleteEntity()
     {

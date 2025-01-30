@@ -43,8 +43,10 @@ public static class HassStates
     /// <param name="responseText">The response text from Home Assistant containing entity states.</param>
     public static void OnHassStatesResponse(string responseText)
     {
-        //Debug.Log(responseText);
-            
+        
+        if (GameManager.Instance.DebugLogGetHassEntities)
+            Debug.Log(responseText);
+        
         // Parse the response text into an array of HassEntity objects
         HassEntity[] hassEntities = JsonHelper.ArrayFromJson<HassEntity>(responseText);
             
@@ -70,6 +72,12 @@ public static class HassStates
             
         // Copy the entities to the inspector field for debugging
         GameManager.Instance.InspectorHassStates = HassStatesDict.Values.ToArray();
+    }
+
+    public static void OnHassConfigResponse(string responseText)
+    {
+        HassConfig config = JsonUtility.FromJson<HassConfig>(responseText);
+        GameManager.Instance.OnHassConfigLoaded(config);
     }
 }
     
@@ -100,4 +108,38 @@ public class HassEntityAttributes
     public float[] hs_color;
     public string icon;
     public string friendly_name;
+    public float current_temperature;
+    public float temperature;
+}
+
+[Serializable]
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+public class HassConfig
+{
+    //public List<string> components;
+    public string country;
+    public string currency;
+    //public int elevation;
+    public string language;
+    //public double latitude;
+    //public string location_name;
+    //public double longitude;
+    //public int radius;
+    public string time_zone;
+    public UnitSystem unit_system;
+    public string version;
+}
+
+[Serializable]
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+public class UnitSystem
+{
+    public string length;
+    public string accumulated_precipitation;
+    public string area;
+    public string mass;
+    public string pressure;
+    public string temperature;
+    public string volume;
+    public string wind_speed;
 }

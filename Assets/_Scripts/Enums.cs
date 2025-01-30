@@ -1,7 +1,7 @@
 ﻿using Utils;
 
 /// <summary>
-/// Device types in Home Assistant
+/// Device types in Home Assistant, that are integrated in the app
 /// </summary>
 public enum EDeviceType
 {
@@ -14,9 +14,14 @@ public enum EDeviceType
         [DisplayName("Sensor")]
         SENSOR,
         [DisplayName("Binary Sensor")]
-        BINARY_SENSOR
+        BINARY_SENSOR,
+        [DisplayName("Climate")]
+        CLIMATE
 }
 
+/// <summary>
+/// sensor and binary_sensor Device Classes
+/// </summary>
 public enum ESensorDeviceClass
 {
         DEFAULT,
