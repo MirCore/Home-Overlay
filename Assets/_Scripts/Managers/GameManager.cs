@@ -25,10 +25,10 @@ namespace Managers
         [field: SerializeField] public ARAnchorManager ARAnchorManager { get; private set; }
         [field: SerializeField] public ARRaycastManager ARRaycastManager { get; private set; }
         
-        [FormerlySerializedAs("RefreshRate")]
         [Tooltip("The refresh rate of the Home Assistant API in seconds.")]
         [SerializeField] private int HassStateRefreshRate = 10;
-
+        
+        private DateTime _lastHassStateRefresh;
 
         [SerializeField] internal List<EntityObject> EntityObjects;
         
@@ -61,12 +61,19 @@ namespace Managers
             
             ARAnchorManager.trackablesChanged.AddListener(OnAnchorChanged);
             EventManager.OnConnectionTested += OnConnectionTested;
+            EventManager.OnHassStatesChanged += OnHassStatesChanged;
         }
 
         private void OnDisable()
         {
             ARAnchorManager.trackablesChanged.RemoveListener(OnAnchorChanged);
             EventManager.OnConnectionTested -= OnConnectionTested;
+            EventManager.OnHassStatesChanged -= OnHassStatesChanged;
+        }
+
+        private void OnHassStatesChanged()
+        {
+            _lastHassStateRefresh = DateTime.Now;
         }
 
         private void OnConnectionTested(int response)
@@ -212,6 +219,11 @@ namespace Managers
 
             if (entityObject != null)
                 entityObject.Entity = entity;
+        }
+
+        public bool HassStatesRecentlyUpdated()
+        {
+            return _lastHassStateRefresh.AddSeconds((float)HassStateRefreshRate / 2) > DateTime.Now;
         }
     }
 }

@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Managers;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
-using Utils;
 
 namespace UI
 {
@@ -18,7 +13,6 @@ namespace UI
         
         [Header("Color Picker")]
         [SerializeField] private ColorPicker ColorPicker;
-        
         
         [Header("Entity Settings")]
         [SerializeField] private Button ChangeEntityButton;
@@ -62,8 +56,11 @@ namespace UI
 
         private void OnChangeEntityButtonClicked()
         {
+            // Deactivate other UI elements. The Settings UI will be recreated later, to restore the state.
             ChangeEntityButton.gameObject.SetActive(false);
+            ColorPicker.gameObject.SetActive(false);
             EntityPicker.gameObject.SetActive(true);
+            
             EntityPicker.SetEntity(Entity);
         }
  
@@ -122,7 +119,8 @@ namespace UI
         {
             if (LoadEntityState()) 
                 return;
-
+            if (EntityPicker.gameObject.activeSelf)
+                return;
 
             if (_entityState.DeviceType == EDeviceType.LIGHT && _entityState.attributes.supported_color_modes.Length != 0)
             {

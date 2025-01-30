@@ -84,6 +84,8 @@ public abstract class RestHandler
     /// </summary>
     public static void GetHassEntities()
     {
+        if (GameManager.Instance.HassStatesRecentlyUpdated())
+            return;
         if (!RestClient.DefaultRequestHeaders.ContainsKey("Authorization"))
             return;
         Uri baseUri = GameManager.Instance.HassUri;
@@ -112,7 +114,8 @@ public abstract class RestHandler
     /// </summary>
     public static void GetHassStates()
     {
-        
+        if (GameManager.Instance.HassStatesRecentlyUpdated())
+            return;
         Uri baseUri = GameManager.Instance.HassUri;
         Uri uri = new (baseUri, "states");
         

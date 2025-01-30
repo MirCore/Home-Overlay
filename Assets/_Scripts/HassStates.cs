@@ -12,7 +12,7 @@ public static class HassStates
     /// A dictionary of all Home Assistant entities. The key is the entity ID and the value is the HassEntity object.
     /// </summary>
     private static readonly Dictionary<string, HassEntity> HassStatesDict = new();
-        
+    
     /// <summary>
     /// Gets a dictionary of all Home Assistant entities. The key is the entity ID and the value is the HassEntity object.
     /// </summary>

@@ -26,7 +26,6 @@ public class EntitySensor : Entity
         if (EntityState == null)
             return;
         string stateText = EntityState.state;
-        Debug.Log(stateText);
         if (float.TryParse(EntityState.state, NumberStyles.Any, CultureInfo.InvariantCulture, out float stateNumber))
             stateText = stateNumber.ToString("G3");
         SensorState.text = $"{stateText}";

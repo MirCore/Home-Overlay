@@ -15,15 +15,10 @@ public class EntityPicker : MonoBehaviour
     /// </summary>
     [Header("Dropdowns")]
     [SerializeField] private TMP_Dropdown TypeDropdown;
-        
-    /// <summary>
-    /// The TMP_Dropdown used to select the entity.
-    /// </summary>
-    [SerializeField] private TMP_Dropdown EntityDropdown;
-    /// <summary>
-    /// The FriendlyNameHandler that shows the currently selected entity.
-    /// </summary>
-    [SerializeField] private FriendlyNameHandler SelectedEntityLabel;
+    
+    [SerializeField] private TMP_InputField SearchInputField;
+    private readonly List<FriendlyNameHandler> _entityPanels = new ();
+    [SerializeField] private Transform _entityPanelsParent;
     
     /// <summary>
     /// The Button that creates a new entity.
@@ -51,19 +46,22 @@ public class EntityPicker : MonoBehaviour
     /// The currently selected device type.
     /// </summary>
     private EDeviceType _selectedEDeviceType;
+    private string _selectedEntityID;
+    private List<string> _entityIDList = new ();
 
     private Entity _entity;
-    
+    private string _searchText = "";
+
     private void OnEnable()
     {
         UpdateTypeDropdown();
         GetHassEntities();
-        UpdateEntityDropdown();
+        GenerateEntityList();
+        
+        SearchInputField.onValueChanged.AddListener(OnSearchInputFieldValueChanged);
         
         if (TypeDropdown)
             TypeDropdown.onValueChanged.AddListener(OnTypeDropdownValueChanged);
-        if (EntityDropdown)
-            EntityDropdown.onValueChanged.AddListener(OnEntityDropdownValueChanged);
         if (CreateEntityButton)
             CreateEntityButton.onClick.AddListener(OnCreateEntityButtonClicked);
         if (SaveChangesButton)
@@ -75,10 +73,10 @@ public class EntityPicker : MonoBehaviour
 
     private void OnDisable()
     {
+        SearchInputField.onValueChanged.RemoveListener(OnSearchInputFieldValueChanged);
+        
         if (TypeDropdown)
             TypeDropdown.onValueChanged.RemoveListener(OnTypeDropdownValueChanged);
-        if (EntityDropdown)
-            EntityDropdown.onValueChanged.RemoveListener(OnEntityDropdownValueChanged);
         if (CreateEntityButton)
             CreateEntityButton.onClick.RemoveListener(OnCreateEntityButtonClicked);
         if (SaveChangesButton)
@@ -92,10 +90,7 @@ public class EntityPicker : MonoBehaviour
     
     private void OnSaveChangesButtonClicked()
     {
-        // Get the selected entity ID from the EntityDropdown
-        string selectedEntityID = GetSelectedEntityID();
-            
-        _entity.UpdateEntityID(selectedEntityID);
+        _entity.UpdateEntityID(_selectedEntityID);
     }
 
     private void OnCancelChangesButtonClicked()
@@ -110,7 +105,7 @@ public class EntityPicker : MonoBehaviour
     private void OnCreateEntityButtonClicked()
     {
         // Get the selected entity ID from the EntityDropdown
-        string selectedEntityID = GetSelectedEntityID();
+        string selectedEntityID = _selectedEntityID;
 
         // Spawn a new entity at the position of the CreateEntityButton with the selected entity ID
         EntitySpawner.SpawnNewEntity(selectedEntityID, CreateEntityButton.transform.position);
@@ -128,54 +123,6 @@ public class EntityPicker : MonoBehaviour
         TypeDropdown.ClearOptions();
         TypeDropdown.AddOptions(Enum.GetValues(typeof(EDeviceType)).Cast<EDeviceType>().Select(e => e.GetDisplayName()).ToList());
     }
-
-    /// <summary>
-    /// Updates the EntityDropdown based on the selected device type.
-    /// If the selected device type is DEFAULT, all entities are shown.
-    /// Otherwise, only entities with the selected device type are shown.
-    /// </summary>
-    private void UpdateEntityDropdown()
-    {
-        string selectedEntity = GetSelectedEntityID();
-        EntityDropdown.ClearOptions();
-
-        // Get a list of all the entities with the selected device type
-        List<string> entityIDList = new ();
-        foreach (KeyValuePair<string, HassEntity> entity in HassStates.GetHassStates())
-        {
-            // Skip entities with device type DEFAULT, as these are not compatible
-            if (entity.Value.DeviceType == EDeviceType.DEFAULT)
-                continue;
-                
-            // Add the entity ID to the list if it matches the selected device type
-            if (_selectedEDeviceType == EDeviceType.DEFAULT || entity.Value.DeviceType == _selectedEDeviceType)
-                entityIDList.Add(entity.Key);
-        }
-
-        // Add the entity IDs to the dropdown
-        EntityDropdown.AddOptions(entityIDList);
-        
-        SetEntityDropdownToEntityID(selectedEntity);
-
-        // Update the selected entity label
-        SelectedEntityLabel.UpdateTitle();
-    }
-
-    private void SetEntityDropdownToEntityID(string entityID)
-    {
-        int entityIndex = EntityDropdown.options.FindIndex(option => option.text == entityID);
-        EntityDropdown.value = entityIndex;
-    }
-
-    /// <summary>
-    /// Handles the change in the EntityDropdown selection.
-    /// Updates the selected entity ID and the title of the SelectedEntityLabel.
-    /// </summary>
-    /// <param name="index">The index of the selected item in the EntityDropdown.</param>
-    private void OnEntityDropdownValueChanged(int index)
-    {
-        SelectedEntityLabel.UpdateTitle();
-    }
     
     /// <summary>
     /// Handles the change in the TypeDropdown selection.
@@ -188,14 +135,7 @@ public class EntityPicker : MonoBehaviour
         _selectedEDeviceType = (EDeviceType)index;
             
         // Refresh the entity dropdown to reflect the new device type selection
-        UpdateEntityDropdown();
-    }
-
-    private string GetSelectedEntityID()
-    {
-        if (EntityDropdown.options.Count == 0)
-            return string.Empty;
-        return EntityDropdown.options[EntityDropdown.value].text;
+        GenerateEntityList();
     }
 
     #endregion
@@ -214,13 +154,113 @@ public class EntityPicker : MonoBehaviour
     /// </summary>
     private void OnHassStatesChanged()
     {
-        UpdateEntityDropdown();
+        GenerateEntityList();
+    }
+
+    private void GenerateEntityList()
+    {
+        // Get the filtered list of entity IDs
+        List<string> entityIDList = GetFilteredEntityIDList();
+        
+        // Check if the list of entity IDs has changed, if not, return
+        if (entityIDList.SequenceEqual(_entityIDList))
+            return;
+        
+        // Return all the entity panels to the pool
+        ObjectPool.Instance.ReturnObjectsToPool(_entityPanels);
+
+        // Update the list of entity IDs
+        _entityIDList = entityIDList;
+        
+        // Populate the EntityPanel
+        PopulateEntityPanel(entityIDList);
+    }
+
+    private List<string> GetFilteredEntityIDList()
+    {
+        // Get a list of all the entities with the selected device type
+        List<string> entityIDList = new ();
+        foreach (KeyValuePair<string, HassEntity> entity in HassStates.GetHassStates())
+        {
+            // Skip entities with device type DEFAULT, as these are not compatible
+            if (entity.Value.DeviceType == EDeviceType.DEFAULT)
+                continue;
+                
+            // Skip entities that do not match the selected device type
+            if (_selectedEDeviceType != EDeviceType.DEFAULT && entity.Value.DeviceType != _selectedEDeviceType)
+                continue;
+            
+            if (EntityMatchesSearchTerm(entity))
+                entityIDList.Add(entity.Key);
+        }
+
+        return entityIDList;
+    }
+    /// <summary>
+    /// Checks if the entity matches the current search term.
+    /// An entity matches if its name or ID starts with the search term.
+    /// </summary>
+    /// <param name="entity">The entity to check.</param>
+    /// <returns>True if the entity matches the search term, false otherwise.</returns>
+    private bool EntityMatchesSearchTerm(KeyValuePair<string, HassEntity> entity)
+    {
+        if (_searchText == "")
+            return true;
+        
+        string eID = entity.Key;
+        string eName = HassStates.GetHassState(eID).attributes.friendly_name ?? "";
+            
+        return eName.Contains(_searchText, StringComparison.CurrentCultureIgnoreCase) ||
+               eID.Contains(_searchText, StringComparison.CurrentCultureIgnoreCase);
+    }
+
+    /// <summary>
+    /// Populates the EntityPanel with the given list of entity IDs.
+    /// </summary>
+    /// <param name="entityIDList">The list of entity IDs to be added to the panel.</param>
+    private void PopulateEntityPanel(List<string> entityIDList)
+    {
+        // Sort entities by friendly_name (default to entityID if name is null)
+        List<string> sortedEntityList = entityIDList
+            .OrderBy(entityID => HassStates.GetHassState(entityID)?.attributes.friendly_name ?? entityID.Split('.')[1])
+            .ToList();
+        
+        foreach (string entityID in sortedEntityList)
+        {
+            // Get a entity panel from the pool and move it to the ScrollRect
+            FriendlyNameHandler entityPickerPanel = ObjectPool.Instance.GetPooledObject();
+            entityPickerPanel.transform.SetParent(_entityPanelsParent, false);
+            
+            // Set the entity panel properties
+            entityPickerPanel.SetNewEntity(entityID);
+            
+            // Highlight the selected entity if it is the same as the selected entityID
+            if (entityID == _selectedEntityID)
+                entityPickerPanel.Highlight();
+            
+            // Add a click listener to the entity panel
+            entityPickerPanel.Button.onClick.AddListener(() => OnEntityButtonClicked(entityID));
+            
+            // Add the entity panel to the list so it can be returned to the pool later
+            _entityPanels.Add(entityPickerPanel);
+        }
+    }
+
+    private void OnEntityButtonClicked(string entityID)
+    {
+        _selectedEntityID = entityID;
+    }
+
+    private void OnSearchInputFieldValueChanged(string value)
+    {
+        _searchText = value;
+        GenerateEntityList();
     }
 
     public void SetEntity(Entity entity)
     {
         _entity = entity;
+        _selectedEntityID = _entity.EntityObject.EntityID;
         TypeDropdown.value = (int)_entity.GetDeviceType();
-        SetEntityDropdownToEntityID(_entity.EntityObject.EntityID);
     }
 }
