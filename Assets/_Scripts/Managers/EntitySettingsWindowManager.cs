@@ -21,7 +21,7 @@ namespace Managers
         /// Toggles the Entity Settings Window for the given entity.
         /// </summary>
         /// <param name="entity">The entity to toggle the settings window for.</param>
-        public void ToggleSettingsWindow(Entity entity)
+        public void ToggleSettingsWindow(Entity.Entity entity)
         {
             EntitySettingsUI entitySettingsUI = _entitySettingsWindows.Find(w => w.Entity == entity);
             if (entitySettingsUI)
@@ -38,7 +38,7 @@ namespace Managers
         /// Spawns a new Entity Settings Window for the given entity.
         /// </summary>
         /// <param name="entity">The entity to spawn the settings window for.</param>
-        private void SpawnNewWindow(Entity entity)
+        private void SpawnNewWindow(Entity.Entity entity)
         {
             EntitySettingsUI newSettingsWindow = Instantiate(EntitySettingsWindowPrefab, entity.transform.position, entity.transform.rotation);
 
@@ -70,7 +70,7 @@ namespace Managers
             newSettingsWindow.SetEntity(entity);
         }
 
-        public void UpdateEntitySettingsWindow(Entity entity)
+        public void UpdateEntitySettingsWindow(Entity.Entity entity)
         {
             EntitySettingsUI entitySettingsUI = _entitySettingsWindows.Find(w => w.Entity == entity);
             if (entitySettingsUI)

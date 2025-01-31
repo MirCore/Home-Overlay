@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace UI
@@ -26,11 +27,26 @@ namespace UI
         private Vector3[] m_Normals;
         private Vector2[] m_UV;
         private int[] m_Triangles;
-    
 
+
+        [SerializeField] private RectTransform RectTransform;
+
+
+        private void OnEnable()
+        {
+            if (RectTransform != null)
+            {
+                rect = new Rect(rect.x,rect.y,RectTransform.rect.width,RectTransform.rect.height);
+            }
+        }
 
         void Start ()
         {
+            if (RectTransform != null)
+            {
+                rect = new Rect(rect.x,rect.y,RectTransform.rect.width,RectTransform.rect.height);
+            }
+            
             m_MeshFilter = GetComponent<MeshFilter>();
             if (m_MeshFilter == null)
                 m_MeshFilter = gameObject.AddComponent<MeshFilter>();

@@ -30,7 +30,7 @@ namespace UI
         
         private HassEntity _entityState;
 
-        public Entity Entity { get; private set; }
+        public Entity.Entity Entity { get; private set; }
 
 
         private void OnEnable()
@@ -107,7 +107,7 @@ namespace UI
             return _entityState == null;
         }
 
-        public void SetEntity(Entity entity)
+        public void SetEntity(Entity.Entity entity)
         {
             Entity = entity;
             ColorPicker.SetEntityID(Entity.EntityObject.EntityID);

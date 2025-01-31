@@ -49,7 +49,7 @@ public class EntityPicker : MonoBehaviour
     private string _selectedEntityID;
     private List<string> _entityIDList = new ();
 
-    private Entity _entity;
+    private Entity.Entity _entity;
     private string _searchText = "";
 
     private void OnEnable()
@@ -257,7 +257,7 @@ public class EntityPicker : MonoBehaviour
         GenerateEntityList();
     }
 
-    public void SetEntity(Entity entity)
+    public void SetEntity(Entity.Entity entity)
     {
         _entity = entity;
         _selectedEntityID = _entity.EntityObject.EntityID;

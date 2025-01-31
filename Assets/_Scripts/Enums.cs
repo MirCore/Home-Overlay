@@ -16,7 +16,9 @@ public enum EDeviceType
         [DisplayName("Binary Sensor")]
         BINARY_SENSOR,
         [DisplayName("Climate")]
-        CLIMATE
+        CLIMATE,
+        [DisplayName("Weather")]
+        WEATHER
 }
 
 /// <summary>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Managers;
 using Proyecto26;
 using UnityEngine;
@@ -12,7 +13,7 @@ public static class HassStates
     /// A dictionary of all Home Assistant entities. The key is the entity ID and the value is the HassEntity object.
     /// </summary>
     private static readonly Dictionary<string, HassEntity> HassStatesDict = new();
-    
+
     /// <summary>
     /// Gets a dictionary of all Home Assistant entities. The key is the entity ID and the value is the HassEntity object.
     /// </summary>
@@ -29,12 +30,7 @@ public static class HassStates
     /// <returns>The HassEntity object associated with the entity ID, or null if no entity is found.</returns>
     public static HassEntity GetHassState(string entityID)
     {
-        if (string.IsNullOrEmpty(entityID))
-            return null;
-
-        HassStatesDict.TryGetValue(entityID, out HassEntity state);
-            
-        return state;
+        return string.IsNullOrEmpty(entityID) ? null : HassStatesDict.GetValueOrDefault(entityID);
     }
 
     /// <summary>
@@ -53,18 +49,25 @@ public static class HassStates
         // Iterate over the entities and handle each one
         foreach (HassEntity entity in hassEntities)
         {
-            // Get the type from the entity ID
-            string type = entity.entity_id.Split('.')[0];
-                
-            // Try to parse the type as an EDeviceType
-            if (Enum.TryParse(type, true, out EDeviceType deviceType))
+            // Update or add the entity state
+            if (HassStatesDict.TryGetValue(entity.entity_id, out HassEntity existingEntity))
             {
-                // Set the device type if it was parsed successfully
-                entity.DeviceType = deviceType;
+                existingEntity.state = entity.state;
+                existingEntity.attributes = entity.attributes;
             }
-                
-            // Update or add the entity
-            HassStatesDict[entity.entity_id] = entity;
+            else
+            {
+                // Get the type from the entity ID
+                string type = entity.entity_id.Split('.')[0];
+
+                // Try to parse the type as an EDeviceType and set the device type if it was parsed successfully
+                if (Enum.TryParse(type, true, out EDeviceType deviceType))
+                    entity.DeviceType = deviceType;
+
+                // Update or add the entity
+                HassStatesDict[entity.entity_id] = entity;
+            }
+            
         }
             
         // Invoke the event that the Hass states have changed
@@ -79,6 +82,12 @@ public static class HassStates
         HassConfig config = JsonUtility.FromJson<HassConfig>(responseText);
         GameManager.Instance.OnHassConfigLoaded(config);
     }
+    
+    public static List<WeatherForecast> ConvertHassWeatherResponse(string responseText)
+    {
+        Match match = Regex.Match(responseText, @"""forecast"":(\[.*?\])", RegexOptions.Singleline);
+        return match.Success ? JsonHelper.ArrayFromJson<WeatherForecast>(match.Groups[1].Value)?.ToList() : null;
+    }
 }
     
 [Serializable]
@@ -86,30 +95,30 @@ public static class HassStates
 public class HassEntity
 {
     public string entity_id;
-    public string state;
+    public string state = "";
     public HassEntityAttributes attributes;
     public EDeviceType DeviceType;
-}
 
-[Serializable]
-[SuppressMessage("ReSharper", "InconsistentNaming")]
-public class HassEntityAttributes
-{
-    public string unit_of_measurement;
-    public string device_class;
-    public int min_color_temp_kelvin;
-    public int max_color_temp_kelvin;
-    public string[] supported_color_modes;
-    public string color_mode;
-    public int brightness;
-    public int color_temp_kelvin;
-    public int color_temp;
-    public int[] rgb_color;
-    public float[] hs_color;
-    public string icon;
-    public string friendly_name;
-    public float current_temperature;
-    public float temperature;
+    [Serializable]
+    public class HassEntityAttributes
+    {
+        public string unit_of_measurement;
+        public string device_class;
+        public int min_color_temp_kelvin;
+        public int max_color_temp_kelvin;
+        public string[] supported_color_modes;
+        public string color_mode;
+        public int brightness;
+        public int color_temp_kelvin;
+        public int color_temp;
+        public int[] rgb_color;
+        public float[] hs_color;
+        public string icon;
+        public string friendly_name;
+        public float current_temperature;
+        public float temperature;
+        public string temperature_unit;
+    }
 }
 
 [Serializable]
@@ -128,18 +137,38 @@ public class HassConfig
     public string time_zone;
     public UnitSystem unit_system;
     public string version;
+    
+    [Serializable]
+    public class UnitSystem
+    {
+        public string length;
+        public string accumulated_precipitation;
+        public string area;
+        public string mass;
+        public string pressure;
+        public string temperature;
+        public string volume;
+        public string wind_speed;
+    }
 }
 
 [Serializable]
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public class UnitSystem
+public class WeatherForecast
 {
-    public string length;
-    public string accumulated_precipitation;
-    public string area;
-    public string mass;
-    public string pressure;
-    public string temperature;
-    public string volume;
-    public string wind_speed;
+    public string condition;
+    public double precipitation_probability;
+    public string datetime;
+    public double wind_bearing;
+    public double uv_index;
+    public double temperature;
+    public double templow;
+    public double wind_gust_speed;
+    public double wind_speed;
+    public double precipitation;
+    public int humidity;
 }
+
+    
+
+

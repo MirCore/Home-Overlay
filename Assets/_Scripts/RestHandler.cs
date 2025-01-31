@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using Entity;
 using Managers;
 using Proyecto26;
 using UnityEngine;
@@ -130,13 +131,14 @@ public abstract class RestHandler
     #endregion
 
     #region Post
-    
+
     /// <summary>
     /// Sends a POST request to the specified URI with the given entity ID.
     /// </summary>
-    /// <param name="body">The data to include in the request body.</param>
     /// <param name="uri">The URI to send the POST request to.</param>
-    private static void SendPostRequest(Uri uri, object body)
+    /// <param name="body">The data to include in the request body.</param>
+    /// <param name="action">[Optional] The action to perform with the response text.</param>
+    private static void SendPostRequest(Uri uri, object body, Action<string> action = null)
     {
         RequestHelper postRequest = new()
         {
@@ -146,7 +148,11 @@ public abstract class RestHandler
         
         RestClient.Post(postRequest)
             .Then(response => {
-                HassStates.OnHassStatesResponse(response.Text);
+                if (action != null)
+                    action.Invoke(response.Text);
+                else
+                    HassStates.OnHassStatesResponse(response.Text);
+                
                 if (GameManager.Instance.DebugLogPostResponses)
                     Debug.Log(response.Text);
             })
@@ -187,9 +193,7 @@ public abstract class RestHandler
 
     public static void SetLightColor(string entityID, Color color)
     {
-        Debug.Log(color);
         int[] rgb = { (int)(color.r * 255), (int)(color.g * 255), (int)(color.b * 255) };
-        Debug.Log("r: " + rgb[0] + " g: " + rgb[1] + " b: " + rgb[2]);
         Uri uri = new (GameManager.Instance.HassUri, "services/light/turn_on");
         RGBColor body = new() { entity_id = entityID, rgb_color = rgb };
         SendPostRequest(uri, body);
@@ -203,55 +207,75 @@ public abstract class RestHandler
     }
 
     #endregion
-}
 
-/// <summary>
-/// Represents an entity ID.
-/// </summary>
-[Serializable]
-public class EntityID
-{
-    /// <summary>
-    /// The entity ID.
-    /// </summary>
-    public string entity_id;
-}
+    public static void GetWeatherForecast(string entityID, Action<string> entityWeather)
+    {
+        Uri uri = new (GameManager.Instance.HassUri, "services/weather/get_forecasts?return_response=true");
+        GetForecast body = new() { entity_id = entityID, type = "daily" };
+        SendPostRequest(uri, body, entityWeather);
+    }
 
-/// <summary>
-/// Represents an entity ID.
-/// </summary>
-[Serializable]
-public class Brightness
-{
     /// <summary>
-    /// The entity ID.
+    /// Represents the data to be sent in a POST request.
     /// </summary>
-    public string entity_id;
-    public string brightness = null;
-}
+    [Serializable]
+    private class EntityID
+    {
+        /// <summary>
+        /// The entity ID.
+        /// </summary>
+        public string entity_id;
+    }
 
-/// <summary>
-/// Represents an entity ID.
-/// </summary>
-[Serializable]
-public class Kelvin
-{
     /// <summary>
-    /// The entity ID.
+    /// Represents the data to be sent in a POST request.
     /// </summary>
-    public string entity_id;
-    public string kelvin = null;
-}
+    [Serializable]
+    private class Brightness
+    {
+        /// <summary>
+        /// The entity ID.
+        /// </summary>
+        public string entity_id;
+        public string brightness = null;
+    }
 
-/// <summary>
-/// Represents an entity ID.
-/// </summary>
-[Serializable]
-public class RGBColor
-{
     /// <summary>
-    /// The entity ID.
+    /// Represents the data to be sent in a POST request.
     /// </summary>
-    public string entity_id;
-    public int[] rgb_color;
+    [Serializable]
+    private class Kelvin
+    {
+        /// <summary>
+        /// The entity ID.
+        /// </summary>
+        public string entity_id;
+        public string kelvin = null;
+    }
+
+    /// <summary>
+    /// Represents the data to be sent in a POST request.
+    /// </summary>
+    [Serializable]
+    private class RGBColor
+    {
+        /// <summary>
+        /// The entity ID.
+        /// </summary>
+        public string entity_id;
+        public int[] rgb_color;
+    }
+
+    /// <summary>
+    /// Represents the data to be sent in a POST request.
+    /// </summary>
+    [Serializable]
+    private class GetForecast
+    {
+        /// <summary>
+        /// The entity ID.
+        /// </summary>
+        public string entity_id;
+        public string type;
+    }
 }

@@ -14,6 +14,8 @@ public abstract class MaterialDesignIcons
     {
         if (_codepointsCollection == null)
             InitiateCodepointsCollection();
+        if (entity.attributes == null)
+            return GetIconByName("help");
 
         string iconName;
 

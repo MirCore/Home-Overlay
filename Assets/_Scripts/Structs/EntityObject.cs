@@ -13,7 +13,7 @@ namespace Structs
         [SerializeField] private string _entityID;
         [SerializeField] private Vector3 _position;
         [SerializeField] private string _anchorID;
-        private Entity _entity;
+        private Entity.Entity _entity;
 
         public EntityObject(string id, string entityID, Vector3 transformPosition)
         {
@@ -39,7 +39,7 @@ namespace Structs
             }
         }
 
-        public Entity Entity { 
+        public Entity.Entity Entity { 
             get => _entity;
             set => _entity = value;
         }

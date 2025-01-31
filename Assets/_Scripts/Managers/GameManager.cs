@@ -223,7 +223,7 @@ namespace Managers
             SaveFile.SaveEntityObjects();
         }
 
-        public void AddEntity(EntityObject eo, Entity entity)
+        public void AddEntity(EntityObject eo, Entity.Entity entity)
         {
             EntityObject entityObject = EntityObjects.FirstOrDefault(e => e == eo);
 

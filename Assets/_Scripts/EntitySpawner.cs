@@ -6,8 +6,9 @@ using Utils;
 
 public class EntitySpawner : MonoBehaviour
 {
-    [SerializeField] private Entity EntityButtonPrefab;
-    [SerializeField] private Entity EntitySensorPrefab;
+    [SerializeField] private Entity.Entity EntityButtonPrefab;
+    [SerializeField] private Entity.Entity EntitySensorPrefab;
+    [SerializeField] private Entity.Entity EntityWeatherPrefab;
     [SerializeField] private Transform HassUITranslation;
 
     /// <summary>
@@ -23,16 +24,13 @@ public class EntitySpawner : MonoBehaviour
         Enum.TryParse(type, true, out EDeviceType deviceType);
 
         // Instantiate the entity at the given position and rotation
-        Entity newEntity;
-        if (deviceType is EDeviceType.LIGHT or EDeviceType.SWITCH)
+        Entity.Entity newEntity = deviceType switch
         {
-            newEntity = Instantiate(EntityButtonPrefab, entityObject.Position, Quaternion.identity);
-        }
-        else
-        {
-            newEntity = Instantiate(EntitySensorPrefab, entityObject.Position, Quaternion.identity);
-        }
-        
+            EDeviceType.LIGHT or EDeviceType.SWITCH => Instantiate(EntityButtonPrefab, entityObject.Position, Quaternion.identity),
+            EDeviceType.WEATHER => Instantiate(EntityWeatherPrefab, HassUITranslation, false),
+            _ => Instantiate(EntitySensorPrefab, entityObject.Position, Quaternion.identity)
+        };
+
         newEntity.transform.localPosition = entityObject.Position;
         
         // Set the entity ID to the new entity
@@ -53,15 +51,12 @@ public class EntitySpawner : MonoBehaviour
         Enum.TryParse(type, true, out EDeviceType deviceType);
 
         // Instantiate the entity at the given position and rotation
-        Entity newEntity;
-        if (deviceType is EDeviceType.LIGHT or EDeviceType.SWITCH)
+        Entity.Entity newEntity = deviceType switch
         {
-            newEntity = Instantiate(EntityButtonPrefab, HassUITranslation, false);
-        }
-        else
-        {
-            newEntity = Instantiate(EntitySensorPrefab, HassUITranslation, false);
-        }
+            EDeviceType.LIGHT or EDeviceType.SWITCH => Instantiate(EntityButtonPrefab, HassUITranslation, false),
+            EDeviceType.WEATHER => Instantiate(EntityWeatherPrefab, HassUITranslation, false),
+            _ => Instantiate(EntitySensorPrefab, HassUITranslation, false)
+        };
 
         // Slightly offset the position of the new entity
         Vector3 newPosition = position - newEntity.transform.forward * 0.1f;
