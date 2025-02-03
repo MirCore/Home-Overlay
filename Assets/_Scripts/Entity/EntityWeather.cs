@@ -58,7 +58,7 @@ namespace Entity
                 }
                 catch (TaskCanceledException)
                 {
-                    Debug.Log("Weather update task was canceled.");
+                    //Debug.Log("Weather update task was canceled.");
                     break;
                 }
                 catch (Exception ex)

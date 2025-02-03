@@ -57,7 +57,7 @@ namespace Entity
                 }
                 catch (TaskCanceledException)
                 {
-                    Debug.Log("Calendar update task was canceled.");
+                    //Debug.Log("Calendar update task was canceled.");
                     break;
                 }
                 catch (Exception ex)

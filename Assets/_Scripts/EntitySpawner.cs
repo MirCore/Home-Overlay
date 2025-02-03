@@ -22,6 +22,7 @@ public class EntitySpawner : MonoBehaviour
         Entity.Entity newEntity = Instantiate(prefab, entityObject.Position, Quaternion.identity);
         
         newEntity.transform.localPosition = entityObject.Position;
+        newEntity.transform.localScale = entityObject.Scale;
         
         // Set the entity ID to the new entity
         newEntity.SetEntityObject(entityObject);
@@ -44,8 +45,6 @@ public class EntitySpawner : MonoBehaviour
         EntityObject entityObject = new (id, selectedEntityID, newPosition);
         GameManager.Instance.EntityObjects.Add(entityObject);
         SaveFile.SaveEntityObjects();
-        
-        newEntity.transform.localPosition = entityObject.Position;
         
         // Set the entity ID to the new entity
         newEntity.SetEntityObject(entityObject);

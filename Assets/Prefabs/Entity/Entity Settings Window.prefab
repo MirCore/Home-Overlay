@@ -643,6 +643,7 @@ MonoBehaviour:
   FlipBackFaceUV: 0
   DoubleSided: 0
   AutoUpdate: 1
+  RectTransform: {fileID: 0}
 --- !u!33 &752854870732137185
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -977,6 +978,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3812194496394750757, guid: 58026359a70f27244893326ba2030f08, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4057280755791980387, guid: 58026359a70f27244893326ba2030f08, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -1171,7 +1176,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6161483100680759035, guid: 58026359a70f27244893326ba2030f08, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0003265882
+      value: 0.009547296
       objectReference: {fileID: 0}
     - target: {fileID: 7293402062370492426, guid: 58026359a70f27244893326ba2030f08, type: 3}
       propertyPath: m_AnchorMax.x

@@ -12,6 +12,8 @@ namespace Structs
         [SerializeField] private string _id;
         [SerializeField] private string _entityID;
         [SerializeField] private Vector3 _position;
+        [SerializeField] private Quaternion _rotation;
+        [SerializeField] private Vector3 _scale = Vector3.one;
         [SerializeField] private string _anchorID;
         private Entity.Entity _entity;
 
@@ -52,6 +54,30 @@ namespace Structs
                     return;
             
                 _position = value;
+                SaveFile.SaveEntityObjects();
+            }
+        }
+    
+        public Quaternion Rotation {
+            get => _rotation;
+            set
+            {
+                if (_rotation == value)
+                    return;
+            
+                _rotation = value;
+                SaveFile.SaveEntityObjects();
+            }
+        }
+    
+        public Vector3 Scale {
+            get => _scale;
+            set
+            {
+                if (_scale == value)
+                    return;
+            
+                _scale = value;
                 SaveFile.SaveEntityObjects();
             }
         }

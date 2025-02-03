@@ -78,6 +78,8 @@ namespace Entity
             CreateAnchorAsync();
 
             EntityObject.Position = transform.position;
+            EntityObject.Rotation = transform.rotation;
+            EntityObject.Scale = transform.localScale;
         }
 
         /// <summary>
@@ -258,6 +260,11 @@ namespace Entity
         public void ReloadSettingsWindow()
         {
             EntitySettingsWindowManager.Instance.UpdateEntitySettingsWindow(this);
+        }
+
+        public void OnScaled()
+        {
+            EntityObject.Scale = transform.localScale;
         }
     }
 }
