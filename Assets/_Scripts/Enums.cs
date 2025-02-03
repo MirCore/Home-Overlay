@@ -18,7 +18,9 @@ public enum EDeviceType
         [DisplayName("Climate")]
         CLIMATE,
         [DisplayName("Weather")]
-        WEATHER
+        WEATHER,
+        [DisplayName("Calendar")]
+        CALENDAR
 }
 
 /// <summary>

@@ -23,6 +23,7 @@ namespace Entity
         /// <summary>
         /// How often to refresh the weather forecast in seconds
         /// </summary>
+        [Tooltip("How often to refresh the weather forecast in seconds")]
         [SerializeField] private float WeatherForecastRefreshRate = 600f;
         
         private readonly List<ForecastPanel> _forecastPanels = new ();
@@ -33,7 +34,7 @@ namespace Entity
         {
             _forecastPanels.Add(ForecastPanel);
             _cancellationTokenSource = new CancellationTokenSource();
-            _ = UpdateWeatherForecast(_cancellationTokenSource.Token);
+            _ = GetHassWeatherForecast(_cancellationTokenSource.Token);
         }
         
         protected override void OnDisable()
@@ -46,7 +47,7 @@ namespace Entity
         /// Updates the weather forecast periodically.
         /// </summary>
         /// <param name="token">The cancellation token to cancel the task.</param>
-        private async Task UpdateWeatherForecast(CancellationToken token)
+        private async Task GetHassWeatherForecast(CancellationToken token)
         {
             while (!token.IsCancellationRequested)
             {

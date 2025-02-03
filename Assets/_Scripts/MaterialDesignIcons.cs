@@ -35,6 +35,9 @@ public abstract class MaterialDesignIcons
                 case EDeviceType.SWITCH:
                     iconName = "toggle-switch-variant-off";
                     break;
+                case EDeviceType.CALENDAR:
+                    iconName = "calendar";
+                    break;
                 case EDeviceType.SENSOR:
                     Enum.TryParse(entity.attributes.device_class, true, out ESensorDeviceClass sensorClass);
                     iconName = sensorClass switch

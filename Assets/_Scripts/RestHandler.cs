@@ -12,6 +12,8 @@ using Uri = System.Uri;
 /// </summary>
 public abstract class RestHandler
 {
+    private static RequestHelper _getRequestHelper;
+
     /// <summary>
     /// Sets the default headers for REST requests to Home Assistant.
     /// 
@@ -83,32 +85,6 @@ public abstract class RestHandler
     #region Get
 
 
-    /// <summary>
-    /// Gets the Home Assistant entities.
-    /// </summary>
-    public static void GetHassEntities()
-    {
-        if (GameManager.Instance.HassStatesRecentlyUpdated())
-            return;
-        if (!RestClient.DefaultRequestHeaders.ContainsKey("Authorization"))
-            return;
-        if (GameManager.Instance.HassUri == null)
-            return;
-        
-        RequestHelper get = new()
-        {
-            Uri = new Uri(GameManager.Instance.HassUri, "states").ToString(),
-        };
-        
-        RestClient.Get(get)
-            .Then(response => {
-                HassStates.OnHassStatesResponse(response.Text);
-            })
-            .Catch(err => {
-                Debug.LogError("Error: " + err.Message + "\n" + err.StackTrace);
-            });
-    }
-
     public static void GetHassConfig()
     {
         if (GameManager.Instance.HassStatesRecentlyUpdated())
@@ -126,6 +102,51 @@ public abstract class RestHandler
             .Catch(err => {
                 Debug.LogError("Error: " + err.Message + "\n" + err.StackTrace);
             });
+    }
+    
+    private static void SendGetRequest(Uri uri, Action<string> action = null)
+    {
+        _getRequestHelper ??= new RequestHelper { Uri = uri.ToString() };
+        _getRequestHelper.Uri = uri.ToString();
+        
+        RestClient.Get(_getRequestHelper)
+            .Then(response => {
+                if (action != null)
+                    action.Invoke(response.Text);
+                else
+                    HassStates.OnHassStatesResponse(response.Text);
+                
+                if (GameManager.Instance.DebugLogPostResponses)
+                    Debug.Log(response.Text);
+            })
+            .Catch(err => {
+                Debug.LogError("Error: " + err.Message + err.StackTrace + " Uri: " + uri);
+            });
+    }
+
+    /// <summary>
+    /// Gets the Home Assistant entities.
+    /// </summary>
+    public static void GetHassEntities()
+    {
+        if (GameManager.Instance.HassStatesRecentlyUpdated())
+            return;
+        if (!RestClient.DefaultRequestHeaders.ContainsKey("Authorization"))
+            return;
+        if (GameManager.Instance.HassUri == null)
+            return;
+        
+        Uri uri = new (GameManager.Instance.HassUri, "states");
+        SendGetRequest(uri);
+    }
+    
+    public static void GetCalendar(string entityID, Action<string> updateCalendar)
+    {
+        string start = DateTime.Now.ToString("yyyy-MM-ddT00:00:00.000Z");
+        Debug.Log(start);
+        string end = DateTime.Now.AddDays(31).ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+        Uri uri = new (GameManager.Instance.HassUri, $"calendars/{entityID}?start={Uri.EscapeDataString(start)}&end={Uri.EscapeDataString(end)}");       
+        SendGetRequest(uri, updateCalendar);
     }
     
     #endregion
@@ -214,6 +235,7 @@ public abstract class RestHandler
         GetForecast body = new() { entity_id = entityID, type = "daily" };
         SendPostRequest(uri, body, entityWeather);
     }
+
 
     /// <summary>
     /// Represents the data to be sent in a POST request.

@@ -88,6 +88,12 @@ public static class HassStates
         Match match = Regex.Match(responseText, @"""forecast"":(\[.*?\])", RegexOptions.Singleline);
         return match.Success ? JsonHelper.ArrayFromJson<WeatherForecast>(match.Groups[1].Value)?.ToList() : null;
     }
+
+    public static List<CalendarEvent> ConvertHassCalendarResponse(string calendarResponse)
+    {
+        CalendarEvent[] events = JsonHelper.ArrayFromJson<CalendarEvent>(calendarResponse);
+        return events.ToList();
+    }
 }
     
 [Serializable]
@@ -169,6 +175,33 @@ public class WeatherForecast
     public int humidity;
 }
 
+[Serializable]
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+public class CalendarEvent
+{
+    public EventDate start;
+    public EventDate end;
+    public string summary;
+    public string description;
+    public string location;
     
+    [Serializable]
+    public class EventDate
+    {
+        public string date;
+        public string dateTime;
+
+        // Converts to a DateTime object for easier use
+        public DateTime? GetDateTime()
+        {
+            if (!string.IsNullOrEmpty(dateTime))
+                return DateTime.Parse(dateTime);
+            if (!string.IsNullOrEmpty(date))
+                return DateTime.Parse(date);
+            return null;
+        }
+    }
+}
+
 
 

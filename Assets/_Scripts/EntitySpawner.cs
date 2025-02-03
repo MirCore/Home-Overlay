@@ -9,6 +9,7 @@ public class EntitySpawner : MonoBehaviour
     [SerializeField] private Entity.Entity EntityButtonPrefab;
     [SerializeField] private Entity.Entity EntitySensorPrefab;
     [SerializeField] private Entity.Entity EntityWeatherPrefab;
+    [SerializeField] private Entity.Entity EntityCalendarPrefab;
     [SerializeField] private Transform HassUITranslation;
 
     /// <summary>
@@ -17,20 +18,9 @@ public class EntitySpawner : MonoBehaviour
     /// <param name="entityObject"></param>
     public void SpawnSavedEntity(EntityObject entityObject)
     {
-        // Get the type from the entity ID
-        string type = entityObject.EntityID.Split('.')[0];
-                
-        // Try to parse the type as an EDeviceType
-        Enum.TryParse(type, true, out EDeviceType deviceType);
-
-        // Instantiate the entity at the given position and rotation
-        Entity.Entity newEntity = deviceType switch
-        {
-            EDeviceType.LIGHT or EDeviceType.SWITCH => Instantiate(EntityButtonPrefab, entityObject.Position, Quaternion.identity),
-            EDeviceType.WEATHER => Instantiate(EntityWeatherPrefab, HassUITranslation, false),
-            _ => Instantiate(EntitySensorPrefab, entityObject.Position, Quaternion.identity)
-        };
-
+        Entity.Entity prefab = GetEntityPrefab(entityObject.EntityID);
+        Entity.Entity newEntity = Instantiate(prefab, entityObject.Position, Quaternion.identity);
+        
         newEntity.transform.localPosition = entityObject.Position;
         
         // Set the entity ID to the new entity
@@ -44,19 +34,8 @@ public class EntitySpawner : MonoBehaviour
     /// <param name="position">The transform at which the entity will be spawned.</param>
     public void SpawnNewEntity(string selectedEntityID, Vector3 position)
     {
-        // Get the type from the entity ID
-        string type = selectedEntityID.Split('.')[0];
-                
-        // Try to parse the type as an EDeviceType
-        Enum.TryParse(type, true, out EDeviceType deviceType);
-
-        // Instantiate the entity at the given position and rotation
-        Entity.Entity newEntity = deviceType switch
-        {
-            EDeviceType.LIGHT or EDeviceType.SWITCH => Instantiate(EntityButtonPrefab, HassUITranslation, false),
-            EDeviceType.WEATHER => Instantiate(EntityWeatherPrefab, HassUITranslation, false),
-            _ => Instantiate(EntitySensorPrefab, HassUITranslation, false)
-        };
+        Entity.Entity prefab = GetEntityPrefab(selectedEntityID);
+        Entity.Entity newEntity = Instantiate(prefab, HassUITranslation, false);
 
         // Slightly offset the position of the new entity
         Vector3 newPosition = position - newEntity.transform.forward * 0.1f;
@@ -70,5 +49,20 @@ public class EntitySpawner : MonoBehaviour
         
         // Set the entity ID to the new entity
         newEntity.SetEntityObject(entityObject);
+    }
+
+    private Entity.Entity GetEntityPrefab(string selectedEntityID)
+    {
+        // Get the type from the entity ID
+        string type = selectedEntityID.Split('.')[0];
+                
+        // Try to parse the type as an EDeviceType and return the corresponding prefab
+        return Enum.TryParse(type, true, out EDeviceType deviceType) ? deviceType switch
+        {
+            EDeviceType.LIGHT or EDeviceType.SWITCH => EntityButtonPrefab,
+            EDeviceType.WEATHER => EntityWeatherPrefab,
+            EDeviceType.CALENDAR => EntityCalendarPrefab,
+            _ => EntitySensorPrefab
+        } : EntitySensorPrefab; // Default fallback
     }
 }
