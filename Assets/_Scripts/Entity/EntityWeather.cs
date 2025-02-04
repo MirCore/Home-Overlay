@@ -33,14 +33,19 @@ namespace Entity
         private void Start()
         {
             _forecastPanels.Add(ForecastPanel);
-            _cancellationTokenSource = new CancellationTokenSource();
-            _ = GetHassWeatherForecast(_cancellationTokenSource.Token);
+            
+            if (HassState != null)
+            {
+                _cancellationTokenSource = new CancellationTokenSource();
+                _ = GetHassWeatherForecast(_cancellationTokenSource.Token);
+            }
         }
         
         protected override void OnDisable()
         {
             base.OnDisable();
             _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource?.Dispose();
         }
 
         /// <summary>
@@ -49,12 +54,14 @@ namespace Entity
         /// <param name="token">The cancellation token to cancel the task.</param>
         private async Task GetHassWeatherForecast(CancellationToken token)
         {
+            if (HassState == null)
+                _cancellationTokenSource.Cancel();
             while (!token.IsCancellationRequested)
             {
                 try
                 {
-                    RestHandler.GetWeatherForecast(HassState.entity_id, UpdateWeather);
-                    await Task.Delay(TimeSpan.FromSeconds(WeatherForecastRefreshRate), token);
+                    if (HassState != null) 
+                        RestHandler.GetWeatherForecast(HassState.entity_id, UpdateWeather);
                 }
                 catch (TaskCanceledException)
                 {
@@ -65,6 +72,8 @@ namespace Entity
                 {
                     Debug.LogError($"Error while updating weather forecast: {ex.Message}");
                 }
+                
+                await Task.Delay(TimeSpan.FromSeconds(WeatherForecastRefreshRate), token);
             }
         }
 
@@ -170,6 +179,15 @@ namespace Entity
             if (HassState == null)
                 return;
             UpdateCurrentWeather();
+            
+            if (_cancellationTokenSource != null && !_cancellationTokenSource.Token.IsCancellationRequested)
+                return;  // Prevent multiple tasks
+
+            _cancellationTokenSource?.Cancel(); // Cancel any existing token
+            _cancellationTokenSource?.Dispose(); // Dispose of the old CTS
+
+            _cancellationTokenSource = new CancellationTokenSource();
+            _ = GetHassWeatherForecast(_cancellationTokenSource.Token);
         }
     }
 }

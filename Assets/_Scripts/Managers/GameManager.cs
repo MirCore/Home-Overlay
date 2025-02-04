@@ -61,7 +61,7 @@ namespace Managers
             
             // Load saved connection settings
             LoadConnectionSettings();
-            
+            Debug.Log(Application.persistentDataPath);
             ARAnchorManager.trackablesChanged.AddListener(OnAnchorChanged);
             EventManager.OnConnectionTested += OnConnectionTested;
             EventManager.OnHassStatesChanged += OnHassStatesChanged;
@@ -131,13 +131,7 @@ namespace Managers
                 RestHandler.SetDefaultHeaders();
                 RestHandler.GetHassEntities();
             }
-            LoadHassConfig();
             LoadEntityObjects();
-        }
-
-        private void LoadHassConfig()
-        {
-            HassConfig = SaveFile.ReadHassConfig();
         }
 
         private void LoadEntityObjects()
@@ -239,7 +233,6 @@ namespace Managers
         public void OnHassConfigLoaded(HassConfig config)
         {
             HassConfig = config;
-            SaveFile.SaveHassConfig();
         }
     }
 }

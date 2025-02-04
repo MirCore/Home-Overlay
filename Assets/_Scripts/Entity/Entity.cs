@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Linq;
 using System.Threading.Tasks;
 using Managers;
@@ -68,12 +69,12 @@ namespace Entity
                 return;
             
             AnchorHelper.AttachTransformToAnchor(transform, addedAnchor);
-            Debug.Log("Entity parented to added anchor");
-
+            //Debug.Log("Entity parented to added anchor");
         }
 
         private void OnSelectExited(SelectExitEventArgs eventData)
         {
+            Debug.Log("Select exited");
             if (EntityObject == null)
                 return;
             
@@ -83,33 +84,63 @@ namespace Entity
             EntityObject.Scale = transform.localScale;
 
             // Create a new anchor
-            _= CreateNewAnchor();
+            // Run async with explicit error handling
+            _ = CreateNewAnchor().ContinueWith(task =>
+            {
+                if (task.IsFaulted)
+                    Debug.LogError($"CreateNewAnchor encountered an error: {task.Exception}");
+            }, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         private async Task CreateNewAnchor()
         {
+            Debug.Log("Creating new anchor");
             ARAnchor newAnchor;
-            
-            if (EntityObject.Settings.AlignWindowToWall)
+            try
             {
-                if (!AnchorHelper.TryCreateAnchorOnNearestPlane(transform, out  newAnchor))
+                if (EntityObject.Settings.AlignWindowToWall)
                 {
-                    Debug.Log("No plane found");
+                    Debug.Log("Aligning to wall");
+                    if (!AnchorHelper.TryCreateAnchorOnNearestPlane(transform, out  newAnchor))
+                    {
+                        Debug.Log("No plane found, turning off AlignWindowToWall");
+                        EntityObject.Settings.AlignWindowToWall = false;
+                        UpdateRotationBehaviour();
+                    }
                 }
+                else if (!EntityObject.Settings.RotationEnabled)
+                {
+                    Debug.Log("Creating new fixed anchor");
+                    Quaternion rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
+                    Result<ARAnchor> result = await AnchorHelper.CreateAnchorAsync(transform, rotation);
+                    if (!result.status.IsSuccess())
+                    {
+                        Debug.LogWarning("Failed to create anchor");
+                    }
+                    newAnchor = result.value;
+                }
+                else
+                {
+                    Debug.Log("Creating new anchor");
+                    Result<ARAnchor> result = await AnchorHelper.CreateAnchorAsync(transform);
+                    if (!result.status.IsSuccess())
+                    {
+                        Debug.LogWarning("Failed to create anchor");
+                    }
+                    newAnchor = result.value;
+                }
+                
+                Debug.Log("Anchor created, attaching to anchor: " + newAnchor.trackableId);
+                AnchorHelper.AttachTransformToAnotherAnchor(transform, newAnchor, _anchor);
+                _anchor = newAnchor;
+                EntityObject.AnchorID = _anchor.trackableId.ToString();
             }
-            else
+            catch (Exception e)
             {
-                Result<ARAnchor> result = await AnchorHelper.CreateAnchorAsync(transform);
-                if (!result.status.IsSuccess())
-                {
-                    Debug.LogWarning("Failed to create anchor");
-                }
-                newAnchor = result.value;
+                Console.WriteLine(e);
+                throw;
             }
-            
-            AnchorHelper.AttachTransformToAnotherAnchor(transform, newAnchor, _anchor);
-            _anchor = newAnchor;
-            EntityObject.AnchorID = _anchor.trackableId.ToString();
+
         }
 
         private void ReattachToAnchor()
@@ -124,7 +155,7 @@ namespace Entity
             }
             else
             {
-                Debug.Log("No anchor loaded");
+                //Debug.Log("No anchor with ID " + EntityObject.AnchorID + " was loaded");
             }
         }
 
@@ -236,15 +267,19 @@ namespace Entity
 
         public void SetWindowControlVisibility() => WindowControls.SetActive(!EntityObject.Settings.HideWindowControls);
         
-        public void ToggleAlignWindowToWall()
+
+        public void UpdateRotationBehaviour()
         {
             // toggle the LazyFollow component on/off
-            _lazyFollow.enabled = !EntityObject.Settings.AlignWindowToWall;
-            
-            // Create a new anchor when the setting is enabled
-            if (EntityObject.Settings.AlignWindowToWall)
+            if (EntityObject.Settings.AlignWindowToWall || !EntityObject.Settings.RotationEnabled)
+            {
+                _lazyFollow.enabled = false;
                 _ = CreateNewAnchor();
+            }
+            else
+                _lazyFollow.enabled = true;
+            
+            ReloadSettingsWindow();
         }
-
     }
 }

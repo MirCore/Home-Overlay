@@ -15,7 +15,7 @@ namespace Structs
         [SerializeField] private Quaternion _rotation;
         [SerializeField] private Vector3 _scale = Vector3.one;
         [SerializeField] private string _anchorID;
-        [SerializeField] private EntitySettings _settings;
+        [SerializeField] private EntitySettings _settings = new ();
         private Entity.Entity _entity;
 
         public EntityObject(string id, string entityID, Vector3 transformPosition)
@@ -119,8 +119,9 @@ namespace Structs
         [Serializable]
         public class EntitySettings
         {
-            public bool HideWindowControls { get; set; }
-            public bool AlignWindowToWall { get; set; }
+            public bool HideWindowControls;
+            public bool AlignWindowToWall;
+            public bool RotationEnabled = true;
         }
     }
 

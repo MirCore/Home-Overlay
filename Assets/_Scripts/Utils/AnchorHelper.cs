@@ -17,7 +17,8 @@ namespace Utils
         static AnchorHelper()
         {
             RaycastManager = Object.FindFirstObjectByType<ARRaycastManager>();
-            ARAnchorManager = Object.FindFirstObjectByType<ARAnchorManager>();   
+            ARAnchorManager = Object.FindFirstObjectByType<ARAnchorManager>();
+            Debug.Log(RaycastManager);
         }
         
         
@@ -26,33 +27,54 @@ namespace Utils
             List<ARRaycastHit> raycastHits = new ();
             ARPlane nearestPlane = null;
             float shortestDistance = float.MaxValue;
-            
             Debug.Log("casting rays");
-            foreach (Vector3 direction in Directions)
+            if (RaycastManager.descriptor is { supportsWorldBasedRaycast: true })
             {
-                // Perform raycast in the current direction
-                if (!RaycastManager.Raycast(new Ray(transform.position, direction), raycastHits, TrackableType.PlaneWithinPolygon))
-                    continue;
-
-                foreach (ARRaycastHit hit in raycastHits.Where(hit => hit.distance < shortestDistance))
+                foreach (Vector3 direction in Directions)
                 {
-                    shortestDistance = hit.distance;
-                    nearestPlane = hit.trackable as ARPlane;
+                    // Perform raycast in the current direction
+                    if (!RaycastManager.Raycast(new Ray(transform.position, direction), raycastHits, TrackableType.Planes))
+                        continue;
+
+                    foreach (ARRaycastHit hit in raycastHits.Where(hit => hit.distance < shortestDistance))
+                    {
+                        shortestDistance = hit.distance;
+                        nearestPlane = hit.trackable as ARPlane;
+                    }
+                }
+
+                Debug.Log("nearest plane: " + nearestPlane);
+            }
+            else
+            {
+                Debug.Log("World based raycast not supported");
+                
+                foreach (Vector3 direction in Directions)
+                {
+                    if (Physics.Raycast(transform.position, direction, out RaycastHit hit, shortestDistance))
+                    {
+                        Debug.Log("hit distance: " + hit.distance);
+                        shortestDistance = hit.distance;
+                        nearestPlane = hit.collider.GetComponent<ARPlane>(); // If ARPlane is not available, change this to a relevant component
+                        Debug.Log(nearestPlane.trackableId);
+                    }
                 }
             }
 
             return nearestPlane;
         }
 
-
         /// <summary>
         /// Asynchronously creates an ARAnchor at the entity's current pose.
         /// </summary>
         /// <param name="transform"></param>
-        public static async Task<Result<ARAnchor>> CreateAnchorAsync(Transform transform)
+        /// <param name="anchorRotation"></param>
+        
+        public static async Task<Result<ARAnchor>> CreateAnchorAsync(Transform transform, Quaternion anchorRotation = default)
         {
+            Quaternion rotation = anchorRotation == default ? transform.rotation : anchorRotation;
             // Attempt to add a new anchor at the current position and rotation
-            Result<ARAnchor> result = await ARAnchorManager.TryAddAnchorAsync(new Pose(transform.position, transform.rotation));
+            Result<ARAnchor> result = await ARAnchorManager.TryAddAnchorAsync(new Pose(transform.position, rotation));
             if (!result.status.IsSuccess())
             {
                 // Log a warning if the anchor creation fails
@@ -110,8 +132,16 @@ namespace Utils
             if (nearestPlane == null) return false;
 
             Quaternion anchorRotation = Quaternion.LookRotation(-nearestPlane.normal, Vector3.up);
-            anchor = ARAnchorManager.AttachAnchor(nearestPlane, new Pose(target.position, anchorRotation));
+            Debug.Log(new Pose(target.position, anchorRotation));
+            if (ARAnchorManager.descriptor.supportsTrackableAttachments)
+                anchor = ARAnchorManager.AttachAnchor(nearestPlane, new Pose(target.position, anchorRotation));
+            else
+            {
+                Task<Result<ARAnchor>> result = CreateAnchorAsync(target, anchorRotation);
+                anchor = result.Result.value;
+            }
 
+            
             return anchor != null;
         }
         

@@ -39,29 +39,6 @@ namespace Utils
                 throw;
             }
         }
-
-        public static HassConfig ReadHassConfig()
-        {
-            if (!File.Exists(HassConfigPath))
-            {
-                Debug.Log("No file found");
-                return null;
-            }
-            try
-            {
-                // Read the entire file into a String value.
-                string json = File.ReadAllText(HassConfigPath);
-                HassConfig hassConfig = JsonUtility.FromJson<HassConfig>(json);
-
-                return hassConfig;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-        }
-
         private static void WriteFile(List<EntityObject> gameData)
         {
             try
@@ -83,29 +60,6 @@ namespace Utils
         public static void SaveEntityObjects()
         {
             WriteFile(GameManager.Instance.EntityObjects);
-        }
-
-        public static void SaveHassConfig()
-        {
-            WriteFile(GameManager.Instance.HassConfig);
-        }
-
-        private static void WriteFile(HassConfig hassConfig)
-        {
-            try
-            {
-                string json = JsonUtility.ToJson(hassConfig);
-                
-                File.WriteAllText(HassConfigPath, json);
-                
-                //Debug.Log(Application.persistentDataPath);
-            }
-            
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
         }
 
         public static EntityObject ReadEncryptedFile()

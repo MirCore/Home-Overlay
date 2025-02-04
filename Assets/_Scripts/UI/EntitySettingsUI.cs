@@ -1,6 +1,7 @@
 using Managers;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 
@@ -17,7 +18,10 @@ namespace UI
         
         [Header("Entity Settings")]
         [SerializeField] private Toggle WindowControlToggle;
+        [SerializeField] private Toggle AlignWindowToWallToggle;
         [SerializeField] private Toggle RotationToggle;
+        [SerializeField] private GameObject TogglesPanel;
+        
         [SerializeField] private Button ChangeEntityButton;
         [SerializeField] private EntityPicker EntityPicker;
         
@@ -45,11 +49,13 @@ namespace UI
             LoadElements();
             
             ChangeEntityButton.gameObject.SetActive(true);
+            TogglesPanel.SetActive(true);
             
             ChangeEntityButton.onClick.AddListener(OnChangeEntityButtonClicked);
             DeleteButton.onClick.AddListener(OnDeleteButtonClicked);
             WindowControlToggle.onValueChanged.AddListener(OnWindowControlToggleValueChanged);
-            RotationToggle.onValueChanged.AddListener(OnAlignToWallToggleValueChanged);
+            AlignWindowToWallToggle.onValueChanged.AddListener(OnAlignToWallToggleValueChanged);
+            RotationToggle.onValueChanged.AddListener(OnRotationToggleValueChanged);
             EventManager.OnHassStatesChanged += OnHassStatesChanged;
         }
 
@@ -58,7 +64,8 @@ namespace UI
             ChangeEntityButton.onClick.RemoveListener(OnChangeEntityButtonClicked);
             DeleteButton.onClick.RemoveListener(OnDeleteButtonClicked);
             WindowControlToggle.onValueChanged.RemoveListener(OnWindowControlToggleValueChanged);
-            RotationToggle.onValueChanged.RemoveListener(OnAlignToWallToggleValueChanged);
+            AlignWindowToWallToggle.onValueChanged.RemoveListener(OnAlignToWallToggleValueChanged);
+            RotationToggle.onValueChanged.RemoveListener(OnRotationToggleValueChanged);
             EventManager.OnHassStatesChanged -= OnHassStatesChanged;
         }
         
@@ -71,7 +78,17 @@ namespace UI
         private void OnAlignToWallToggleValueChanged(bool value)
         {
             Entity.EntityObject.Settings.AlignWindowToWall = value;
-            Entity.ToggleAlignWindowToWall();
+            if (value == true)
+                Entity.EntityObject.Settings.RotationEnabled = false;
+            Entity.UpdateRotationBehaviour();
+        }
+        
+        private void OnRotationToggleValueChanged(bool value)
+        {
+            Entity.EntityObject.Settings.RotationEnabled = value;
+            if (value == true)
+                Entity.EntityObject.Settings.AlignWindowToWall = false;
+            Entity.UpdateRotationBehaviour();
         }
 
         /// <summary>
@@ -82,6 +99,7 @@ namespace UI
             // Deactivate other UI elements. The Settings UI will be recreated later, to restore the state.
             ChangeEntityButton.gameObject.SetActive(false);
             ColorPicker.gameObject.SetActive(false);
+            TogglesPanel.SetActive(false);
             EntityPicker.gameObject.SetActive(true);
             
             EntityPicker.SetEntity(Entity);
@@ -155,8 +173,9 @@ namespace UI
                 ColorPicker.gameObject.SetActive(false);
             }
 
-            WindowControlToggle.isOn = Entity.EntityObject.Settings.HideWindowControls;
-            RotationToggle.isOn = Entity.EntityObject.Settings.AlignWindowToWall;
+            WindowControlToggle.SetIsOnWithoutNotify(Entity.EntityObject.Settings.HideWindowControls);
+            AlignWindowToWallToggle.SetIsOnWithoutNotify(Entity.EntityObject.Settings.AlignWindowToWall);
+            RotationToggle.SetIsOnWithoutNotify(Entity.EntityObject.Settings.RotationEnabled);
         }
     }
 }
