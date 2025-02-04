@@ -10,25 +10,25 @@ using UnityEngine;
 public static class HassStates
 {
     /// <summary>
-    /// A dictionary of all Home Assistant entities. The key is the entity ID and the value is the HassEntity object.
+    /// A dictionary of all Home Assistant entities. The key is the entity ID and the value is the HassState object.
     /// </summary>
-    private static readonly Dictionary<string, HassEntity> HassStatesDict = new();
+    private static readonly Dictionary<string, HassState> HassStatesDict = new();
 
     /// <summary>
-    /// Gets a dictionary of all Home Assistant entities. The key is the entity ID and the value is the HassEntity object.
+    /// Gets a dictionary of all Home Assistant entities. The key is the entity ID and the value is the HassState object.
     /// </summary>
-    /// <returns>A dictionary of HassEntity objects.</returns>
-    public static Dictionary<string, HassEntity> GetHassStates()
+    /// <returns>A dictionary of HassState objects.</returns>
+    public static Dictionary<string, HassState> GetHassStates()
     {
         return HassStatesDict;
     }
         
     /// <summary>
-    /// Gets the HassEntity object from the specified entity ID.
+    /// Gets the HassState object from the specified entity ID.
     /// </summary>
-    /// <param name="entityID">The entity ID of the HassEntity object to retrieve.</param>
-    /// <returns>The HassEntity object associated with the entity ID, or null if no entity is found.</returns>
-    public static HassEntity GetHassState(string entityID)
+    /// <param name="entityID">The entity ID of the HassState object to retrieve.</param>
+    /// <returns>The HassState object associated with the entity ID, or null if no entity is found.</returns>
+    public static HassState GetHassState(string entityID)
     {
         return string.IsNullOrEmpty(entityID) ? null : HassStatesDict.GetValueOrDefault(entityID);
     }
@@ -43,14 +43,14 @@ public static class HassStates
         if (GameManager.Instance.DebugLogGetHassEntities)
             Debug.Log(responseText);
         
-        // Parse the response text into an array of HassEntity objects
-        HassEntity[] hassEntities = JsonHelper.ArrayFromJson<HassEntity>(responseText);
+        // Parse the response text into an array of HassState objects
+        HassState[] hassStates = JsonHelper.ArrayFromJson<HassState>(responseText);
             
         // Iterate over the entities and handle each one
-        foreach (HassEntity entity in hassEntities)
+        foreach (HassState entity in hassStates)
         {
             // Update or add the entity state
-            if (HassStatesDict.TryGetValue(entity.entity_id, out HassEntity existingEntity))
+            if (HassStatesDict.TryGetValue(entity.entity_id, out HassState existingEntity))
             {
                 existingEntity.state = entity.state;
                 existingEntity.attributes = entity.attributes;
@@ -98,7 +98,7 @@ public static class HassStates
     
 [Serializable]
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public class HassEntity
+public class HassState
 {
     public string entity_id;
     public string state = "";

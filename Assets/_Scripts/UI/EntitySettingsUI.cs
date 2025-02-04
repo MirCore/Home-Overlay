@@ -2,6 +2,7 @@ using Managers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.XR.ARFoundation;
 
 namespace UI
 {
@@ -15,6 +16,8 @@ namespace UI
         [SerializeField] private ColorPicker ColorPicker;
         
         [Header("Entity Settings")]
+        [SerializeField] private Toggle WindowControlToggle;
+        [SerializeField] private Toggle RotationToggle;
         [SerializeField] private Button ChangeEntityButton;
         [SerializeField] private EntityPicker EntityPicker;
         
@@ -28,7 +31,7 @@ namespace UI
         /// </summary>
         private EDeviceType _selectedEDeviceType;
         
-        private HassEntity _entityState;
+        private HassState _hassState;
 
         public Entity.Entity Entity { get; private set; }
 
@@ -42,8 +45,11 @@ namespace UI
             LoadElements();
             
             ChangeEntityButton.gameObject.SetActive(true);
+            
             ChangeEntityButton.onClick.AddListener(OnChangeEntityButtonClicked);
             DeleteButton.onClick.AddListener(OnDeleteButtonClicked);
+            WindowControlToggle.onValueChanged.AddListener(OnWindowControlToggleValueChanged);
+            RotationToggle.onValueChanged.AddListener(OnAlignToWallToggleValueChanged);
             EventManager.OnHassStatesChanged += OnHassStatesChanged;
         }
 
@@ -51,9 +57,26 @@ namespace UI
         {
             ChangeEntityButton.onClick.RemoveListener(OnChangeEntityButtonClicked);
             DeleteButton.onClick.RemoveListener(OnDeleteButtonClicked);
+            WindowControlToggle.onValueChanged.RemoveListener(OnWindowControlToggleValueChanged);
+            RotationToggle.onValueChanged.RemoveListener(OnAlignToWallToggleValueChanged);
             EventManager.OnHassStatesChanged -= OnHassStatesChanged;
         }
+        
+        private void OnWindowControlToggleValueChanged(bool value)
+        {
+            Entity.EntityObject.Settings.HideWindowControls = value;
+            Entity.SetWindowControlVisibility();
+        }
+        
+        private void OnAlignToWallToggleValueChanged(bool value)
+        {
+            Entity.EntityObject.Settings.AlignWindowToWall = value;
+            Entity.ToggleAlignWindowToWall();
+        }
 
+        /// <summary>
+        /// Changes the UI to show the EntityPicker.
+        /// </summary>
         private void OnChangeEntityButtonClicked()
         {
             // Deactivate other UI elements. The Settings UI will be recreated later, to restore the state.
@@ -91,8 +114,8 @@ namespace UI
         {
             if (LoadEntityState()) return;
 
-            TitleText.text = _entityState.attributes.friendly_name;
-            SubtitleText.text = _entityState.entity_id;
+            TitleText.text = _hassState.attributes.friendly_name;
+            SubtitleText.text = _hassState.entity_id;
         }
 
         /// <summary>
@@ -103,8 +126,8 @@ namespace UI
         private bool LoadEntityState()
         {
             if (Entity)
-                _entityState = HassStates.GetHassState(Entity.EntityObject.EntityID);
-            return _entityState == null;
+                _hassState = HassStates.GetHassState(Entity.EntityObject.EntityID);
+            return _hassState == null;
         }
 
         public void SetEntity(Entity.Entity entity)
@@ -122,15 +145,18 @@ namespace UI
             if (EntityPicker.gameObject.activeSelf)
                 return;
 
-            if (_entityState.DeviceType == EDeviceType.LIGHT && _entityState.attributes.supported_color_modes.Length != 0)
+            if (_hassState.DeviceType == EDeviceType.LIGHT && _hassState.attributes.supported_color_modes.Length != 0)
             {
                 ColorPicker.gameObject.SetActive(true);
-                ColorPicker.SetMode(_entityState.attributes.supported_color_modes);
+                ColorPicker.SetMode(_hassState.attributes.supported_color_modes);
             }
             else
             {
                 ColorPicker.gameObject.SetActive(false);
             }
+
+            WindowControlToggle.isOn = Entity.EntityObject.Settings.HideWindowControls;
+            RotationToggle.isOn = Entity.EntityObject.Settings.AlignWindowToWall;
         }
     }
 }

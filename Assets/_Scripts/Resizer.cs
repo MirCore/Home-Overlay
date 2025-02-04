@@ -40,7 +40,7 @@ public class Resizer : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointe
 
     private void OnSelectExited(SelectExitEventArgs eventData)
     {
-        _entity?.OnScaled();
+        if (_entity != null) _entity.EntityObject.Scale = transform.localScale;
     }
 
     private void Update()
@@ -73,6 +73,6 @@ public class Resizer : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointe
     
     public void OnPointerUp(PointerEventData eventData)
     {
-        _entity?.OnScaled();
+        if (_entity != null) _entity.EntityObject.Scale = transform.localScale;
     }
 }

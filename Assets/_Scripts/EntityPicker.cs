@@ -90,7 +90,7 @@ public class EntityPicker : MonoBehaviour
     
     private void OnSaveChangesButtonClicked()
     {
-        _entity.UpdateEntityID(_selectedEntityID);
+        _entity.AssignNewEntityID(_selectedEntityID);
     }
 
     private void OnCancelChangesButtonClicked()
@@ -180,34 +180,34 @@ public class EntityPicker : MonoBehaviour
     {
         // Get a list of all the entities with the selected device type
         List<string> entityIDList = new ();
-        foreach (KeyValuePair<string, HassEntity> entity in HassStates.GetHassStates())
+        foreach (KeyValuePair<string, HassState> state in HassStates.GetHassStates())
         {
             // Skip entities with device type DEFAULT, as these are not compatible
-            if (entity.Value.DeviceType == EDeviceType.DEFAULT)
+            if (state.Value.DeviceType == EDeviceType.DEFAULT)
                 continue;
                 
             // Skip entities that do not match the selected device type
-            if (_selectedEDeviceType != EDeviceType.DEFAULT && entity.Value.DeviceType != _selectedEDeviceType)
+            if (_selectedEDeviceType != EDeviceType.DEFAULT && state.Value.DeviceType != _selectedEDeviceType)
                 continue;
             
-            if (EntityMatchesSearchTerm(entity))
-                entityIDList.Add(entity.Key);
+            if (EntityMatchesSearchTerm(state))
+                entityIDList.Add(state.Key);
         }
 
         return entityIDList;
     }
     /// <summary>
-    /// Checks if the entity matches the current search term.
-    /// An entity matches if its name or ID starts with the search term.
+    /// Checks if the state matches the current search term.
+    /// An state matches if its name or ID starts with the search term.
     /// </summary>
-    /// <param name="entity">The entity to check.</param>
-    /// <returns>True if the entity matches the search term, false otherwise.</returns>
-    private bool EntityMatchesSearchTerm(KeyValuePair<string, HassEntity> entity)
+    /// <param name="state">The state to check.</param>
+    /// <returns>True if the state matches the search term, false otherwise.</returns>
+    private bool EntityMatchesSearchTerm(KeyValuePair<string, HassState> state)
     {
         if (_searchText == "")
             return true;
         
-        string eID = entity.Key;
+        string eID = state.Key;
         string eName = HassStates.GetHassState(eID).attributes.friendly_name ?? "";
             
         return eName.Contains(_searchText, StringComparison.CurrentCultureIgnoreCase) ||
@@ -257,6 +257,10 @@ public class EntityPicker : MonoBehaviour
         GenerateEntityList();
     }
 
+    /// <summary>
+    /// Sets the Entity this EntityPicker is part of. Also selects the entity in the dropdown
+    /// </summary>
+    /// <param name="entity"></param>
     public void SetEntity(Entity.Entity entity)
     {
         _entity = entity;

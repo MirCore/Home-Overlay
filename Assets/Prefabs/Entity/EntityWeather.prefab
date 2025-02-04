@@ -1322,6 +1322,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 8281280488977203932}
   m_SourcePrefab: {fileID: 100100000, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
+--- !u!1 &47081332350235054 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7344501811070057332, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
+  m_PrefabInstance: {fileID: 7299118124748671706}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &5065124057832072275 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2522370098298039945, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
@@ -1342,6 +1347,7 @@ MonoBehaviour:
   HighlightImage: {fileID: 0}
   Icon: {fileID: 4016058435295100767}
   SettingsButton: {fileID: 8297586591055066645}
+  WindowControls: {fileID: 47081332350235054}
   State: {fileID: 1779759598034595140}
   Temperature: {fileID: 6099263789454769517}
   ForecastPanel: {fileID: 5669456847920794739}

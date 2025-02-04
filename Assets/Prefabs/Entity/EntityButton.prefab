@@ -623,6 +623,11 @@ PrefabInstance:
       insertIndex: 1
       addedObject: {fileID: 54477021383180761}
   m_SourcePrefab: {fileID: 100100000, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
+--- !u!1 &3904307504107716888 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7344501811070057332, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
+  m_PrefabInstance: {fileID: 6035399124158823020}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &5021326457533859491 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1616051512472190159, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
@@ -659,6 +664,7 @@ MonoBehaviour:
   HighlightImage: {fileID: 6513151547911117981}
   Icon: {fileID: 5706165741701347998}
   SettingsButton: {fileID: 5021326457533859491}
+  WindowControls: {fileID: 3904307504107716888}
   Button: {fileID: 8909964121112961152}
 --- !u!224 &8622971570471764161 stripped
 RectTransform:

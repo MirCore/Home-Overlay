@@ -10,7 +10,7 @@ public abstract class MaterialDesignIcons
 {
     private static CodepointData[] _codepointsCollection;
 
-    public static string GetIcon(HassEntity entity)
+    public static string GetIcon(HassState entity)
     {
         if (_codepointsCollection == null)
             InitiateCodepointsCollection();

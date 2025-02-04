@@ -115,32 +115,32 @@ public class ColorPicker : MonoBehaviour
     /// </remarks>
     private void UpdateSliderValues()
     {
-        HassEntity entityState = HassStates.GetHassState(_entityID);
-        if (entityState == null)
+        HassState hassState = HassStates.GetHassState(_entityID);
+        if (hassState == null)
             return;
         
         // If the entity is off, set the state to false.
-        _turnedOn = entityState.state != "off";
+        _turnedOn = hassState.state != "off";
         
         // Update Temperature slider bounds
-        UpdateTemperatureSliderBounds(entityState);
+        UpdateTemperatureSliderBounds(hassState);
 
         // Update Brightness slider
-        _brightness = entityState.attributes.brightness;
+        _brightness = hassState.attributes.brightness;
         BrightnessSlider.SetValueWithoutNotify(_brightness);
         
         // Update Saturation slider
-        _saturation = entityState.attributes.hs_color is { Length: 2 } ? (int)entityState.attributes.hs_color[1] : _saturation;
+        _saturation = hassState.attributes.hs_color is { Length: 2 } ? (int)hassState.attributes.hs_color[1] : _saturation;
         SaturationSlider.SetValueWithoutNotify(_saturation);
         
         // Update Temperature slider
-        _temperature = entityState.attributes.color_temp_kelvin;
+        _temperature = hassState.attributes.color_temp_kelvin;
         TemperatureSlider.SetValueWithoutNotify(_temperature);
 
         // Update Hue slider if saturation is greater than 10%, to avoid the hue slider from jumping to a wrong value
         if (_saturation > 0.1f)
         {
-            _hue = entityState.attributes.hs_color is { Length: 2 } ? (int)entityState.attributes.hs_color[0] : _hue;
+            _hue = hassState.attributes.hs_color is { Length: 2 } ? (int)hassState.attributes.hs_color[0] : _hue;
             HueSlider.SetValueWithoutNotify(_hue);
         }
 
@@ -150,15 +150,15 @@ public class ColorPicker : MonoBehaviour
     /// <summary>
     /// Updates the temperature slider bounds with the min and max color temp kelvin of the entity.
     /// </summary>
-    /// <param name="entityState">The HassEntity object of the entity.</param>
-    private void UpdateTemperatureSliderBounds(HassEntity entityState)
+    /// <param name="hassState">The HassState object of the entity.</param>
+    private void UpdateTemperatureSliderBounds(HassState hassState)
     {
-        if ((int)TemperatureSlider.minValue == entityState.attributes.min_color_temp_kelvin && (int)TemperatureSlider.maxValue == entityState.attributes.max_color_temp_kelvin)
+        if ((int)TemperatureSlider.minValue == hassState.attributes.min_color_temp_kelvin && (int)TemperatureSlider.maxValue == hassState.attributes.max_color_temp_kelvin)
             return;
         // Temporally remove the listener to avoid triggering the event when setting min and max values
         TemperatureSlider.onValueChanged.RemoveListener(OnTemperatureSliderValueChanged);
-        TemperatureSlider.minValue = entityState.attributes.min_color_temp_kelvin;
-        TemperatureSlider.maxValue = entityState.attributes.max_color_temp_kelvin;
+        TemperatureSlider.minValue = hassState.attributes.min_color_temp_kelvin;
+        TemperatureSlider.maxValue = hassState.attributes.max_color_temp_kelvin;
         TemperatureSlider.onValueChanged.AddListener(OnTemperatureSliderValueChanged);
     }
 

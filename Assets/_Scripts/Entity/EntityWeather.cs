@@ -53,7 +53,7 @@ namespace Entity
             {
                 try
                 {
-                    RestHandler.GetWeatherForecast(EntityState.entity_id, UpdateWeather);
+                    RestHandler.GetWeatherForecast(HassState.entity_id, UpdateWeather);
                     await Task.Delay(TimeSpan.FromSeconds(WeatherForecastRefreshRate), token);
                 }
                 catch (TaskCanceledException)
@@ -83,9 +83,9 @@ namespace Entity
         /// </summary>
         private void UpdateCurrentWeather()
         {
-            State.text = StringManipulation.CapitalizeFirstLetter(EntityState.state);
-            Temperature.text = $"{EntityState.attributes.temperature} {EntityState.attributes.temperature_unit}";
-            Icon.text = MaterialDesignIcons.GetIconByName(WeatherIcons.GetValueOrDefault(EntityState.state, ""));
+            State.text = StringManipulation.CapitalizeFirstLetter(HassState.state);
+            Temperature.text = $"{HassState.attributes.temperature} {HassState.attributes.temperature_unit}";
+            Icon.text = MaterialDesignIcons.GetIconByName(WeatherIcons.GetValueOrDefault(HassState.state, ""));
         }
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace Entity
         /// </summary>
         protected override void UpdateEntity()
         {
-            if (EntityState == null)
+            if (HassState == null)
                 return;
             UpdateCurrentWeather();
         }

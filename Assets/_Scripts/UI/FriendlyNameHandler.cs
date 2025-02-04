@@ -41,9 +41,9 @@ namespace UI
         /// <param name="entityID"></param>
         private void UpdateTitle(string entityID = "")
         {
-            HassEntity hassEntity = HassStates.GetHassState(entityID == "" ? Subtitle.text : entityID);
-            if (hassEntity != null)
-                Title.text = hassEntity.attributes.friendly_name;
+            HassState hassState = HassStates.GetHassState(entityID == "" ? Subtitle.text : entityID);
+            if (hassState != null)
+                Title.text = hassState.attributes.friendly_name;
             else if (Subtitle.text.Split('.').Length > 1)
                 Title.text = Subtitle.text.Split('.')[1];
         }

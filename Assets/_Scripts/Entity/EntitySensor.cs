@@ -12,19 +12,19 @@ namespace Entity
     
         private void UpdateSensorValue()
         {
-            if (EntityState == null)
+            if (HassState == null)
                 return;
             // Sensor as a state string
-            string stateText = EntityState.state;
+            string stateText = HassState.state;
             // Sensor as a state float
-            if (float.TryParse(EntityState.state, NumberStyles.Any, CultureInfo.InvariantCulture, out float stateNumber))
+            if (float.TryParse(HassState.state, NumberStyles.Any, CultureInfo.InvariantCulture, out float stateNumber))
                 stateText = stateNumber.ToString("G3");
             // Sensor as a temperature float
-            if (EntityState.DeviceType == EDeviceType.CLIMATE)
-                stateText = $"{EntityState.attributes.current_temperature} ({EntityState.attributes.temperature})"; // current (target)
+            if (HassState.DeviceType == EDeviceType.CLIMATE)
+                stateText = $"{HassState.attributes.current_temperature} ({HassState.attributes.temperature})"; // current (target)
             SensorState.text = $"{stateText}";
-            SensorUnit.text = $"{(EntityState.attributes == null ? "" : EntityState.attributes.unit_of_measurement)}";
-            if (EntityState.DeviceType == EDeviceType.CLIMATE && !string.IsNullOrEmpty(GameManager.Instance.HassConfig.unit_system.temperature))
+            SensorUnit.text = $"{(HassState.attributes == null ? "" : HassState.attributes.unit_of_measurement)}";
+            if (HassState.DeviceType == EDeviceType.CLIMATE && !string.IsNullOrEmpty(GameManager.Instance.HassConfig.unit_system.temperature))
                 SensorUnit.text = $"{GameManager.Instance.HassConfig.unit_system.temperature}";
         }
 
@@ -36,14 +36,14 @@ namespace Entity
 
         private void UpdateIcon()
         {
-            if (EntityState == null)
+            if (HassState == null)
                 return;
         
-            Icon.text = MaterialDesignIcons.GetIcon(EntityState);
+            Icon.text = MaterialDesignIcons.GetIcon(HassState);
 
-            if (EntityState.DeviceType == EDeviceType.CLIMATE)
+            if (HassState.DeviceType == EDeviceType.CLIMATE)
             {
-                Icon.color = EntityState.state == "heat" ? Icon.color = new Color(1f, 0.4f, 0f) : Icon.color = Color.black;
+                Icon.color = HassState.state == "heat" ? Icon.color = new Color(1f, 0.4f, 0f) : Icon.color = Color.black;
             }
             else
             {

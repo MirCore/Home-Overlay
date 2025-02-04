@@ -25,7 +25,7 @@ public class EntitySpawner : MonoBehaviour
         newEntity.transform.localScale = entityObject.Scale;
         
         // Set the entity ID to the new entity
-        newEntity.SetEntityObject(entityObject);
+        newEntity.InitEntityObject(entityObject);
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ public class EntitySpawner : MonoBehaviour
         SaveFile.SaveEntityObjects();
         
         // Set the entity ID to the new entity
-        newEntity.SetEntityObject(entityObject);
+        newEntity.InitEntityObject(entityObject);
     }
 
     private Entity.Entity GetEntityPrefab(string selectedEntityID)

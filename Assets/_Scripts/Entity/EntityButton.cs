@@ -27,10 +27,10 @@ namespace Entity
         /// </summary>
         private void OnButtonClicked()
         {
-            if (EntityState == null)
+            if (HassState == null)
                 return;
         
-            switch (EntityState.DeviceType)
+            switch (HassState.DeviceType)
             {
                 case EDeviceType.DEFAULT:
                     break;
@@ -50,24 +50,24 @@ namespace Entity
         /// </summary>
         private void UpdateIcon()
         {
-            if (EntityState == null)
+            if (HassState == null)
                 return;
         
             // Update the icon based on the entity's attributes.
-            Icon.text = MaterialDesignIcons.GetIcon(EntityState);
+            Icon.text = MaterialDesignIcons.GetIcon(HassState);
 
             Color color;
         
             // Update the icon color based on the entity's state.
             // If the entity is off, set the icon color to black.
-            if (EntityState.state == "off")
+            if (HassState.state == "off")
             {
                 color = Color.black;
             }
             // If the entity has a valid RGB color, set the icon color to it.
-            else if (EntityState.attributes is { rgb_color: { Length: 3 } })
+            else if (HassState.attributes is { rgb_color: { Length: 3 } })
             {
-                color = JsonHelpers.RGBToUnityColor(EntityState.attributes.rgb_color);
+                color = JsonHelpers.RGBToUnityColor(HassState.attributes.rgb_color);
             }
             // Otherwise, set the icon color to white.
             else
@@ -75,9 +75,9 @@ namespace Entity
                 color = Color.white;
             }
 
-            if (EntityState.attributes != null && EntityState.attributes.brightness != 0)
+            if (HassState.attributes != null && HassState.attributes.brightness != 0)
             {
-                color = Color.Lerp(Color.black, color, EntityState.attributes.brightness / 255f);
+                color = Color.Lerp(Color.black, color, HassState.attributes.brightness / 255f);
             }
         
             Icon.color = color;

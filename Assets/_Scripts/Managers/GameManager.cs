@@ -48,7 +48,7 @@ namespace Managers
         /// <summary>
         /// Only used for debugging in the inspector.
         /// </summary>
-        [SerializeField] public HassEntity[] InspectorHassStates;
+        [SerializeField] public HassState[] InspectorHassStates;
         
 #if QUEST_BUILD && FALSE
         [field: SerializeField] public EffectMesh EffectMesh { get; private set; }

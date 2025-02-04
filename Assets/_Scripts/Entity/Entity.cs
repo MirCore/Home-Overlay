@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Linq;
+using System.Threading.Tasks;
 using Managers;
 using Structs;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using UnityEngine.XR;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
+using UnityEngine.XR.Interaction.Toolkit.UI;
 using Utils;
 
 namespace Entity
@@ -22,13 +20,14 @@ namespace Entity
         [SerializeField] private Image HighlightImage;
         [SerializeField] internal TMP_Text Icon;
         [SerializeField] private Button SettingsButton;
+        [SerializeField] private GameObject WindowControls;
+        private LazyFollow _lazyFollow;
         private XRBaseInteractable _interactable;
 
-        protected HassEntity EntityState;
+        protected HassState HassState;
         public EntityObject EntityObject { get; private set; }
 
-        private ARAnchorManager _arAnchorManager;
-        private ARAnchor _anchor;
+        private ARAnchor _anchor;    
 
         /// <summary>
         /// A coroutine that is currently setting the color of the button temporarily.
@@ -37,8 +36,8 @@ namespace Entity
 
         protected virtual void OnEnable()
         {
-            _arAnchorManager = GameManager.Instance.ARAnchorManager;
-            _arAnchorManager.trackablesChanged.AddListener(OnAnchorChanged);
+            _lazyFollow = GetComponent<LazyFollow>();
+            AnchorHelper.ARAnchorManager.trackablesChanged.AddListener(OnAnchorChanged);
 
             SettingsButton.onClick.AddListener(OnSettingsButtonClicked);
             _interactable = GetComponent<XRBaseInteractable>();
@@ -48,7 +47,7 @@ namespace Entity
 
         protected virtual void OnDisable()
         {
-            _arAnchorManager.trackablesChanged.RemoveListener(OnAnchorChanged);
+            AnchorHelper.ARAnchorManager.trackablesChanged.RemoveListener(OnAnchorChanged);
 
             SettingsButton.onClick.RemoveListener(OnSettingsButtonClicked);
             _interactable.selectExited.RemoveListener(OnSelectExited);
@@ -56,104 +55,103 @@ namespace Entity
         }
 
         /// <summary>
-        /// Listens for when AR anchors are added to the scene, and parents this entity to the first anchor that matches the EntityObject's AnchorID.
+        /// Listens for when AR anchors are added to the scene, and parents this entity to the anchor that matches the EntityObject's AnchorID.
         /// </summary>
         private void OnAnchorChanged(ARTrackablesChangedEventArgs<ARAnchor> changes)
         {
+            // if the entity already has an anchor, exit the method
             if (_anchor != null)
                 return;
 
-            foreach (ARAnchor addedAnchor in changes.added.Where(addedAnchor => EntityObject.AnchorID == addedAnchor.trackableId.ToString()))
-            {
-                SetParentToAnchor(addedAnchor);
-                Debug.Log("Entity parented to added anchor");
-            }
+            ARAnchor addedAnchor = changes.added.FirstOrDefault(a => a.trackableId.ToString() == EntityObject.AnchorID);
+            if (addedAnchor == null)
+                return;
+            
+            AnchorHelper.AttachTransformToAnchor(transform, addedAnchor);
+            Debug.Log("Entity parented to added anchor");
+
         }
 
         private void OnSelectExited(SelectExitEventArgs eventData)
         {
             if (EntityObject == null)
                 return;
-
-            CreateAnchorAsync();
-
+            
+            // Save the new pose of the entity
             EntityObject.Position = transform.position;
             EntityObject.Rotation = transform.rotation;
             EntityObject.Scale = transform.localScale;
+
+            // Create a new anchor
+            _= CreateNewAnchor();
         }
 
-        /// <summary>
-        /// Sets the parent of the entity to the specified ARAnchor.
-        /// </summary>
-        /// <param name="newAnchor">The new anchor to attach to.</param>
-        private void SetParentToAnchor(ARAnchor newAnchor)
+        private async Task CreateNewAnchor()
         {
+            ARAnchor newAnchor;
+            
+            if (EntityObject.Settings.AlignWindowToWall)
+            {
+                if (!AnchorHelper.TryCreateAnchorOnNearestPlane(transform, out  newAnchor))
+                {
+                    Debug.Log("No plane found");
+                }
+            }
+            else
+            {
+                Result<ARAnchor> result = await AnchorHelper.CreateAnchorAsync(transform);
+                if (!result.status.IsSuccess())
+                {
+                    Debug.LogWarning("Failed to create anchor");
+                }
+                newAnchor = result.value;
+            }
+            
+            AnchorHelper.AttachTransformToAnotherAnchor(transform, newAnchor, _anchor);
             _anchor = newAnchor;
-            // Set the entity's parent to the anchor
-            transform.SetParent(_anchor.transform, false);
-            // Align the entity's position with the anchor
-            transform.position = _anchor.transform.position;
-            // Update the AnchorID in the entity object
             EntityObject.AnchorID = _anchor.trackableId.ToString();
-            //Debug.Log("Attached to anchor: " + EntityObject.AnchorID);
         }
 
-        /// <summary>
-        /// Asynchronously creates an ARAnchor at the entity's current pose.
-        /// </summary>
-        private async void CreateAnchorAsync()
+        private void ReattachToAnchor()
         {
-            // Attempt to add a new anchor at the current position and rotation
-            Result<ARAnchor> result = await _arAnchorManager.TryAddAnchorAsync(new Pose(transform.position, transform.rotation));
-            if (!result.status.IsSuccess())
-            {
-                // Log a warning if the anchor creation fails
-                Debug.LogWarning("Failed to create anchor");
+            // If the entity object does not have an anchor ID, exit the method
+            if (string.IsNullOrEmpty(EntityObject.AnchorID))
                 return;
-            }
 
-            ARAnchor oldAnchor = _anchor; // Store reference to the old anchor
-            ARAnchor newAnchor = result.value; // Get the newly created anchor
-
-            SetParentToAnchor(newAnchor); // Re-parent the entity to the new anchor
-
-            if (oldAnchor != null)
+            if (AnchorHelper.TryGetExistingAnchor(EntityObject.AnchorID, out ARAnchor anchor))
             {
-                // Remove the old anchor if it exists
-                bool deleted = _arAnchorManager.TryRemoveAnchor(oldAnchor);
-                //if (deleted)
-                //    Debug.Log("Deleted old anchor");
+                AnchorHelper.AttachTransformToAnchor(transform, anchor);
             }
-        }
-
-        private void OnSettingsButtonClicked()
-        {
-            EntitySettingsWindowManager.Instance.ToggleSettingsWindow(this);
+            else
+            {
+                Debug.Log("No anchor loaded");
+            }
         }
 
         /// <summary>
-        /// Called when Hass states change. Updates the icon.
+        /// Called when Hass states change.
         /// </summary>
         private void OnHassStatesChanged()
         {
             // Get the current state of the entity.
-            EntityState ??= HassStates.GetHassState(EntityObject.EntityID);
+            HassState ??= HassStates.GetHassState(EntityObject.EntityID);
 
+            // Update the Entity UI
             UpdateEntity();
         }
-
 
         /// <summary>
         /// Sets the entity object and updates the icon and anchor accordingly.
         /// </summary>
         /// <param name="entityObject">The entity object to be associated with this entity.</param>
-        public void SetEntityObject(EntityObject entityObject)
+        public void InitEntityObject(EntityObject entityObject)
         {
             // Assign the provided entity object to the current entity
             EntityObject = entityObject;
             // Add the entity object to the GameManager's list of entities
             GameManager.Instance.AddEntity(EntityObject, this);
-            AttachToAnchor();
+            ReattachToAnchor();
+            SetWindowControlVisibility();
 
             // If there is no entity ID, there is nothing to update.
             if (EntityObject.EntityID == null)
@@ -163,9 +161,9 @@ namespace Entity
             }
 
             // Get the current state of the entity.
-            EntityState ??= HassStates.GetHassState(EntityObject.EntityID);
+            HassState ??= HassStates.GetHassState(EntityObject.EntityID);
 
-            if (EntityState != null)
+            if (HassState != null)
             {
                 // Update the icon to reflect the current state of the entity
                 UpdateEntity();
@@ -173,34 +171,13 @@ namespace Entity
 
         }
 
-        private void AttachToAnchor()
-        {
-            // If the entity object does not have an anchor ID, exit the method
-            if (string.IsNullOrEmpty(EntityObject.AnchorID))
-                return;
-
-            // Retrieve the anchor using the anchor ID
-            TrackableId trackableId = new(EntityObject.AnchorID);
-            ARAnchor anchor = _arAnchorManager.GetAnchor(trackableId);
-
-            // If an anchor is found, set the entity's parent to the anchor
-            if (anchor != null)
-            {
-                SetParentToAnchor(anchor);
-            }
-            else
-            {
-                // Log a message if no anchor is found
-                Debug.Log("No anchor loaded");
-            }
-        }
-
-        public void UpdateEntityID(string entityID)
+        // Assign a new Entity ID to the entity
+        public void AssignNewEntityID(string entityID)
         {
             EntityObject.EntityID = entityID;
 
             // Get the current state of the entity.
-            EntityState = HassStates.GetHassState(EntityObject.EntityID);
+            HassState = HassStates.GetHassState(EntityObject.EntityID);
 
             UpdateEntity();
             EntitySettingsWindowManager.Instance.UpdateEntitySettingsWindow(this);
@@ -251,20 +228,23 @@ namespace Entity
             // Set the flag to indicate that the coroutine has finished
             _setButtonColorTemporarilyCoroutine = null;
         }
+        private void OnSettingsButtonClicked() => EntitySettingsWindowManager.Instance.ToggleSettingsWindow(this);
 
-        public EDeviceType GetDeviceType()
+        public EDeviceType GetDeviceType() => HassState.DeviceType;
+
+        public void ReloadSettingsWindow() => EntitySettingsWindowManager.Instance.UpdateEntitySettingsWindow(this);
+
+        public void SetWindowControlVisibility() => WindowControls.SetActive(!EntityObject.Settings.HideWindowControls);
+        
+        public void ToggleAlignWindowToWall()
         {
-            return EntityState.DeviceType;
+            // toggle the LazyFollow component on/off
+            _lazyFollow.enabled = !EntityObject.Settings.AlignWindowToWall;
+            
+            // Create a new anchor when the setting is enabled
+            if (EntityObject.Settings.AlignWindowToWall)
+                _ = CreateNewAnchor();
         }
 
-        public void ReloadSettingsWindow()
-        {
-            EntitySettingsWindowManager.Instance.UpdateEntitySettingsWindow(this);
-        }
-
-        public void OnScaled()
-        {
-            EntityObject.Scale = transform.localScale;
-        }
     }
 }

@@ -52,7 +52,7 @@ namespace Entity
             {
                 try
                 {
-                    RestHandler.GetCalendar(EntityState.entity_id, UpdateCalendar);
+                    RestHandler.GetCalendar(HassState.entity_id, UpdateCalendar);
                     await Task.Delay(TimeSpan.FromSeconds(CalendarRefreshRate), token);
                 }
                 catch (TaskCanceledException)

@@ -1123,6 +1123,7 @@ MonoBehaviour:
   HighlightImage: {fileID: 0}
   Icon: {fileID: 0}
   SettingsButton: {fileID: 2146726319355691960}
+  WindowControls: {fileID: 7947449285313135619}
   Month: {fileID: 5200249035392254520}
   Day: {fileID: 5724035621027868564}
   Weekday: {fileID: 7596000964629196262}
@@ -1131,3 +1132,8 @@ MonoBehaviour:
   Location: {fileID: 2100485805265878836}
   InspectorCalendarEvents: []
   CalendarRefreshRate: 600
+--- !u!1 &7947449285313135619 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7344501811070057332, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
+  m_PrefabInstance: {fileID: 839897688799362935}
+  m_PrefabAsset: {fileID: 0}

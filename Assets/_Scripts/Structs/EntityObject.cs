@@ -15,6 +15,7 @@ namespace Structs
         [SerializeField] private Quaternion _rotation;
         [SerializeField] private Vector3 _scale = Vector3.one;
         [SerializeField] private string _anchorID;
+        [SerializeField] private EntitySettings _settings;
         private Entity.Entity _entity;
 
         public EntityObject(string id, string entityID, Vector3 transformPosition)
@@ -70,8 +71,15 @@ namespace Structs
             }
         }
     
-        public Vector3 Scale {
-            get => _scale;
+        public Vector3 Scale
+        {
+            get
+            {
+                if (_scale == Vector3.zero) 
+                    Scale = Vector3.one; 
+                
+                return _scale;
+            }
             set
             {
                 if (_scale == value)
@@ -100,6 +108,19 @@ namespace Structs
             }
             else
                 GameManager.Instance.RemoveEntity(this);
+        }
+
+        public EntitySettings Settings
+        {
+            get => _settings;
+            set => _settings = value;
+        }
+        
+        [Serializable]
+        public class EntitySettings
+        {
+            public bool HideWindowControls { get; set; }
+            public bool AlignWindowToWall { get; set; }
         }
     }
 
