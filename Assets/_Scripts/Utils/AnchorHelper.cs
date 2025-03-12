@@ -10,7 +10,7 @@ namespace Utils
     public abstract class AnchorHelper
     {
         private static readonly ARRaycastManager RaycastManager;
-
+        private static readonly ARPlaneManager PlaneMeshManager;
         public static readonly ARAnchorManager ARAnchorManager;
         private static readonly Vector3[] Directions = { Vector3.forward, Vector3.back, Vector3.up, Vector3.down, Vector3.left, Vector3.right }; // Directions to cast rays
 
@@ -18,7 +18,8 @@ namespace Utils
         {
             RaycastManager = Object.FindFirstObjectByType<ARRaycastManager>();
             ARAnchorManager = Object.FindFirstObjectByType<ARAnchorManager>();
-            Debug.Log(RaycastManager);
+            PlaneMeshManager = Object.FindFirstObjectByType<ARPlaneManager>();
+            
         }
         
         

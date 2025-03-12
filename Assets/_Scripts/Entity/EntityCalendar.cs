@@ -31,8 +31,11 @@ namespace Entity
         
         private void Start()
         {
-            _cancellationTokenSource = new CancellationTokenSource();
-            _ = GetHassCalendar(_cancellationTokenSource.Token);
+            if (HassState != null)
+            {
+                _cancellationTokenSource = new CancellationTokenSource();
+                _ = GetHassCalendar(_cancellationTokenSource.Token);
+            }
         }
         
         protected override void OnDisable()
@@ -48,12 +51,14 @@ namespace Entity
         /// <param name="token">The cancellation token to cancel the task.</param>
         private async Task GetHassCalendar(CancellationToken token)
         {
+            if (HassState == null)
+                _cancellationTokenSource.Cancel();
             while (!token.IsCancellationRequested)
             {
                 try
                 {
-                    RestHandler.GetCalendar(HassState.entity_id, UpdateCalendar);
-                    await Task.Delay(TimeSpan.FromSeconds(CalendarRefreshRate), token);
+                    if (HassState != null) 
+                        RestHandler.GetCalendar(HassState.entity_id, UpdateCalendar);
                 }
                 catch (TaskCanceledException)
                 {
@@ -64,13 +69,15 @@ namespace Entity
                 {
                     Debug.LogError($"Error while updating calendar: {ex.Message}");
                 }
-            }
+                await Task.Delay(TimeSpan.FromSeconds(CalendarRefreshRate), token);
+            }                
         }
         
         private void UpdateCalendar(string calendarResponse)
         {
             UpdateNextEvent(calendarResponse);
         }
+        
         /// <summary>
         /// Updates the calendar panel with the next event.
         /// </summary>
@@ -112,6 +119,17 @@ namespace Entity
 
         protected override void UpdateEntity()
         {
+            if (HassState == null)
+                return;
+            
+            if (_cancellationTokenSource != null && !_cancellationTokenSource.Token.IsCancellationRequested)
+                return;  // Prevent multiple tasks
+
+            _cancellationTokenSource?.Cancel(); // Cancel any existing token
+            _cancellationTokenSource?.Dispose(); // Dispose of the old CTS
+
+            _cancellationTokenSource = new CancellationTokenSource();
+            _ = GetHassCalendar(_cancellationTokenSource.Token);
         }
     }
 }
