@@ -66,13 +66,18 @@ namespace Utils
         }
 
         /// <summary>
-        /// Asynchronously creates an ARAnchor at the entity's current pose.
+        /// Asynchronously creates an ARAnchor at the panel's current pose.
         /// </summary>
         /// <param name="transform"></param>
         /// <param name="anchorRotation"></param>
         
         public static async Task<Result<ARAnchor>> CreateAnchorAsync(Transform transform, Quaternion anchorRotation = default)
         {
+            if (LoaderUtility.GetActiveLoader()?.GetLoadedSubsystem<XRAnchorSubsystem>() == null)
+            {
+                return new Result<ARAnchor>();
+            }
+            
             Quaternion rotation = anchorRotation == default ? transform.rotation : anchorRotation;
             // Attempt to add a new anchor at the current position and rotation
             Result<ARAnchor> result = await ARAnchorManager.TryAddAnchorAsync(new Pose(transform.position, rotation));
@@ -90,6 +95,11 @@ namespace Utils
         /// </summary>
         public static bool TryGetExistingAnchor(string anchorId, out ARAnchor anchor)
         {
+            if (string.IsNullOrEmpty(anchorId))
+            {
+                anchor = null;
+                return false;
+            }
             TrackableId trackableId = new(anchorId);
             anchor = ARAnchorManager.GetAnchor(trackableId);
             return anchor != null;
@@ -110,15 +120,15 @@ namespace Utils
         /// <summary>
         /// Sets the parent of a given transform to an ARAnchor.
         /// </summary>
-        public static void AttachTransformToAnotherAnchor(Transform target, ARAnchor anchor, ARAnchor oldAnchor)
+        public static void AttachTransformToAnotherAnchor(Transform target, ARAnchor anchor, string oldAnchorID)
         {
             if (target == null || anchor == null) return;
 
             AttachTransformToAnchor(target, anchor);
             
             // Remove the old anchor if it exists
-            if (oldAnchor != null) 
-                TryRemoveAnchor(oldAnchor);
+            if (!string.IsNullOrEmpty(oldAnchorID)) 
+                TryRemoveAnchor(oldAnchorID);
         }
         
         /// <summary>
@@ -145,11 +155,11 @@ namespace Utils
             
             return anchor != null;
         }
-        
-        
-        public static void TryRemoveAnchor(ARAnchor oldAnchor)
+
+        private static void TryRemoveAnchor(string oldAnchorID)
         {
-            ARAnchorManager.TryRemoveAnchor(oldAnchor);
+            if (TryGetExistingAnchor(oldAnchorID, out ARAnchor anchor))
+                ARAnchorManager.TryRemoveAnchor(anchor);
         }
     }
 }

@@ -5,6 +5,7 @@ using Managers;
 using TMPro;
 using UI;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Utils;
 
@@ -21,10 +22,10 @@ public class EntityPicker : MonoBehaviour
     [SerializeField] private Transform _entityPanelsParent;
     
     /// <summary>
-    /// The Button that creates a new entity.
+    /// The Button that creates a new panel.
     /// </summary>
     [Header("Buttons")]
-    [SerializeField] private Button CreateEntityButton;
+    [SerializeField] private Button CreatePanelButton;
     
     /// <summary>
     /// The Button that saves the settings.
@@ -37,10 +38,11 @@ public class EntityPicker : MonoBehaviour
     [SerializeField] private Button CancelChangesButton;
     
     /// <summary>
-    /// The EntitySpawner that spawns new entities.
+    /// The PanelSpawner that spawns new entities.
     /// </summary>
+    [FormerlySerializedAs("EntitySpawner")]
     [Header("Managers")]
-    [SerializeField] private EntitySpawner EntitySpawner;
+    [SerializeField] private PanelSpawner PanelSpawner;
     
     /// <summary>
     /// The currently selected device type.
@@ -49,7 +51,7 @@ public class EntityPicker : MonoBehaviour
     private string _selectedEntityID;
     private List<string> _entityIDList = new ();
 
-    private Entity.Entity _entity;
+    private Panel.Panel _panel;
     private string _searchText = "";
 
     private void OnEnable()
@@ -62,8 +64,8 @@ public class EntityPicker : MonoBehaviour
         
         if (TypeDropdown)
             TypeDropdown.onValueChanged.AddListener(OnTypeDropdownValueChanged);
-        if (CreateEntityButton)
-            CreateEntityButton.onClick.AddListener(OnCreateEntityButtonClicked);
+        if (CreatePanelButton)
+            CreatePanelButton.onClick.AddListener(OnCreatePanelButtonClicked);
         if (SaveChangesButton)
             SaveChangesButton.onClick.AddListener(OnSaveChangesButtonClicked);
         if (CancelChangesButton)
@@ -77,8 +79,8 @@ public class EntityPicker : MonoBehaviour
         
         if (TypeDropdown)
             TypeDropdown.onValueChanged.RemoveListener(OnTypeDropdownValueChanged);
-        if (CreateEntityButton)
-            CreateEntityButton.onClick.RemoveListener(OnCreateEntityButtonClicked);
+        if (CreatePanelButton)
+            CreatePanelButton.onClick.RemoveListener(OnCreatePanelButtonClicked);
         if (SaveChangesButton)
             SaveChangesButton.onClick.RemoveListener(OnSaveChangesButtonClicked);
         if (CancelChangesButton)
@@ -90,25 +92,27 @@ public class EntityPicker : MonoBehaviour
     
     private void OnSaveChangesButtonClicked()
     {
-        _entity.AssignNewEntityID(_selectedEntityID);
+        _panel.AssignNewEntityID(_selectedEntityID);
     }
 
     private void OnCancelChangesButtonClicked()
     {
-        _entity.ReloadSettingsWindow();
+        _panel.ReloadSettingsWindow();
     }
     
     /// <summary>
-    /// Handles the click event of the CreateEntityButton.
-    /// Spawns a new entity at the position of the CreateEntityButton with the selected entity ID.
+    /// Handles the click event of the CreatePanelButton.
+    /// Spawns a new panel at the position of the CreatePanelButton with the selected panel ID.
     /// </summary>
-    private void OnCreateEntityButtonClicked()
+    private void OnCreatePanelButtonClicked()
     {
-        // Get the selected entity ID from the EntityDropdown
+        // Get the selected panel ID from the EntityDropdown
         string selectedEntityID = _selectedEntityID;
 
-        // Spawn a new entity at the position of the CreateEntityButton with the selected entity ID
-        EntitySpawner.SpawnNewEntity(selectedEntityID, CreateEntityButton.transform.position);
+        // Spawn a new panel at the position of the CreatePanelButton with the selected panel ID
+        PanelSpawner.SpawnNewEntity(selectedEntityID, CreatePanelButton.transform.position);
+
+        UIManager.Instance.CloseMainMenu();
     }
 
     #endregion
@@ -159,17 +163,17 @@ public class EntityPicker : MonoBehaviour
 
     private void GenerateEntityList()
     {
-        // Get the filtered list of entity IDs
+        // Get the filtered list of entityIDs
         List<string> entityIDList = GetFilteredEntityIDList();
         
-        // Check if the list of entity IDs has changed, if not, return
+        // Check if the list of entityIDs has changed, if not, return
         if (entityIDList.SequenceEqual(_entityIDList))
             return;
         
-        // Return all the entity panels to the pool
+        // Return all the panels to the pool
         ObjectPool.Instance.ReturnObjectsToPool(_entityPanels);
 
-        // Update the list of entity IDs
+        // Update the list of entityIDs
         _entityIDList = entityIDList;
         
         // Populate the EntityPanel
@@ -215,9 +219,9 @@ public class EntityPicker : MonoBehaviour
     }
 
     /// <summary>
-    /// Populates the EntityPanel with the given list of entity IDs.
+    /// Populates the EntityPanel with the given list of entityIDs.
     /// </summary>
-    /// <param name="entityIDList">The list of entity IDs to be added to the panel.</param>
+    /// <param name="entityIDList">The list of entityIDs to be added to the panel.</param>
     private void PopulateEntityPanel(List<string> entityIDList)
     {
         // Sort entities by friendly_name (default to entityID if name is null)
@@ -234,7 +238,7 @@ public class EntityPicker : MonoBehaviour
             // Set the entity panel properties
             entityPickerPanel.SetNewEntity(entityID);
             
-            // Highlight the selected entity if it is the same as the selected entityID
+            // Highlight the selected panel if it is the same as the selected entityID
             if (entityID == _selectedEntityID)
                 entityPickerPanel.Highlight();
             
@@ -258,13 +262,13 @@ public class EntityPicker : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets the Entity this EntityPicker is part of. Also selects the entity in the dropdown
+    /// Sets the Panel this EntityPicker is part of. Also selects the entity in the dropdown
     /// </summary>
-    /// <param name="entity"></param>
-    public void SetEntity(Entity.Entity entity)
+    /// <param name="panel"></param>
+    public void SetEntity(Panel.Panel panel)
     {
-        _entity = entity;
-        _selectedEntityID = _entity.EntityObject.EntityID;
-        TypeDropdown.value = (int)_entity.GetDeviceType();
+        _panel = panel;
+        _selectedEntityID = _panel.PanelData.EntityID;
+        TypeDropdown.value = (int)_panel.GetDeviceType();
     }
 }

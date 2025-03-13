@@ -11,13 +11,13 @@ namespace Utils
     public abstract class SaveFile
     {
         // Key for reading and writing encrypted data.
-        // (This is a "hardcoded" secret key. )
+        // (This is a "hardcoded" secret key.)
         private static readonly byte[] SavedKey = { 0xE6, 0xDA, 0x48, 0x8E, 0xD2, 0x15, 0x8A, 0x26, 0x2E, 0xA4, 0x7D, 0x78, 0x96 ,0x0 ,0xCD, 0x90 };
         
         private static readonly string SaveDataPath = Application.persistentDataPath + "/saveData.json";
         private static readonly string HassConfigPath = Application.persistentDataPath + "/hassConfig.json";
         
-        public static List<EntityObject> ReadFile()
+        public static List<PanelData> ReadFile()
         {
             if (!File.Exists(SaveDataPath))
             {
@@ -28,10 +28,10 @@ namespace Utils
             {
                 // Read the entire file into a String value.
                 string json = File.ReadAllText(SaveDataPath);
-                EntityObjectListWrapper wrapper = JsonUtility.FromJson<EntityObjectListWrapper>(json);
+                PanelDataListWrapper wrapper = JsonUtility.FromJson<PanelDataListWrapper>(json);
             
                 // Deserialize the JSON data into a pattern matching the GameData class.
-                return wrapper.EntityObjects ?? new List<EntityObject>();
+                return wrapper.PanelDatas ?? new List<PanelData>();
             }
             catch (Exception e)
             {
@@ -39,11 +39,11 @@ namespace Utils
                 throw;
             }
         }
-        private static void WriteFile(List<EntityObject> gameData)
+        private static void WriteFile(List<PanelData> gameData)
         {
             try
             {
-                string json = JsonUtility.ToJson(new EntityObjectListWrapper { EntityObjects = gameData }, true);
+                string json = JsonUtility.ToJson(new PanelDataListWrapper { PanelDatas = gameData }, true);
                 
                 File.WriteAllText(SaveDataPath, json);
                 
@@ -57,12 +57,12 @@ namespace Utils
             }
         }
 
-        public static void SaveEntityObjects()
+        public static void SavePanelDatas()
         {
-            WriteFile(GameManager.Instance.EntityObjects);
+            WriteFile(PanelManager.Instance.PanelDatas);
         }
 
-        public static EntityObject ReadEncryptedFile()
+        public static PanelData ReadEncryptedFile()
         {
             if (!File.Exists(SaveDataPath))
             {
@@ -97,7 +97,7 @@ namespace Utils
                 reader.Close();
             
                 // Deserialize the JSON data into a pattern matching the GameData class.
-                return JsonUtility.FromJson<EntityObject>(text);
+                return JsonUtility.FromJson<PanelData>(text);
             }
             catch (Exception e)
             {
@@ -107,7 +107,7 @@ namespace Utils
             
         }
 
-        public static void WriteEncryptedFile(EntityObject gameData)
+        public static void WriteEncryptedFile(PanelData gameData)
         {
             try
             {

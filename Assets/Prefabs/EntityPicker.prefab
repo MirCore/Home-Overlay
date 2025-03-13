@@ -392,7 +392,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CreateEmtpyEntityButton: {fileID: 1960666277901095479}
-  EntitySpawner: {fileID: 0}
+  PanelSpawner: {fileID: 0}
 --- !u!114 &5139710179486004580
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -408,10 +408,10 @@ MonoBehaviour:
   TypeDropdown: {fileID: 1672523752591572843}
   SearchInputField: {fileID: 3284757838371520498}
   _entityPanelsParent: {fileID: 6161483100680759035}
-  CreateEntityButton: {fileID: 4652241261140843984}
+  CreatePanelButton: {fileID: 4652241261140843984}
   SaveChangesButton: {fileID: 297602557490917340}
   CancelChangesButton: {fileID: 2666707940372290416}
-  EntitySpawner: {fileID: 0}
+  PanelSpawner: {fileID: 0}
 --- !u!1 &5107411998830598921
 GameObject:
   m_ObjectHideFlags: 0

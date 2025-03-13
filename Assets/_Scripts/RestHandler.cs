@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using Entity;
 using Managers;
 using Proyecto26;
 using UnityEngine;
@@ -154,7 +153,7 @@ public abstract class RestHandler
     #region Post
 
     /// <summary>
-    /// Sends a POST request to the specified URI with the given entity ID.
+    /// Sends a POST request to the specified URI with the given panel ID.
     /// </summary>
     /// <param name="uri">The URI to send the POST request to.</param>
     /// <param name="body">The data to include in the request body.</param>
@@ -183,9 +182,9 @@ public abstract class RestHandler
     }
     
     /// <summary>
-    /// Toggles the light state for the specified entity ID.
+    /// Toggles the light state for the specified panel ID.
     /// </summary>
-    /// <param name="entityID">The entity ID of the light to toggle.</param>
+    /// <param name="entityID">The panel ID of the light to toggle.</param>
     public static void ToggleLight(string entityID)
     {
         Uri uri = new (GameManager.Instance.HassUri, "services/light/toggle");
@@ -194,9 +193,9 @@ public abstract class RestHandler
     }
 
     /// <summary>
-    /// Toggles the switch state for the specified entity ID.
+    /// Toggles the switch state for the specified panel ID.
     /// </summary>
-    /// <param name="entityID">The entity ID of the switch to toggle.</param>
+    /// <param name="entityID">The panel ID of the switch to toggle.</param>
     public static void ToggleSwitch(string entityID)
     {
         Uri uri = new (GameManager.Instance.HassUri, "services/switch/toggle");
@@ -244,7 +243,7 @@ public abstract class RestHandler
     private class EntityID
     {
         /// <summary>
-        /// The entity ID.
+        /// The panel ID.
         /// </summary>
         public string entity_id;
     }
@@ -256,7 +255,7 @@ public abstract class RestHandler
     private class Brightness
     {
         /// <summary>
-        /// The entity ID.
+        /// The panel ID.
         /// </summary>
         public string entity_id;
         public string brightness = null;
@@ -269,7 +268,7 @@ public abstract class RestHandler
     private class Kelvin
     {
         /// <summary>
-        /// The entity ID.
+        /// The panel ID.
         /// </summary>
         public string entity_id;
         public string kelvin = null;
@@ -282,7 +281,7 @@ public abstract class RestHandler
     private class RGBColor
     {
         /// <summary>
-        /// The entity ID.
+        /// The panel ID.
         /// </summary>
         public string entity_id;
         public int[] rgb_color;
@@ -295,7 +294,7 @@ public abstract class RestHandler
     private class GetForecast
     {
         /// <summary>
-        /// The entity ID.
+        /// The panel ID.
         /// </summary>
         public string entity_id;
         public string type;

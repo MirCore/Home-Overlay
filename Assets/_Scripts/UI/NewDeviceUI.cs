@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace UI
@@ -6,14 +7,14 @@ namespace UI
     public class NewDeviceUI : MonoBehaviour
     {
         /// <summary>
-        /// The Button that creates an empty new entity.
+        /// The Button that creates an empty new panel.
         /// </summary>
         [SerializeField] private Button CreateEmtpyEntityButton;
         
         /// <summary>
-        /// The EntitySpawner that spawns new entities.
+        /// The PanelSpawner that spawns new entities.
         /// </summary>
-        [SerializeField] private EntitySpawner EntitySpawner;
+        [SerializeField] private PanelSpawner PanelSpawner;
         
         /// <summary>
         /// The currently selected device type.
@@ -33,12 +34,12 @@ namespace UI
 
         /// <summary>
         /// Handles the click event of the OnCreateEmptyEntityButtonClicked.
-        /// Spawns a new empty entity at the position of the CreateEmtpyEntityButton with the selected entity ID.
+        /// Spawns a new empty panel at the position of the CreateEmtpyEntityButton with the selected panel ID.
         /// </summary>
         private void OnCreateEmptyEntityButtonClicked()
         {
-            // Spawn a new entity at the position of the CreateEmtpyEntityButton with the selected entity ID
-            EntitySpawner.SpawnNewEntity(null, CreateEmtpyEntityButton.transform.position);
+            // Spawn a new panel at the position of the CreateEmtpyEntityButton with the selected panel ID
+            PanelSpawner.SpawnNewEntity(null, CreateEmtpyEntityButton.transform.position);
         }
         
     }

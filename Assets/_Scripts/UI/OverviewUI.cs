@@ -25,56 +25,56 @@ namespace UI
         }
 
         /// <summary>
-        /// Shows the entity panels by enabling or instantiating them as needed.
+        /// Shows the panel panels by enabling or instantiating them as needed.
         /// </summary>
         private void ShowEntityPanels()
         {
-            // Initialize an index to keep track of the current entity panel
+            // Initialize an index to keep track of the current panel
             int index = 0;
 
-            // Iterate over all entity objects in the game manager
-            foreach (EntityObject entity in GameManager.Instance.EntityObjects)
+            // Iterate over all panel objects in the game manager
+            foreach (PanelData panelData in PanelManager.Instance.PanelDatas)
             {
-                // Get the entity panel, either by reusing an existing one or instantiating a new one
+                // Get the panel, either by reusing an existing one or instantiating a new one
                 GameObject overviewUIEntityPanel;
                 if (index < _entityPanels.Count)
                 {
-                    // Reuse an existing entity panel
+                    // Reuse an existing panel panel
                     overviewUIEntityPanel = _entityPanels[index];
                     overviewUIEntityPanel.SetActive(true);
                 }
                 else
                 {
-                    // Instantiate a new entity panel
+                    // Instantiate a new panel panel
                     overviewUIEntityPanel = Instantiate(EntityPanelPrefab, transform);
                     _entityPanels.Add(overviewUIEntityPanel);
                 }
 
-                // Set the entity object for the friendly name handler
-                overviewUIEntityPanel.GetComponent<FriendlyNameHandler>().SetNewEntity(entity);
+                // Set the panel object for the friendly name handler
+                overviewUIEntityPanel.GetComponent<FriendlyNameHandler>().SetNewEntity(panelData);
                 Button[] buttons = overviewUIEntityPanel.GetComponentsInChildren<Button>();
-                buttons[0].onClick.AddListener(() => OnHighlightEntityButtonPressed(entity));
-                buttons[1].onClick.AddListener(() => OnDeleteEntityButtonPressed(entity));
+                buttons[0].onClick.AddListener(() => OnHighlightPanelButtonPressed(panelData));
+                buttons[1].onClick.AddListener(() => OnDeletePanelButtonPressed(panelData));
 
-                // Increment the index for the next entity panel
+                // Increment the index for the next panel
                 index++;
             }
 
-            // Hide any remaining entity panels that are not needed
+            // Hide any remaining panel panels that are not needed
             for (int i = index; i < _entityPanels.Count; i++)
             {
                 _entityPanels[i].SetActive(false);
             }
         }
 
-        private void OnHighlightEntityButtonPressed(EntityObject entity)
+        private void OnHighlightPanelButtonPressed(PanelData panelData)
         {
-            entity.Entity.HighlightEntity();
+            panelData.Panel.HighlightPanel();
         }
 
-        private void OnDeleteEntityButtonPressed(EntityObject entity)
+        private void OnDeletePanelButtonPressed(PanelData entity)
         {
-            GameManager.Instance.EntityObjects.FirstOrDefault(e => e.ID == entity.ID)?.DeleteEntity();
+            PanelManager.Instance.PanelDatas.FirstOrDefault(e => e.ID == entity.ID)?.DeletePanel();
             ShowEntityPanels();
         }
     }

@@ -132,5 +132,10 @@ namespace Managers
             if (_mainUILazyFollow != null)
                 _mainUILazyFollow.positionFollowMode = LazyFollow.PositionFollowMode.Follow;
         }
+
+        public void CloseMainMenu()
+        {
+            HideMainMenu();
+        }
     }
 }

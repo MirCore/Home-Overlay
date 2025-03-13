@@ -107,11 +107,11 @@ public class ColorPicker : MonoBehaviour
     }
     
     /// <summary>
-    /// Updates the sliders based on the entity state.
+    /// Updates the sliders based on the panel state.
     /// </summary>
     /// <remarks>
-    /// If the entity is off, it sets the state to false.
-    /// If the entity is on, it updates the Temperature slider bounds, and sets the Brightness, Saturation and Hue sliders to the current value of the entity.
+    /// If the panel is off, it sets the state to false.
+    /// If the panel is on, it updates the Temperature slider bounds, and sets the Brightness, Saturation and Hue sliders to the current value of the panel.
     /// </remarks>
     private void UpdateSliderValues()
     {
@@ -119,7 +119,7 @@ public class ColorPicker : MonoBehaviour
         if (hassState == null)
             return;
         
-        // If the entity is off, set the state to false.
+        // If the panel is off, set the state to false.
         _turnedOn = hassState.state != "off";
         
         // Update Temperature slider bounds
@@ -148,9 +148,9 @@ public class ColorPicker : MonoBehaviour
     }
     
     /// <summary>
-    /// Updates the temperature slider bounds with the min and max color temp kelvin of the entity.
+    /// Updates the temperature slider bounds with the min and max color temp kelvin of the panel.
     /// </summary>
-    /// <param name="hassState">The HassState object of the entity.</param>
+    /// <param name="hassState">The HassState object of the panel.</param>
     private void UpdateTemperatureSliderBounds(HassState hassState)
     {
         if ((int)TemperatureSlider.minValue == hassState.attributes.min_color_temp_kelvin && (int)TemperatureSlider.maxValue == hassState.attributes.max_color_temp_kelvin)
@@ -187,7 +187,7 @@ public class ColorPicker : MonoBehaviour
         else
             BrightnessSliderBackground.materialForRendering.SetColor(ColorEnd, Color.white);
         
-        // Set the alpha to 0.5 if the entity is off
+        // Set the alpha to 0.5 if the panel is off
         float alpha = _turnedOn == false ? 0.5f : 1f;
         SaturationSliderBackground.materialForRendering.SetFloat(Alpha, alpha);
         BrightnessSliderBackground.materialForRendering.SetFloat(Alpha, alpha);
@@ -202,14 +202,14 @@ public class ColorPicker : MonoBehaviour
     }
     
     /// <summary>
-    /// Toggles the color picker sliders based on the supported color modes of the entity.
+    /// Toggles the color picker sliders based on the supported color modes of the panel.
     /// </summary>
-    /// <param name="supportedColorModes">The supported color modes of the entity.</param>
+    /// <param name="supportedColorModes">The supported color modes of the panel.</param>
     public void SetMode(string[] supportedColorModes)
     { 
         HashSet<string> modes = new (supportedColorModes);
         
-        // If the entity only supports the onoff mode, hide the color picker
+        // If the panel only supports the onoff mode, hide the color picker
         if (modes.Count == 1 && modes.Contains("onoff") || modes.Contains("unknown"))
         {
             gameObject.SetActive(false);
@@ -218,11 +218,11 @@ public class ColorPicker : MonoBehaviour
         
         // All cases support the brightness mode, so it can stay on
         
-        // If the entity supports the color_temp mode, show the temperature slider
+        // If the panel supports the color_temp mode, show the temperature slider
         _supportsTemperature = modes.Contains("color_temp");
         TemperatureSliderObject.SetActive(_supportsTemperature);
         
-        // If the entity supports the hs, rgb, rgbw, rgbww, white, or xy modes, show the color picker
+        // If the panel supports the hs, rgb, rgbw, rgbww, white, or xy modes, show the color picker
         _supportsColor = modes.Overlaps(new[] { "hs", "rgb", "rgbw", "rgbww", "white", "xy" });
         HueSliderObject.SetActive(_supportsColor);
         SaturationSliderObject.SetActive(_supportsColor);

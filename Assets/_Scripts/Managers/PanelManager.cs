@@ -1,0 +1,104 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Structs;
+using UnityEngine;
+using UnityEngine.XR.ARFoundation;
+using Utils;
+
+namespace Managers
+{
+    public class PanelManager : Singleton<PanelManager>
+    {
+        public List<PanelData> PanelDatas { get; private set; } = new ();
+
+        [field: SerializeField] private List<PanelData> PanelsToLoad { get; set; }
+
+        /// <summary>
+        /// The PanelSpawner that spawns new entities.
+        /// </summary>
+        [SerializeField] private PanelSpawner PanelSpawner;
+
+        private void OnEnable()
+        {
+            AnchorHelper.ARAnchorManager.trackablesChanged.AddListener(OnAnchorsChanged);
+        }
+
+        private void OnDisable()
+        {
+            AnchorHelper.ARAnchorManager.trackablesChanged.RemoveListener(OnAnchorsChanged);
+        }
+
+        private void OnAnchorsChanged(ARTrackablesChangedEventArgs<ARAnchor> changes)
+        {
+            if (PanelDatas.Count > 0)
+            {
+                foreach (PanelData panelData in changes.added.Select(arAnchor => PanelsToLoad.First(a => a.AnchorID == arAnchor.trackableId.ToString())))
+                {
+                    PanelSpawner.SpawnSavedPanel(panelData);
+                    PanelsToLoad.Remove(panelData);
+                }
+            }
+            
+            // Listens for when AR anchors are added to the scene, and deletes any anchors that aren't associated with an PanelData.
+            foreach (ARAnchor addedAnchor in changes.added.Where(addedAnchor => !PanelDatas.Exists(e => e.AnchorID == addedAnchor.trackableId.ToString())))
+            {
+                StartCoroutine(DeleteAnchorNextFrame(addedAnchor));
+            }
+        }
+
+        /// <summary>
+        /// Removes a deleted Panel from the List and saves the changes
+        /// </summary>
+        /// <param name="panelData"></param>
+        public void RemovePanel(PanelData panelData)
+        {
+            PanelDatas.Remove(panelData);
+            SaveFile.SavePanelDatas();
+        }
+
+        /// <summary>
+        /// Deletes an anchor on the next frame after it is added, after the anchor has been fully initialized.
+        /// This is necessary because the anchor isn't fully initialized until the next frame after it is added,
+        /// and attempting to delete it immediately will fail.
+        /// </summary>
+        /// <param name="anchor">The anchor to delete.</param>
+        private static IEnumerator DeleteAnchorNextFrame(ARAnchor anchor)
+        {
+            yield return new WaitForEndOfFrame();
+            AnchorHelper.ARAnchorManager.TryRemoveAnchor(anchor);
+        }
+        
+        internal void LoadEntityObjects()
+        {
+            PanelDatas = SaveFile.ReadFile();
+            if (PanelDatas == null)
+                return;
+
+            PanelsToLoad = PanelDatas.ToList();
+            LoadPanels();
+        }
+
+        /// <summary>
+        /// Checks if the anchors for PanelsToLoad already exists, or if there is no anchorID set in the panelData.
+        /// Spawns the Panels if true and removes them from the list.
+        /// </summary>
+        private void LoadPanels()
+        {
+            if (PanelsToLoad.Count == 0)
+                return;
+
+            foreach (PanelData panelData in PanelsToLoad.ToList().Where(p => AnchorHelper.TryGetExistingAnchor(p.AnchorID, out ARAnchor _) || string.IsNullOrEmpty(p.AnchorID)))
+            {
+                PanelSpawner.SpawnSavedPanel(panelData);
+                PanelsToLoad.Remove(panelData);
+            }
+        }
+
+        public void AddNewEntity(PanelData panelData)
+        {
+            PanelDatas.Add(panelData);
+            SaveFile.SavePanelDatas();
+        }
+    }
+}

@@ -48,9 +48,9 @@ namespace UI
                 Title.text = Subtitle.text.Split('.')[1];
         }
 
-        public void SetNewEntity(EntityObject entityObject)
+        public void SetNewEntity(PanelData panelData)
         {
-            Subtitle.text = entityObject.EntityID;
+            Subtitle.text = panelData.EntityID;
             
             UpdateTitle();
         }

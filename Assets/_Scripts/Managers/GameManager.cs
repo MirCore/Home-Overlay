@@ -22,23 +22,19 @@ namespace Managers
         public string HassURL { get; private set; }
         public int HassPort { get; private set; }
         public string HassToken { get; private set; }
-        [field: SerializeField] public ARPlaneManager ARPlaneManager { get; private set; }
-        [field: SerializeField] public ARAnchorManager ARAnchorManager { get; private set; }
-        [field: SerializeField] public ARRaycastManager ARRaycastManager { get; private set; }
 
         [Tooltip("The refresh rate of the Home Assistant API in seconds.")]
         [SerializeField] private int HassStateRefreshRate = 10;
         
         private DateTime _lastHassStateRefresh;
 
-        [SerializeField] internal List<EntityObject> EntityObjects;
         
         [field: SerializeField] public HassConfig HassConfig { get; private set; }
         
         /// <summary>
-        /// The EntitySpawner that spawns new entities.
+        /// The PanelSpawner that spawns new entities.
         /// </summary>
-        [SerializeField] private EntitySpawner EntitySpawner;
+        [SerializeField] private PanelSpawner PanelSpawner;
 
         [SerializeField] private GameObject HassUI;
         
@@ -50,10 +46,6 @@ namespace Managers
         /// </summary>
         [SerializeField] public HassState[] InspectorHassStates;
         
-#if QUEST_BUILD && FALSE
-        [field: SerializeField] public EffectMesh EffectMesh { get; private set; }
-#endif
-
         private void OnEnable()
         {
             // Initialize PlayerPrefs
@@ -62,14 +54,12 @@ namespace Managers
             // Load saved connection settings
             LoadConnectionSettings();
             Debug.Log(Application.persistentDataPath);
-            ARAnchorManager.trackablesChanged.AddListener(OnAnchorChanged);
             EventManager.OnConnectionTested += OnConnectionTested;
             EventManager.OnHassStatesChanged += OnHassStatesChanged;
         }
 
         private void OnDisable()
         {
-            ARAnchorManager.trackablesChanged.RemoveListener(OnAnchorChanged);
             EventManager.OnConnectionTested -= OnConnectionTested;
             EventManager.OnHassStatesChanged -= OnHassStatesChanged;
         }
@@ -98,30 +88,6 @@ namespace Managers
             }
         }
 
-        /// <summary>
-        /// Listens for when AR anchors are added to the scene, and deletes any anchors that aren't associated with an EntityObject.
-        /// </summary>
-        private void OnAnchorChanged(ARTrackablesChangedEventArgs<ARAnchor> changes)
-        {
-            foreach (ARAnchor addedAnchor in changes.added.Where(addedAnchor =>
-                         !EntityObjects.Exists(e => e.AnchorID == addedAnchor.trackableId.ToString())))
-            {
-                StartCoroutine(DeleteAnchorNextFrame(addedAnchor));
-            }
-        }
-
-        /// <summary>
-        /// Deletes an anchor on the next frame after it is added, after the anchor has been fully initialized.
-        /// This is necessary because the anchor isn't fully initialized until the next frame after it is added,
-        /// and attempting to delete it immediately will fail.
-        /// </summary>
-        /// <param name="anchor">The anchor to delete.</param>
-        private IEnumerator DeleteAnchorNextFrame(ARAnchor anchor)
-        {
-            yield return new WaitForEndOfFrame();
-            ARAnchorManager.TryRemoveAnchor(anchor);
-        }
-
         private void OnInitialConnectionTested(int statusCode)
         {
             EventManager.OnConnectionTested -= OnInitialConnectionTested;
@@ -131,21 +97,10 @@ namespace Managers
                 RestHandler.SetDefaultHeaders();
                 RestHandler.GetHassEntities();
             }
-            LoadEntityObjects();
-        }
-
-        private void LoadEntityObjects()
-        {
-            EntityObjects = SaveFile.ReadFile();
-            if (EntityObjects == null)
-                return;
-            foreach (EntityObject entityObject in EntityObjects)
-            {
-                EntitySpawner.SpawnSavedEntity(entityObject);
-            }
-
+            PanelManager.Instance.LoadEntityObjects();
             EventManager.InvokeOnAppStateLoaded();
         }
+
 
         /// <summary>
         /// Tests the connection to Home Assistant using the provided URL, port, and token.
@@ -209,20 +164,6 @@ namespace Managers
                 TestConnection(HassURL, HassPort, HassToken);
                 EventManager.OnConnectionTested += OnInitialConnectionTested;
             }
-        }
-
-        public void RemoveEntity(EntityObject entityObject)
-        {
-            EntityObjects.Remove(entityObject);
-            SaveFile.SaveEntityObjects();
-        }
-
-        public void AddEntity(EntityObject eo, Entity.Entity entity)
-        {
-            EntityObject entityObject = EntityObjects.FirstOrDefault(e => e == eo);
-
-            if (entityObject != null)
-                entityObject.Entity = entity;
         }
 
         public bool HassStatesRecentlyUpdated()

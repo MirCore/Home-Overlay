@@ -3,14 +3,16 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.XR;
 
-public class WindowGrabber : MonoBehaviour, IDragHandler
+public class WindowGrabber : MonoBehaviour, IDragHandler, IEndDragHandler
 {
     [SerializeField] private Transform WindowTransform;
     [SerializeField] private float ScaleFactor = 1;
+    private Panel.Panel _panel;
     
     private void OnEnable()
     {
-        IDragHandler foo = GetComponent<IDragHandler>();
+        _panel = GetComponentInParent<Panel.Panel>();
+        IDragHandler _ = GetComponent<IDragHandler>();
     }
     
     public void OnDrag(PointerEventData eventData)
@@ -21,6 +23,13 @@ public class WindowGrabber : MonoBehaviour, IDragHandler
         Vector2 adjustedDelta = eventData.delta * ScaleFactor;
 
         WindowTransform.localPosition += (Vector3)adjustedDelta;
+        }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        if (!_panel)
+            return;
+
+        _panel.OnEndDrag();
     }
-        
 }
