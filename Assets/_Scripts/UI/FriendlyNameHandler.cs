@@ -1,5 +1,4 @@
-﻿using System;
-using Structs;
+﻿using Structs;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,15 +10,16 @@ namespace UI
         [SerializeField] private TMP_Text Title;
         [SerializeField] private TMP_Text Subtitle;
         [SerializeField] internal Button Button;
+        ColorBlock _colorBlock;
 
         private void OnEnable()
         {
             if (Button == null)
                 return;
-            ColorBlock colorBlock = Button.colors;
-            colorBlock.normalColor = new Color(1, 1, 1, 0f);
-            colorBlock.highlightedColor = new Color(1, 1, 1, 0.1f);
-            Button.colors = colorBlock;
+            _colorBlock = Button.colors;
+            _colorBlock.normalColor = new Color(1, 1, 1, 0f);
+            _colorBlock.highlightedColor = new Color(1, 1, 1, 0.1f);
+            Button.colors = _colorBlock;
         }
 
         private void Start()
@@ -55,9 +55,9 @@ namespace UI
 
         public void SetNewEntity(string entityID)
         {        
-                Subtitle.text = entityID;
-                
-                UpdateTitle(entityID);
+            Subtitle.text = entityID;
+            
+            UpdateTitle(entityID);
         }
 
         public void Highlight(string entityID)
@@ -66,18 +66,16 @@ namespace UI
                 return;
             if (entityID == Subtitle.text)
             {
-                ColorBlock colorBlock = Button.colors;
-                colorBlock.normalColor = new Color(1, 1, 1, 0.1f);
-                colorBlock.highlightedColor = new Color(1, 1, 1, 0.2f);
-                Button.colors = colorBlock;
+                _colorBlock.normalColor = new Color(1, 1, 1, 0.1f);
+                _colorBlock.highlightedColor = new Color(1, 1, 1, 0.2f);
             }
             else
             {
-                ColorBlock colorBlock = Button.colors;
-                colorBlock.normalColor = new Color(1, 1, 1, 0f);
-                colorBlock.highlightedColor = new Color(1, 1, 1, 0.1f);
-                Button.colors = colorBlock;
+                _colorBlock.normalColor = new Color(1, 1, 1, 0f);
+                _colorBlock.highlightedColor = new Color(1, 1, 1, 0.1f);
             }
+
+            Button.colors = _colorBlock;
         }
     }
 }

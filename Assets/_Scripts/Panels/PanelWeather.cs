@@ -9,7 +9,7 @@ using Utils;
 
 namespace Panel
 {
-    public class PanelWeather : Panel
+    public class PanelWeather : Panels.Panel
     {
         [SerializeField] private TMP_Text State;
         [SerializeField] private TMP_Text Temperature;

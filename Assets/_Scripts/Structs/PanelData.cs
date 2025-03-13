@@ -20,7 +20,7 @@ namespace Structs
         [SerializeField] private PanelSettings _settings = new ();
         
         // current instance of the Panel
-        private Panel.Panel _panel;
+        private Panels.Panel _panel;
 
         public PanelData(string id, string entityID, Vector3 transformPosition)
         {
@@ -46,7 +46,7 @@ namespace Structs
             }
         }
 
-        public Panel.Panel Panel { 
+        public Panels.Panel Panel { 
             get => _panel;
             set => _panel = value;
         }

@@ -13,7 +13,7 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit.UI;
 using Utils;
 
-namespace Panel
+namespace Panels
 {
     public abstract class Panel : MonoBehaviour
     {
@@ -74,6 +74,10 @@ namespace Panel
             try
             {
                 ARAnchor newAnchor;
+                
+                if (SystemInfo.graphicsDeviceName == "Apple visionOS simulator GPU")
+                    return;
+                
                 if (PanelData.Settings.AlignWindowToWall)
                 {
                     Debug.Log("Aligning to wall");

@@ -9,7 +9,7 @@ using UnityEngine.XR.Interaction.Toolkit.Interactors;
 public class Resizer : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointerUpHandler
 {
     [SerializeField] private Transform ObjectToTransform;
-    private Panel.Panel _panel;
+    private Panels.Panel _panel;
 
     private XRBaseInteractable _interactable;
     private XRBaseInteractor _interactor;
@@ -19,7 +19,7 @@ public class Resizer : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointe
 
     private void OnEnable()
     {
-        _panel = ObjectToTransform.GetComponent<Panel.Panel>();
+        _panel = ObjectToTransform.GetComponent<Panels.Panel>();
         _interactable = GetComponent<XRBaseInteractable>();
         _interactable.selectEntered.AddListener(OnSelectEntered);
         _interactable.selectExited.AddListener(OnSelectExited);

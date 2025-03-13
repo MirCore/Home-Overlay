@@ -5,15 +5,15 @@ using UnityEngine;
 
 public class PanelSpawner : MonoBehaviour
 {
-    [SerializeField] private Panel.Panel PanelButtonPrefab;
-    [SerializeField] private Panel.Panel PanelSensorPrefab;
-    [SerializeField] private Panel.Panel PanelWeatherPrefab;
-    [SerializeField] private Panel.Panel PanelCalendarPrefab;
+    [SerializeField] private Panels.Panel PanelButtonPrefab;
+    [SerializeField] private Panels.Panel PanelSensorPrefab;
+    [SerializeField] private Panels.Panel PanelWeatherPrefab;
+    [SerializeField] private Panels.Panel PanelCalendarPrefab;
 
     public void SpawnSavedPanel(PanelData panelData)
     {
-        Panel.Panel prefab = GetEntityPrefab(panelData.EntityID);
-        Panel.Panel newPanel = Instantiate(prefab);
+        Panels.Panel prefab = GetEntityPrefab(panelData.EntityID);
+        Panels.Panel newPanel = Instantiate(prefab);
         
         // Set the panel ID to the new panel
         newPanel.InitPanel(panelData);
@@ -26,8 +26,8 @@ public class PanelSpawner : MonoBehaviour
     /// <param name="position">The transform at which the panel will be spawned.</param>
     public void SpawnNewEntity(string selectedEntityID, Vector3 position)
     {
-        Panel.Panel prefab = GetEntityPrefab(selectedEntityID);
-        Panel.Panel newPanel = Instantiate(prefab);
+        Panels.Panel prefab = GetEntityPrefab(selectedEntityID);
+        Panels.Panel newPanel = Instantiate(prefab);
 
         // Slightly offset the position of the new panel
         Vector3 newPosition = position - newPanel.transform.forward * 0.1f;
@@ -40,7 +40,7 @@ public class PanelSpawner : MonoBehaviour
         newPanel.InitPanel(panelData);
     }
 
-    private Panel.Panel GetEntityPrefab(string selectedEntityID)
+    private Panels.Panel GetEntityPrefab(string selectedEntityID)
     {
         // Get the type from the panel ID
         string type = selectedEntityID.Split('.')[0];

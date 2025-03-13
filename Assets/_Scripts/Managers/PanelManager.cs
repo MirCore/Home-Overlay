@@ -36,8 +36,9 @@ namespace Managers
         {
             if (PanelDatas.Count > 0)
             {
-                foreach (PanelData panelData in changes.added.Select(arAnchor => PanelsToLoad.First(a => a.AnchorID == arAnchor.trackableId.ToString())))
+                foreach (PanelData panelData in changes.added.Select(arAnchor => PanelsToLoad.FirstOrDefault(a => a.AnchorID == arAnchor.trackableId.ToString())))
                 {
+                    if (panelData == null) continue;
                     _panelSpawner.SpawnSavedPanel(panelData);
                     PanelsToLoad.Remove(panelData);
                 }

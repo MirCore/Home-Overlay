@@ -5,7 +5,7 @@ using Utils;
 
 namespace Panel
 {
-    public class PanelButton : Panel
+    public class PanelButton : Panels.Panel
     {
         [SerializeField] private Button Button;
         

@@ -21,7 +21,7 @@ namespace Managers
         /// Toggles the Panel Settings Window for the given panel.
         /// </summary>
         /// <param name="panel">The panel to toggle the settings window for.</param>
-        public void ToggleSettingsWindow(Panel.Panel panel)
+        public void ToggleSettingsWindow(Panels.Panel panel)
         {
             PanelSettingsUI panelSettingsUI = _entitySettingsWindows.Find(w => w.Panel == panel);
             if (panelSettingsUI)
@@ -38,7 +38,7 @@ namespace Managers
         /// Spawns a new Panel Settings Window for the given panel.
         /// </summary>
         /// <param name="panel">The panel to spawn the settings window for.</param>
-        private void SpawnNewWindow(Panel.Panel panel)
+        private void SpawnNewWindow(Panels.Panel panel)
         {
             PanelSettingsUI newSettingsWindow = Instantiate(PanelSettingsWindowPrefab, panel.transform.position, panel.transform.rotation);
 
@@ -70,7 +70,7 @@ namespace Managers
             newSettingsWindow.SetPanel(panel);
         }
 
-        public void UpdatePanelSettingsWindow(Panel.Panel panel)
+        public void UpdatePanelSettingsWindow(Panels.Panel panel)
         {
             PanelSettingsUI panelSettingsUI = _entitySettingsWindows.Find(w => w.Panel == panel);
             if (panelSettingsUI)

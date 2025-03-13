@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Panel
 {
-    public class PanelCalendar : Panel
+    public class PanelCalendar : Panels.Panel
     {
         [SerializeField] private TMP_Text Month;
         [SerializeField] private TMP_Text Day;

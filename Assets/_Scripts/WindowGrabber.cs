@@ -7,11 +7,11 @@ public class WindowGrabber : MonoBehaviour, IDragHandler, IEndDragHandler
 {
     [SerializeField] private Transform WindowTransform;
     [SerializeField] private float ScaleFactor = 1;
-    private Panel.Panel _panel;
+    private Panels.Panel _panel;
     
     private void OnEnable()
     {
-        _panel = GetComponentInParent<Panel.Panel>();
+        _panel = GetComponentInParent<Panels.Panel>();
         IDragHandler _ = GetComponent<IDragHandler>();
     }
     

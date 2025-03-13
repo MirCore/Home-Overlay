@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Panel
 {
-    public class PanelSensor : Panel
+    public class PanelSensor : Panels.Panel
     {
         [SerializeField] private TMP_Text SensorState;
         [SerializeField] private TMP_Text SensorUnit;

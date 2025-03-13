@@ -43,7 +43,7 @@ public class EntityPicker : MonoBehaviour
     private string _selectedEntityID;
     private List<string> _entityIDList = new ();
 
-    private Panel.Panel _panel;
+    private Panels.Panel _panel;
     private string _searchText = "";
 
     private void OnEnable()
@@ -261,7 +261,7 @@ public class EntityPicker : MonoBehaviour
     /// Sets the Panel this EntityPicker is part of. Also selects the entity in the dropdown
     /// </summary>
     /// <param name="panel"></param>
-    public void SetEntity(Panel.Panel panel)
+    public void SetEntity(Panels.Panel panel)
     {
         _panel = panel;
         _selectedEntityID = _panel.PanelData.EntityID;

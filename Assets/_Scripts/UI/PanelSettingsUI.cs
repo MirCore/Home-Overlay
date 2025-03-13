@@ -37,7 +37,7 @@ namespace UI
         
         private HassState _hassState;
 
-        public Panel.Panel Panel { get; private set; }
+        public Panels.Panel Panel { get; private set; }
 
 
         private void OnEnable()
@@ -148,7 +148,7 @@ namespace UI
             return _hassState == null;
         }
 
-        public void SetPanel(Panel.Panel panel)
+        public void SetPanel(Panels.Panel panel)
         {
             Panel = panel;
             ColorPicker.SetEntityID(Panel.PanelData.EntityID);

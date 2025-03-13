@@ -7,7 +7,18 @@ namespace Utils
     public class ObjectPool : Singleton<ObjectPool>
     {
         [SerializeField] private FriendlyNameHandler ObjectToPool;
+        [SerializeField] private int InitialPoolSize = 10;
         private readonly List<FriendlyNameHandler> _pooledObjects = new();
+
+        private void OnEnable()
+        {
+            for (int i = 0; i < InitialPoolSize; i++)
+            {
+                FriendlyNameHandler newInstance = Instantiate(ObjectToPool);
+                newInstance.gameObject.SetActive(false);
+                _pooledObjects.Add(newInstance);
+            }
+        }
 
         public FriendlyNameHandler GetPooledObject()
         {
