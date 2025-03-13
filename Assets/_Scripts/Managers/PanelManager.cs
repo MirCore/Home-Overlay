@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Structs;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.XR.ARFoundation;
 using Utils;
 
 namespace Managers
 {
+    [RequireComponent(typeof(PanelSpawner)), RequireComponent(typeof(PanelSettingsWindowManager))]
     public class PanelManager : Singleton<PanelManager>
     {
         public List<PanelData> PanelDatas { get; private set; } = new ();
@@ -17,10 +19,11 @@ namespace Managers
         /// <summary>
         /// The PanelSpawner that spawns new entities.
         /// </summary>
-        [SerializeField] private PanelSpawner PanelSpawner;
+        private PanelSpawner _panelSpawner;
 
         private void OnEnable()
         {
+            _panelSpawner = GetComponent<PanelSpawner>();
             AnchorHelper.ARAnchorManager.trackablesChanged.AddListener(OnAnchorsChanged);
         }
 
@@ -35,7 +38,7 @@ namespace Managers
             {
                 foreach (PanelData panelData in changes.added.Select(arAnchor => PanelsToLoad.First(a => a.AnchorID == arAnchor.trackableId.ToString())))
                 {
-                    PanelSpawner.SpawnSavedPanel(panelData);
+                    _panelSpawner.SpawnSavedPanel(panelData);
                     PanelsToLoad.Remove(panelData);
                 }
             }
@@ -90,7 +93,7 @@ namespace Managers
 
             foreach (PanelData panelData in PanelsToLoad.ToList().Where(p => AnchorHelper.TryGetExistingAnchor(p.AnchorID, out ARAnchor _) || string.IsNullOrEmpty(p.AnchorID)))
             {
-                PanelSpawner.SpawnSavedPanel(panelData);
+                _panelSpawner.SpawnSavedPanel(panelData);
                 PanelsToLoad.Remove(panelData);
             }
         }
@@ -99,6 +102,16 @@ namespace Managers
         {
             PanelDatas.Add(panelData);
             SaveFile.SavePanelDatas();
+        }
+
+        public void SpawnNewEmptyEntity(Vector3 transformPosition)
+        {
+            _panelSpawner.SpawnNewEntity(null, transformPosition);
+        }
+
+        public void SpawnNewEntity(string selectedEntityID, Vector3 transformPosition)
+        {
+            _panelSpawner.SpawnNewEntity(selectedEntityID, transformPosition);
         }
     }
 }

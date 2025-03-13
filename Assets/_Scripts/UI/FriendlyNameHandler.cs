@@ -20,8 +20,6 @@ namespace UI
             colorBlock.normalColor = new Color(1, 1, 1, 0f);
             colorBlock.highlightedColor = new Color(1, 1, 1, 0.1f);
             Button.colors = colorBlock;
-            
-            Button.onClick.AddListener(Highlight);
         }
 
         private void Start()
@@ -62,14 +60,24 @@ namespace UI
                 UpdateTitle(entityID);
         }
 
-        public void Highlight()
+        public void Highlight(string entityID)
         {
             if (Button == null)
                 return;
-            ColorBlock colorBlock = Button.colors;
-            colorBlock.normalColor = new Color(1, 1, 1, 0.1f);
-            colorBlock.highlightedColor = new Color(1, 1, 1, 0.2f);
-            Button.colors = colorBlock;
+            if (entityID == Subtitle.text)
+            {
+                ColorBlock colorBlock = Button.colors;
+                colorBlock.normalColor = new Color(1, 1, 1, 0.1f);
+                colorBlock.highlightedColor = new Color(1, 1, 1, 0.2f);
+                Button.colors = colorBlock;
+            }
+            else
+            {
+                ColorBlock colorBlock = Button.colors;
+                colorBlock.normalColor = new Color(1, 1, 1, 0f);
+                colorBlock.highlightedColor = new Color(1, 1, 1, 0.1f);
+                Button.colors = colorBlock;
+            }
         }
     }
 }

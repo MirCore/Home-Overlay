@@ -47,6 +47,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1384384802870045242}
   - component: {fileID: 4344456421405218644}
+  - component: {fileID: 6567810917656443448}
   - component: {fileID: 4517111591931077225}
   m_Layer: 5
   m_Name: Text (TMP)
@@ -82,6 +83,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3196037741964967240}
   m_CullTransparentMesh: 1
+--- !u!114 &6567810917656443448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3196037741964967240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1f9ed4b0ca3f45c891bae98df5155e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortingLayer: 100
+  ApplyToChildren: 0
 --- !u!114 &4517111591931077225
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -183,6 +198,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8427609931052636262}
   - component: {fileID: 1594327238852380823}
+  - component: {fileID: 9188530910732401246}
   - component: {fileID: 1657947795974928034}
   m_Layer: 5
   m_Name: Text (TMP)
@@ -218,6 +234,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3782066189425605405}
   m_CullTransparentMesh: 1
+--- !u!114 &9188530910732401246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3782066189425605405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1f9ed4b0ca3f45c891bae98df5155e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortingLayer: 100
+  ApplyToChildren: 0
 --- !u!114 &1657947795974928034
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -392,7 +422,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CreateEmtpyEntityButton: {fileID: 1960666277901095479}
-  PanelSpawner: {fileID: 0}
 --- !u!114 &5139710179486004580
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -411,7 +440,6 @@ MonoBehaviour:
   CreatePanelButton: {fileID: 4652241261140843984}
   SaveChangesButton: {fileID: 297602557490917340}
   CancelChangesButton: {fileID: 2666707940372290416}
-  PanelSpawner: {fileID: 0}
 --- !u!1 &5107411998830598921
 GameObject:
   m_ObjectHideFlags: 0

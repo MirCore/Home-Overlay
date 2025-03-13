@@ -52,6 +52,7 @@ GameObject:
   - component: {fileID: 6631286562826281071}
   - component: {fileID: 6800655090248646535}
   - component: {fileID: 4148113502603548045}
+  - component: {fileID: 8446952622416247127}
   m_Layer: 5
   m_Name: Close Button Window
   m_TagString: Untagged
@@ -183,6 +184,20 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &8446952622416247127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 685531688156070898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1f9ed4b0ca3f45c891bae98df5155e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortingLayer: 100
+  ApplyToChildren: 0
 --- !u!1 &1653985647719658200
 GameObject:
   m_ObjectHideFlags: 0
@@ -273,6 +288,7 @@ GameObject:
   - component: {fileID: 2850467782192587616}
   - component: {fileID: 988054959641423190}
   - component: {fileID: 6947109228957812486}
+  - component: {fileID: 9056892061981286271}
   m_Layer: 5
   m_Name: Left Interactable
   m_TagString: Untagged
@@ -487,6 +503,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ObjectToTransform: {fileID: 0}
+--- !u!114 &9056892061981286271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3445705525803016179}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1f9ed4b0ca3f45c891bae98df5155e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortingLayer: 100
+  ApplyToChildren: 0
 --- !u!1 &5014222145447442617
 GameObject:
   m_ObjectHideFlags: 0
@@ -502,6 +532,7 @@ GameObject:
   - component: {fileID: 5020847554820376867}
   - component: {fileID: 7807476071575290196}
   - component: {fileID: 3370068967780439660}
+  - component: {fileID: 1843435909123401812}
   m_Layer: 5
   m_Name: Grabber Window
   m_TagString: Untagged
@@ -667,6 +698,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 150, y: 30, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1843435909123401812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5014222145447442617}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1f9ed4b0ca3f45c891bae98df5155e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortingLayer: 100
+  ApplyToChildren: 0
 --- !u!1 &7207731259689933796
 GameObject:
   m_ObjectHideFlags: 0
@@ -682,6 +727,7 @@ GameObject:
   - component: {fileID: 5876993953855430633}
   - component: {fileID: 7267349120170004659}
   - component: {fileID: 3128173747935872525}
+  - component: {fileID: 8728611861636496796}
   m_Layer: 5
   m_Name: Right Interactable
   m_TagString: Untagged
@@ -897,3 +943,17 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &8728611861636496796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7207731259689933796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1f9ed4b0ca3f45c891bae98df5155e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortingLayer: 100
+  ApplyToChildren: 0

@@ -479,7 +479,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2522370098298039945, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
       propertyPath: m_Name
-      value: EntitySensor
+      value: Panel-Sensor
       objectReference: {fileID: 0}
     - target: {fileID: 2623621052029450925, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
       propertyPath: m_SizeDelta.x
@@ -548,6 +548,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4549937412642180801, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6038345480698078092}
+    - targetCorrespondingSourceObject: {fileID: 4549937412642180801, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7106489438559290315}
   m_SourcePrefab: {fileID: 100100000, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
 --- !u!1 &47081332350235054 stripped
 GameObject:
@@ -608,6 +611,20 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &7106489438559290315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6516482965802746907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1f9ed4b0ca3f45c891bae98df5155e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortingLayer: 50
+  ApplyToChildren: 1
 --- !u!224 &8163702200327889075 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1441405485455305321, guid: 56729b3eda175f046830741f79f8d92f, type: 3}

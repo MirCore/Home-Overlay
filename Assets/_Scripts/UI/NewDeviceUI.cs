@@ -1,5 +1,5 @@
+using Managers;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace UI
@@ -10,11 +10,6 @@ namespace UI
         /// The Button that creates an empty new panel.
         /// </summary>
         [SerializeField] private Button CreateEmtpyEntityButton;
-        
-        /// <summary>
-        /// The PanelSpawner that spawns new entities.
-        /// </summary>
-        [SerializeField] private PanelSpawner PanelSpawner;
         
         /// <summary>
         /// The currently selected device type.
@@ -39,7 +34,7 @@ namespace UI
         private void OnCreateEmptyEntityButtonClicked()
         {
             // Spawn a new panel at the position of the CreateEmtpyEntityButton with the selected panel ID
-            PanelSpawner.SpawnNewEntity(null, CreateEmtpyEntityButton.transform.position);
+            PanelManager.Instance.SpawnNewEmptyEntity(CreateEmtpyEntityButton.transform.position);
         }
         
     }

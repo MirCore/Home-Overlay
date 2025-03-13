@@ -21,9 +21,9 @@ namespace Utils
             PlaneMeshManager = Object.FindFirstObjectByType<ARPlaneManager>();
             
         }
-        
-        
-        public static ARPlane FindNearestPlane(Transform transform)
+
+
+        private static ARPlane FindNearestPlane(Transform transform)
         {
             List<ARRaycastHit> raycastHits = new ();
             ARPlane nearestPlane = null;
@@ -73,10 +73,8 @@ namespace Utils
         
         public static async Task<Result<ARAnchor>> CreateAnchorAsync(Transform transform, Quaternion anchorRotation = default)
         {
-            if (LoaderUtility.GetActiveLoader()?.GetLoadedSubsystem<XRAnchorSubsystem>() == null)
-            {
+            if (!AnchorsAreSupported())
                 return new Result<ARAnchor>();
-            }
             
             Quaternion rotation = anchorRotation == default ? transform.rotation : anchorRotation;
             // Attempt to add a new anchor at the current position and rotation
@@ -89,7 +87,12 @@ namespace Utils
             
             return result;
         }
-        
+
+        private static bool AnchorsAreSupported()
+        {
+            return LoaderUtility.GetActiveLoader()?.GetLoadedSubsystem<XRAnchorSubsystem>() != null;
+        }
+
         /// <summary>
         /// Tries to retrieve an existing ARAnchor by its trackable ID.
         /// </summary>
@@ -137,6 +140,9 @@ namespace Utils
         public static bool TryCreateAnchorOnNearestPlane(Transform target, out ARAnchor anchor)
         {
             anchor = null;
+            
+            if (!AnchorsAreSupported())
+                return false;
             if (target == null) return false;
 
             ARPlane nearestPlane = FindNearestPlane(target);
@@ -158,6 +164,8 @@ namespace Utils
 
         private static void TryRemoveAnchor(string oldAnchorID)
         {
+            if (!AnchorsAreSupported())
+                return;
             if (TryGetExistingAnchor(oldAnchorID, out ARAnchor anchor))
                 ARAnchorManager.TryRemoveAnchor(anchor);
         }

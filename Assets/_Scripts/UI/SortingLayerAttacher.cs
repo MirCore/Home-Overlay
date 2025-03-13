@@ -28,8 +28,8 @@ namespace UI
 
             if (_sortingGroup == null)
             {
-                Debug.LogError("Could not find VisionOSSortingGroup");
-                return;
+                _sortingGroup = transform.root.gameObject.AddComponent<VisionOSSortingGroup>();
+                Debug.Log("Could not find VisionOSSortingGroup, created a new one.");
             }
             
             ObservableList<VisionOSSortingGroup.RendererSorting> groupMembers = _sortingGroup.Renderers;

@@ -5,7 +5,6 @@ using Managers;
 using TMPro;
 using UI;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Utils;
 
@@ -36,13 +35,6 @@ public class EntityPicker : MonoBehaviour
     /// The Button that cancels the changes.
     /// </summary>
     [SerializeField] private Button CancelChangesButton;
-    
-    /// <summary>
-    /// The PanelSpawner that spawns new entities.
-    /// </summary>
-    [FormerlySerializedAs("EntitySpawner")]
-    [Header("Managers")]
-    [SerializeField] private PanelSpawner PanelSpawner;
     
     /// <summary>
     /// The currently selected device type.
@@ -110,7 +102,7 @@ public class EntityPicker : MonoBehaviour
         string selectedEntityID = _selectedEntityID;
 
         // Spawn a new panel at the position of the CreatePanelButton with the selected panel ID
-        PanelSpawner.SpawnNewEntity(selectedEntityID, CreatePanelButton.transform.position);
+        PanelManager.Instance.SpawnNewEntity(selectedEntityID, CreatePanelButton.transform.position);
 
         UIManager.Instance.CloseMainMenu();
     }
@@ -240,7 +232,7 @@ public class EntityPicker : MonoBehaviour
             
             // Highlight the selected panel if it is the same as the selected entityID
             if (entityID == _selectedEntityID)
-                entityPickerPanel.Highlight();
+                entityPickerPanel.Highlight(entityID);
             
             // Add a click listener to the entity panel
             entityPickerPanel.Button.onClick.AddListener(() => OnEntityButtonClicked(entityID));
@@ -253,6 +245,10 @@ public class EntityPicker : MonoBehaviour
     private void OnEntityButtonClicked(string entityID)
     {
         _selectedEntityID = entityID;
+        foreach (FriendlyNameHandler entityPanel in _entityPanels)
+        {
+            entityPanel.Highlight(entityID);
+        }
     }
 
     private void OnSearchInputFieldValueChanged(string value)

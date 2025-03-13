@@ -9,8 +9,6 @@ public class PanelSpawner : MonoBehaviour
     [SerializeField] private Panel.Panel PanelSensorPrefab;
     [SerializeField] private Panel.Panel PanelWeatherPrefab;
     [SerializeField] private Panel.Panel PanelCalendarPrefab;
-    [SerializeField] private Transform HassUITranslation;
-
 
     public void SpawnSavedPanel(PanelData panelData)
     {
@@ -29,7 +27,7 @@ public class PanelSpawner : MonoBehaviour
     public void SpawnNewEntity(string selectedEntityID, Vector3 position)
     {
         Panel.Panel prefab = GetEntityPrefab(selectedEntityID);
-        Panel.Panel newPanel = Instantiate(prefab, HassUITranslation, false);
+        Panel.Panel newPanel = Instantiate(prefab);
 
         // Slightly offset the position of the new panel
         Vector3 newPosition = position - newPanel.transform.forward * 0.1f;
