@@ -375,6 +375,7 @@ GameObject:
   - component: {fileID: 6669906975591623752}
   - component: {fileID: 9214587740781826144}
   - component: {fileID: 7971031883889181043}
+  - component: {fileID: 5843584166845820092}
   m_Layer: 0
   m_Name: Backdrop Big
   m_TagString: Untagged
@@ -450,6 +451,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5843584166845820092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2935576035863061092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1f9ed4b0ca3f45c891bae98df5155e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortingLayer: -1
+  ApplyToChildren: 0
 --- !u!1 &4360576742108606324
 GameObject:
   m_ObjectHideFlags: 0
@@ -595,6 +610,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1441405485455305321}
+  - component: {fileID: 564356491023665425}
   - component: {fileID: 2398645671528445738}
   m_Layer: 0
   m_Name: Panel
@@ -622,6 +638,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -40, y: -40}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &564356491023665425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4549937412642180801}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1f9ed4b0ca3f45c891bae98df5155e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortingLayer: 50
+  ApplyToChildren: 1
 --- !u!114 &2398645671528445738
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -662,6 +692,7 @@ GameObject:
   - component: {fileID: 5891199721075770817}
   - component: {fileID: 3813146046905726308}
   - component: {fileID: 3344700166324973333}
+  - component: {fileID: 8116627543906507180}
   m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
@@ -815,6 +846,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &8116627543906507180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8548494967115247867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1f9ed4b0ca3f45c891bae98df5155e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortingLayer: 0
+  ApplyToChildren: 0
 --- !u!1001 &7299118124748671706
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -254,5 +254,6 @@ public class EntityPicker : MonoBehaviour
         _panel = panel;
         _selectedEntityID = _panel.PanelData.EntityID;
         TypeDropdown.value = (int)_panel.GetDeviceType();
+        SaveChangesButton.gameObject.SetActive(true);
     }
 }

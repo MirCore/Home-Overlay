@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7667994879783907482}
   - component: {fileID: 39729583320479265}
   - component: {fileID: 5706165741701347998}
+  - component: {fileID: 3062541963915554654}
   m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -136,6 +137,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &3062541963915554654
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 48600175520399078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1f9ed4b0ca3f45c891bae98df5155e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortingLayer: 3
+  ApplyToChildren: 0
 --- !u!1 &456817739522546309
 GameObject:
   m_ObjectHideFlags: 0
@@ -148,6 +163,7 @@ GameObject:
   - component: {fileID: 2736127604437125383}
   - component: {fileID: 7238776045091759653}
   - component: {fileID: 4087434983445237719}
+  - component: {fileID: 2053621723817070240}
   m_Layer: 0
   m_Name: Entity Settings Mesh
   m_TagString: Untagged
@@ -258,6 +274,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2053621723817070240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 456817739522546309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1f9ed4b0ca3f45c891bae98df5155e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortingLayer: 90
+  ApplyToChildren: 0
 --- !u!1 &4990848797107094855
 GameObject:
   m_ObjectHideFlags: 0
@@ -269,6 +299,7 @@ GameObject:
   - component: {fileID: 7243935532955591061}
   - component: {fileID: 7264173631081794957}
   - component: {fileID: 8843391117300197078}
+  - component: {fileID: 8057508379688976105}
   m_Layer: 0
   m_Name: Backdrop Small
   m_TagString: Untagged
@@ -344,6 +375,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &8057508379688976105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4990848797107094855}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1f9ed4b0ca3f45c891bae98df5155e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortingLayer: 89
+  ApplyToChildren: 0
 --- !u!1 &5950242595631931543
 GameObject:
   m_ObjectHideFlags: 0
@@ -356,6 +401,7 @@ GameObject:
   - component: {fileID: 3218206561189416523}
   - component: {fileID: 6513151547911117981}
   - component: {fileID: 8909964121112961152}
+  - component: {fileID: 5142549545953159199}
   m_Layer: 0
   m_Name: Button - Entity
   m_TagString: Untagged
@@ -465,6 +511,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &5142549545953159199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5950242595631931543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1f9ed4b0ca3f45c891bae98df5155e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortingLayer: 2
+  ApplyToChildren: 0
 --- !u!1001 &6035399124158823020
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -547,7 +607,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2522370098298039945, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
       propertyPath: m_Name
-      value: EntityButton
+      value: Panel-Button
       objectReference: {fileID: 0}
     - target: {fileID: 2623621052029450925, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
       propertyPath: m_SizeDelta.x

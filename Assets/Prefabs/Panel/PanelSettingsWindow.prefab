@@ -65,9 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Subtitle
-
-'
+  m_text: 'Subtitle '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: de9834d6b78832947ab4c3d5372a5dc7, type: 2}
   m_sharedMaterial: {fileID: 5354461233442748436, guid: de9834d6b78832947ab4c3d5372a5dc7, type: 2}
@@ -2068,6 +2066,18 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -4.999939
       objectReference: {fileID: 0}
+    - target: {fileID: 1223861401604867091, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1223861401604867091, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1223861401604867091, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2500263776688775055, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -2194,7 +2204,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8185954209503414733, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0065894607
+      value: 0.008434515
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
