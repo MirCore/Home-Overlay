@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.UI;
 
 namespace UI
@@ -16,6 +18,8 @@ namespace UI
         private readonly Vector3[] _panelCorners = new Vector3[4];
         private readonly List<GameObject> _children = new();
 
+        private bool _isVisible;
+        
         private void OnEnable()
         {
             // Initialize ScrollRect if not set in the inspector
@@ -37,12 +41,11 @@ namespace UI
             }
 
             // Cache child GameObjects for visibility checks
-            if (_children.Count == 0)
+            foreach (Transform child in transform)
             {
-                foreach (Transform child in transform)
-                {
+                child.gameObject.SetActive(_isVisible);
+                if (!_children.Contains(child.gameObject))
                     _children.Add(child.gameObject);
-                }
             }
 
             // Subscribe to the scroll event if ScrollRect is available
@@ -85,7 +88,11 @@ namespace UI
 
             // Check if the content overlaps with the viewport
             bool isVisible = viewportRect.Overlaps(rect);
-            SetChildrenActive(isVisible);
+            
+            if (isVisible != _isVisible)
+                SetChildrenActive(isVisible);
+            
+            _isVisible = isVisible;
         }
 
         /// <summary>
