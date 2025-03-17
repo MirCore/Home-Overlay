@@ -20,19 +20,21 @@ namespace Utils
             }
         }
 
-        public FriendlyNameHandler GetPooledObject()
+        public FriendlyNameHandler GetPooledObject(Transform parent)
         {
+            FriendlyNameHandler pooledObject;
             if (_pooledObjects.Count > 0)
             {
-                FriendlyNameHandler pooledObject = _pooledObjects[0];
+                pooledObject = _pooledObjects[0];
                 _pooledObjects.RemoveAt(0);
-                pooledObject.gameObject.SetActive(true);
-                return pooledObject;
+                pooledObject.transform.SetParent(parent, false);
             }
             else
             {
-                return Instantiate(ObjectToPool);
+                pooledObject = Instantiate(ObjectToPool, parent, false);
             }
+            pooledObject.gameObject.SetActive(true);
+            return pooledObject;
         }
 
         public void ReturnObjectToPool(FriendlyNameHandler pooledObject)

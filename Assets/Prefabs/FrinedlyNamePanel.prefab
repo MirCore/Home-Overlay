@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6190056000201024112}
   - component: {fileID: 106756508927609646}
   - component: {fileID: 4967492092110903218}
+  - component: {fileID: 3830073428663611692}
   m_Layer: 5
   m_Name: FrinedlyNamePanel
   m_TagString: Untagged
@@ -78,9 +79,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: -8, z: 0, w: -8}
-  m_Maskable: 1
+  m_Maskable: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -138,6 +139,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &3830073428663611692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1418389879367696097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 024bfb74829340208e9663d4e70c4e72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScrollRect: {fileID: 0}
+  RectTransform: {fileID: 7701156621033190895}
 --- !u!1 &2818810276276883395
 GameObject:
   m_ObjectHideFlags: 0

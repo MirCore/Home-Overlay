@@ -5,6 +5,8 @@ using Managers;
 using TMPro;
 using UI;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Utils;
 
@@ -49,7 +51,6 @@ public class EntityPicker : MonoBehaviour
     private void OnEnable()
     {
         UpdateTypeDropdown();
-        GetHassEntities();
         GenerateEntityList();
         
         SearchInputField.onValueChanged.AddListener(OnSearchInputFieldValueChanged);
@@ -79,6 +80,7 @@ public class EntityPicker : MonoBehaviour
             CancelChangesButton.onClick.RemoveListener(OnCancelChangesButtonClicked);
         EventManager.OnHassStatesChanged -= OnHassStatesChanged;
     }
+
 
     #region Apply or Cancel Changes
     
@@ -137,21 +139,14 @@ public class EntityPicker : MonoBehaviour
     #endregion
     
     /// <summary>
-    /// Gets the Home Assistant Entities via the RestHandler.
-    /// The result is then passed to the OnHassStatesChanged method.
-    /// </summary>
-    private static void GetHassEntities()
-    {
-        RestHandler.GetHassEntities();
-    }
-
-    /// <summary>
     /// Updates the EntityDropdown when the HassStates are changed
     /// </summary>
     private void OnHassStatesChanged()
     {
         GenerateEntityList();
     }
+
+    #region List generating
 
     private void GenerateEntityList()
     {
@@ -161,6 +156,8 @@ public class EntityPicker : MonoBehaviour
         // Check if the list of entityIDs has changed, if not, return
         if (entityIDList.SequenceEqual(_entityIDList))
             return;
+        
+        Debug.Log("GenerateEntityList");
         
         // Return all the panels to the pool
         ObjectPool.Instance.ReturnObjectsToPool(_entityPanels);
@@ -175,26 +172,16 @@ public class EntityPicker : MonoBehaviour
     private List<string> GetFilteredEntityIDList()
     {
         // Get a list of all the entities with the selected device type
-        List<string> entityIDList = new ();
-        foreach (KeyValuePair<string, HassState> state in HassStates.GetHassStates())
-        {
-            // Skip entities with device type DEFAULT, as these are not compatible
-            if (state.Value.DeviceType == EDeviceType.DEFAULT)
-                continue;
-                
-            // Skip entities that do not match the selected device type
-            if (_selectedEDeviceType != EDeviceType.DEFAULT && state.Value.DeviceType != _selectedEDeviceType)
-                continue;
-            
-            if (EntityMatchesSearchTerm(state))
-                entityIDList.Add(state.Key);
-        }
-
-        return entityIDList;
+        return (from state in HassStates.GetHassStates()
+            where state.Value.DeviceType != EDeviceType.DEFAULT
+            where _selectedEDeviceType == EDeviceType.DEFAULT || state.Value.DeviceType == _selectedEDeviceType
+            where EntityMatchesSearchTerm(state)
+            select state.Key).ToList();
     }
+    
     /// <summary>
     /// Checks if the state matches the current search term.
-    /// An state matches if its name or ID starts with the search term.
+    /// A state matches if its name or ID starts with the search term.
     /// </summary>
     /// <param name="state">The state to check.</param>
     /// <returns>True if the state matches the search term, false otherwise.</returns>
@@ -224,8 +211,7 @@ public class EntityPicker : MonoBehaviour
         foreach (string entityID in sortedEntityList)
         {
             // Get a entity panel from the pool and move it to the ScrollRect
-            FriendlyNameHandler entityPickerPanel = ObjectPool.Instance.GetPooledObject();
-            entityPickerPanel.transform.SetParent(_entityPanelsParent, false);
+            FriendlyNameHandler entityPickerPanel = ObjectPool.Instance.GetPooledObject(_entityPanelsParent);
             
             // Set the entity panel properties
             entityPickerPanel.SetNewEntity(entityID);
@@ -241,6 +227,8 @@ public class EntityPicker : MonoBehaviour
             _entityPanels.Add(entityPickerPanel);
         }
     }
+    
+    #endregion
 
     private void OnEntityButtonClicked(string entityID)
     {
