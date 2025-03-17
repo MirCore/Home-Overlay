@@ -35,6 +35,8 @@ namespace UI
         {
             // Spawn a new panel at the position of the CreateEmtpyEntityButton with the selected panel ID
             PanelManager.Instance.SpawnNewEmptyEntity(CreateEmtpyEntityButton.transform.position);
+            
+            UIManager.Instance.CloseMainMenu();
         }
         
     }

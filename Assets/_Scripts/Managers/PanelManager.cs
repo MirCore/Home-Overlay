@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Structs;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.XR.ARFoundation;
 using Utils;
 
@@ -92,7 +91,7 @@ namespace Managers
             if (PanelsToLoad.Count == 0)
                 return;
 
-            foreach (PanelData panelData in PanelsToLoad.ToList().Where(p => AnchorHelper.TryGetExistingAnchor(p.AnchorID, out ARAnchor _) || string.IsNullOrEmpty(p.AnchorID)))
+            foreach (PanelData panelData in PanelsToLoad.Where(p => AnchorHelper.TryGetExistingAnchor(p.AnchorID, out ARAnchor _) || string.IsNullOrEmpty(p.AnchorID)).ToList())
             {
                 _panelSpawner.SpawnSavedPanel(panelData);
                 PanelsToLoad.Remove(panelData);

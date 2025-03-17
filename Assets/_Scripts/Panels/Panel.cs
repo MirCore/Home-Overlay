@@ -50,7 +50,6 @@ namespace Panels
 
         private void OnSelectExited(SelectExitEventArgs eventData)
         {
-            Debug.Log("Select exited");
             if (PanelData == null)
                 return;
             
@@ -104,7 +103,7 @@ namespace Panels
                 }
                 else
                 {
-                    Debug.Log("Creating new anchor");
+                    Debug.Log("Creating new normal anchor");
                     Result<ARAnchor> result = await AnchorHelper.CreateAnchorAsync(transform);
                     if (!result.status.IsSuccess())
                     {

@@ -1,12 +1,10 @@
-Shader "VisionUI/MultiplyBackground"
+Shader "VisionUI/BlurredBackground"
 {
     Properties
     {
+        [NoScaleOffset] _Background ("Background Cubemap", Cube) = "white" {}
         [PerRendererData] _MainTex("Sprite Texture", 2D) = "white" {}
         _Color("Tint", Color) = (1,1,1,1)
-
-        _MultColor("Multiply color", Color) = (1,1,1,0.2980392)
-        _BaseColorValue("Base Color Value", Float) = 1
 
         _StencilComp("Stencil Comparison", Float) = 8
         _Stencil("Stencil ID", Float) = 0
@@ -43,13 +41,14 @@ Shader "VisionUI/MultiplyBackground"
             Lighting Off
             ZWrite Off
             ZTest [unity_GUIZTestMode]
-            ColorMask RGB
+            ColorMask RGBA
 
             Pass
             {
-                Blend DstColor Zero
+                BlendOp Add, Max
+                Blend SrcAlpha OneMinusSrcAlpha, One One
 
-                Name "MultiplyLayer"
+                Name "CubemapBackground"
                 CGPROGRAM
                 #pragma vertex vert
                 #pragma fragment frag
@@ -78,13 +77,13 @@ Shader "VisionUI/MultiplyBackground"
                     UNITY_VERTEX_OUTPUT_STEREO
                 };
 
-                sampler2D _MainTex;
+                samplerCUBE _Background;
                 fixed4 _Color;
-                fixed4 _TextureSampleAdd;
+                fixed4 _StaticColor;
+                sampler2D _MainTex;
                 float4 _ClipRect;
                 float4 _MainTex_ST;
-                fixed4 _MultColor;
-                float _BaseColorValue;
+                uniform float _staticValue;
 
                 v2f vert(appdata_t v)
                 {
@@ -95,16 +94,17 @@ Shader "VisionUI/MultiplyBackground"
                     OUT.vertex = UnityObjectToClipPos(OUT.worldPosition);
 
                     OUT.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
-    
-                    OUT.color = lerp(_MultColor * half4(1, 1, 1, v.color.a), v.color * _Color * _MultColor, _BaseColorValue);
+
+                    OUT.color = v.color * _Color;
                     return OUT;
                 }
 
                 fixed4 frag(v2f IN) : SV_Target
                 {
-                    half4 color = (tex2D(_MainTex, IN.texcoord) + _TextureSampleAdd) * IN.color;
-                    color = lerp(half4(1, 1, 1, 1), color, color.a);
-    
+                    half4 color = lerp(texCUBE(_Background, -WorldSpaceViewDir(IN.worldPosition)), _StaticColor, _staticValue);
+                    half4 sprite = tex2D(_MainTex, IN.texcoord);
+                    color.a *= sprite.a * IN.color.a;
+                    
                     #ifdef UNITY_UI_CLIP_RECT
                     color.a *= UnityGet2DClipping(IN.worldPosition.xy, _ClipRect);
                     #endif

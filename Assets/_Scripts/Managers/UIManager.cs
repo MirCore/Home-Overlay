@@ -22,8 +22,11 @@ namespace Managers
         
         [Header("Tabs")]
         [SerializeField] private GameObject OverviewTab;
+        [SerializeField] private string OverviewTitle;
         [SerializeField] private GameObject NewDeviceTab;
+        [SerializeField] private string NewDeviceTitle;
         [SerializeField] private GameObject SettingsTab;
+        [SerializeField] private string SettingsTitle;
         
         [Header("Sidebar")]
         [SerializeField] private Button OverviewButton;
@@ -56,6 +59,11 @@ namespace Managers
 
         private void OnHomeButtonClicked()
         {
+            if (Camera.main != null)
+            {
+                MainUI.transform.LookAt(Camera.main.transform.position, Vector3.up);
+                MainUI.transform.forward = -MainUI.transform.forward;
+            }
             ShowOverviewTab();
         }
 
@@ -67,7 +75,7 @@ namespace Managers
         {
             ShowTab(OverviewTab);
             
-            HeaderText.text = "Overview";
+            HeaderText.text = OverviewTitle;
         }
 
         /// <summary>
@@ -78,7 +86,7 @@ namespace Managers
         {
             ShowTab(NewDeviceTab);
             
-            HeaderText.text = "Add new Device";
+            HeaderText.text = NewDeviceTitle;
         }
         
         /// <summary>
@@ -89,7 +97,7 @@ namespace Managers
         {
             ShowTab(SettingsTab);
             
-            HeaderText.text = "Settings";
+            HeaderText.text = SettingsTitle;
         }
 
         /// <summary>
@@ -106,6 +114,7 @@ namespace Managers
             
             // Show the selected tab
             tab.SetActive(true);
+            
             
             // Show the main UI and hide the home button
             MainUI.SetActive(true);
