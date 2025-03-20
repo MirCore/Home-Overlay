@@ -420,7 +420,6 @@ GameObject:
   - component: {fileID: 3632297362912436051}
   - component: {fileID: 73203495291581294}
   - component: {fileID: 1289879179574167240}
-  - component: {fileID: 3913342510859536836}
   - component: {fileID: 4638537065223354684}
   m_Layer: 5
   m_Name: InputField
@@ -513,7 +512,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
     m_PressedColor: {r: 0.698, g: 0.698, b: 0.698, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.521, g: 0.521, b: 0.521, a: 1}
+    m_DisabledColor: {r: 0.521, g: 0.521, b: 0.521, a: 0}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -589,28 +588,6 @@ MonoBehaviour:
   isAlert: 0
   m_InputValidator: {fileID: 0}
   m_ShouldActivateOnSelect: 1
---- !u!95 &3913342510859536836
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3515614372051200735}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 49fb898d1cf2e274db7df9fe515f4179, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &4638537065223354684
 MonoBehaviour:
   m_ObjectHideFlags: 0
