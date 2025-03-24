@@ -59,13 +59,13 @@ struct SettingsWindow: View {
         .onAppear {
             // Call the public function that was defined in SwiftUIPlugin
             // inside UnityFramework
-            CallCSharpCallback("appeared")
+            //CallCSharpCallback("appeared")
             url = GetHassUrl().isEmpty ? url : GetHassUrl()
             port = GetHassPort().isEmpty ? port : GetHassPort()
             token = GetHassToken().isEmpty ? token : GetHassToken()
         }
         .onDisappear {
-            CallCSharpCallback("closed")
+            //CallCSharpCallback("closed")
         }
         .padding(10)
     }

@@ -96,7 +96,7 @@ namespace UI
             URLInputField.interactable = false;
             PortInputField.interactable = false;
             TokenInputField.interactable = false;
-            OpenSwiftUISettingsWindow("SettingsWindow", GameManager.Instance.HassURL, GameManager.Instance.HassPort.ToString(), GameManager.Instance.HassToken);
+            SwiftUIDriver.OpenSwiftUISettingsWindow("SettingsWindow", GameManager.Instance.HassURL, GameManager.Instance.HassPort.ToString(), GameManager.Instance.HassToken);
 #endif
         }
 

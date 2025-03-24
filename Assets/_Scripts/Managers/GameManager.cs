@@ -175,5 +175,11 @@ namespace Managers
         {
             HassConfig = config;
         }
+
+        public static void OnWindowFocused(bool isFocused)
+        {
+            if (!isFocused)
+                UIManager.Instance.CloseMainMenu();
+        }
     }
 }

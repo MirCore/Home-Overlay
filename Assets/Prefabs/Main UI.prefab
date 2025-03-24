@@ -3358,6 +3358,7 @@ MonoBehaviour:
   TokenInputField: {fileID: 7271563440549970749}
   LoadTokenButton: {fileID: 8614144481890651047}
   PasteTokenButton: {fileID: 3672169863289643282}
+  ChangeConnectionSettingsButton: {fileID: 7822701385252214613}
   TestConnectionButton: {fileID: 6942298450270049610}
   SaveButton: {fileID: 2016913373092681645}
   ConnectSuccessField: {fileID: 8116137846924264706}
@@ -5014,6 +5015,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7660865608013487009, guid: a1b2add05fe854d4a8817414d3b9942f, type: 3}
   m_PrefabInstance: {fileID: 6316601101722921255}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7822701385252214613 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4262307723051482738, guid: a1b2add05fe854d4a8817414d3b9942f, type: 3}
+  m_PrefabInstance: {fileID: 6316601101722921255}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6589115770808331064
 PrefabInstance:
   m_ObjectHideFlags: 0
