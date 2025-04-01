@@ -8,17 +8,17 @@ import SwiftUI
 struct SwiftUIInjectedScene {
     @SceneBuilder
     static var scene: some Scene {
-        WindowGroup(id: "SettingsWindow") {
+        WindowGroup(id: "MainMenu") {
             // The sample defines a custom view, but you can also put your entire window's
             // structure here as you can with SwiftUI.
-            SettingsWindow()
-        }.defaultSize(width: 400.0, height: 400.0)
+            MainMenu()
+        }.defaultSize(width: 720.0, height: 640.0)
 
         // You can create multiple WindowGroups here for different wnidows;
         // they need a distinct id. If you include multiple items,
         // the scene property must be decorated with "@SceneBuilder" as above.
-        WindowGroup(id: "SimpleText") {
-            Text("Hello World")
-        }
+        //WindowGroup(id: "SimpleText") {
+        //    Text("Hello World")
+        //}
     }
 }

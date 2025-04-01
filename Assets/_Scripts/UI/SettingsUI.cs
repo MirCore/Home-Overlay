@@ -96,7 +96,7 @@ namespace UI
             URLInputField.interactable = false;
             PortInputField.interactable = false;
             TokenInputField.interactable = false;
-            SwiftUIDriver.OpenSwiftUISettingsWindow("SettingsWindow", GameManager.Instance.HassURL, GameManager.Instance.HassPort.ToString(), GameManager.Instance.HassToken);
+            SwiftUIDriver.OpenSwiftUIWindow("MainMenu");
 #endif
         }
 
@@ -110,14 +110,14 @@ namespace UI
             EventManager.OnConnectionTested -= OnConnectionTested;
            
 #if UNITY_VISIONOS 
-            SwiftUIDriver.CloseSwiftUIWindow("SettingsWindow");
+            SwiftUIDriver.CloseSwiftUIWindow("MainMenu");
 #endif
         }
 
         private void ChangeConnectionSettings()
         {
 #if UNITY_VISIONOS
-            SwiftUIDriver.OpenSwiftUISettingsWindow("SettingsWindow", GameManager.Instance.HassURL, GameManager.Instance.HassPort.ToString(), GameManager.Instance.HassToken);
+            SwiftUIDriver.OpenSwiftUIWindow("MainMenu");
 #endif
         }
 

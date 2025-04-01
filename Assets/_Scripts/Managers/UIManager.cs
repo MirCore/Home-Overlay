@@ -1,5 +1,6 @@
 using System;
 using TMPro;
+using UI;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR.Interaction.Toolkit.UI;
@@ -59,6 +60,12 @@ namespace Managers
 
         private void OnHomeButtonClicked()
         {
+#if UNITY_VISIONOS && !UNITY_EDITOR
+            SwiftUIDriver.OpenSwiftUIWindow("MainMenu");
+            HomeButtonUI.SetActive(false);
+            return;
+#endif
+            
             if (Camera.main != null)
             {
                 MainUI.transform.LookAt(Camera.main.transform.position, Vector3.up);
@@ -145,6 +152,11 @@ namespace Managers
         public void CloseMainMenu()
         {
             HideMainMenu();
+        }
+
+        public void ShowHomeButton()
+        {
+            HomeButtonUI.SetActive(true);
         }
     }
 }

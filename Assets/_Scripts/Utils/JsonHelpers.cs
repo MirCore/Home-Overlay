@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Proyecto26;
 using UnityEngine;
 
 namespace Utils
@@ -22,6 +25,17 @@ namespace Utils
             float b = rgb[2] / 255f;
 
             return new Color(r, g, b);
+        }
+        public static string DictToJsonString(Dictionary<string, string> dict)
+        {
+            return JsonHelper.ArrayToJsonString(dict.Select(pair => new DictStruct { key = pair.Key, value = pair.Value }).ToArray());
+        }
+        
+        [Serializable]
+        public struct DictStruct
+        {
+            public string key;
+            public string value;
         }
     }
 }

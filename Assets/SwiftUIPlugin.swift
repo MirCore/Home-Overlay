@@ -1,35 +1,3 @@
-//
-// This is a sample Swift plugin that provides an interface for
-// the SwiftUI sample to interact with. It must be linked into
-// UnityFramework, which is what the default Swift file plugin
-// importer will place it into.
-//
-// It uses "@_cdecl", a Swift not-officially-supported attribute to
-// provide C-style linkage and symbol for a given function.
-//
-// It also uses a "hack" to create an EnvironmentValues() instance
-// in order to fetch the openWindow and dismissWindow action. Normally,
-// these would be provided to a view via something like:
-//
-//    @Environment(\.openWindow) var openWindow
-//
-// but we don't have a view at this point, and it's expected that these
-// actions will be global (and not view-specific) anyway.
-//
-// There are two additional files that complete this example:
-// SwiftUISampleInjectedScene.swift and HelloWorldConventView.swift.
-//
-// Any file named "...InjectedScene.swift" will be moved to the Unity-VisionOS
-// Xcode target (as it must be there in order to be referenced by the App), and
-// its static ".scene" member will be added to the App's main Scene. See
-// the comments in SwiftUISampleInjectedScene.swift for more information.
-//
-// Any file that's inside of a "SwiftAppSupport" directory anywhere in its path
-// will also be moved to the Unity-VisionOS Xcode target. HelloWorldContentView.swift
-// is inside SwiftAppSupport beceause it's needed by the WindowGroup this sample
-// adds to provide its content.
-//
-
 import Foundation
 import SwiftUI
 
@@ -49,6 +17,7 @@ var callbackDelegate: CallbackDelegateType? = nil
 var hassUrl = "http://homeassistant.local/"
 var hassPort = "8123"
 var hassToken = ""
+public var entitiesDict: [String:String] = [:]
 
 // Declared in C# as: static extern void SetNativeCallback(CallbackDelegate callback);
 @_cdecl("SetNativeCallback")
@@ -60,7 +29,7 @@ func setNativeCallback(_ delegate: CallbackDelegateType)
 
 // This is a function for your own use from the enclosing Unity-VisionOS app, to call the delegate
 // from your own windows/views (HelloWorldContentView uses this)
-public func CallCSharpCallback(_ str: String, _ url: String = "", _ port: String = "", _ token: String = "")
+public func CallCSharpCallback(_ str: String, _ arg0: String = "", _ arg1: String = "", _ arg2: String = "")
 {
     guard let callbackDelegate = callbackDelegate else {
         print("ERROR: Callback delegate is nil")
@@ -69,18 +38,17 @@ public func CallCSharpCallback(_ str: String, _ url: String = "", _ port: String
 
     // Log the values and confirm UTF-8 encoding
     print("CallCSharpCallback invoked with:")
-    print("Command: \(str), URL: \(url), Port: \(port), Token: \(token)")
+    print("Command: \(str), arg0: \(arg0), arg1: \(arg1), arg2: \(arg2)")
 
     str.withCString { cString in
-        url.withCString { cUrl in
-            port.withCString{ cPort in
-                token.withCString { cToken in
-                    callbackDelegate(cString, cUrl, port, cToken)
+        arg0.withCString { cArg0 in
+            arg1.withCString{ cArg1 in
+                arg2.withCString { cArg2 in
+                    callbackDelegate(cString, cArg0, cArg1, cArg2)
                 }
             }
         }
     }
-
 }
 
 // Declared in C# as: static extern void OpenSwiftUIWindow(string name);
@@ -94,12 +62,9 @@ func openSwiftUIWindow(_ cname: UnsafePointer<CChar>)
     openWindow(id: name)
 }
 
-// Declared in C# as: static extern void OpenSwiftUIWindow(string name);
-@_cdecl("OpenSwiftUISettingsWindow")
-func openSwiftUISettingsWindow(_ cname: UnsafePointer<CChar>, _ cUrl: UnsafePointer<CChar>, _ cPort: UnsafePointer<CChar>, _ cToken: UnsafePointer<CChar>)
+@_cdecl("SetSwiftUIConnectionValues")
+func setSwiftUIConnectionValues(_ cUrl: UnsafePointer<CChar>, _ cPort: UnsafePointer<CChar>, _ cToken: UnsafePointer<CChar>)
 {
-    let openWindow = EnvironmentValues().openWindow
-    
     hassUrl = String(cString: cUrl);
     hassPort = String(cString: cPort);
     hassToken = String(cString: cToken);
@@ -108,12 +73,41 @@ func openSwiftUISettingsWindow(_ cname: UnsafePointer<CChar>, _ cUrl: UnsafePoin
     {
         hassPort = "8123";
     }
-    
-    let name = String(cString: cname)
-    print("############ OPEN WINDOW \(name)")
-    openWindow(id: name)
-    
 }
+
+// Define the structures to match the JSON format
+struct Item: Codable {
+    let key: String
+    let value: String
+}
+
+struct ItemsWrapper: Codable {
+    let Items: [Item]
+}
+
+@_cdecl("SetSwiftUIHassEntities")
+func setSwiftUIHassEntities(_ cEntities: UnsafePointer<CChar>) {
+    // Convert the C string to a Swift string
+    let entitiesString = String(cString: cEntities)
+
+    // Attempt to convert the string to Data
+    if let data = entitiesString.data(using: .utf8) {
+        do {
+            // Decode the JSON data into the ItemsWrapper structure
+            let itemsWrapper = try JSONDecoder().decode(ItemsWrapper.self, from: data)
+
+            // Convert the list of items into a dictionary
+            entitiesDict = Dictionary(uniqueKeysWithValues: itemsWrapper.Items.map { ($0.key, $0.value) })
+
+            // Log the parsed entities
+            print("Parsed entities: \(entitiesDict)")
+        } catch {
+            // Handle any errors that occur during decoding
+            print("Failed to parse JSON string: \(error)")
+        }
+    }
+}
+
 
 // Declared in C# as: static extern void CloseSwiftUIWindow(string name);
 @_cdecl("CloseSwiftUIWindow")
