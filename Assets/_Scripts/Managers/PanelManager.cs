@@ -11,7 +11,7 @@ namespace Managers
     [RequireComponent(typeof(PanelSpawner)), RequireComponent(typeof(PanelSettingsWindowManager))]
     public class PanelManager : Singleton<PanelManager>
     {
-        public List<PanelData> PanelDatas { get; private set; } = new ();
+        public List<PanelData> PanelDataList { get; private set; } = new ();
 
         [field: SerializeField] private List<PanelData> PanelsToLoad { get; set; }
 
@@ -33,7 +33,7 @@ namespace Managers
 
         private void OnAnchorsChanged(ARTrackablesChangedEventArgs<ARAnchor> changes)
         {
-            if (PanelDatas.Count > 0)
+            if (PanelDataList.Count > 0)
             {
                 foreach (PanelData panelData in changes.added.Select(arAnchor => PanelsToLoad.FirstOrDefault(a => a.AnchorID == arAnchor.trackableId.ToString())))
                 {
@@ -44,7 +44,7 @@ namespace Managers
             }
             
             // Listens for when AR anchors are added to the scene, and deletes any anchors that aren't associated with an PanelData.
-            foreach (ARAnchor addedAnchor in changes.added.Where(addedAnchor => !PanelDatas.Exists(e => e.AnchorID == addedAnchor.trackableId.ToString())))
+            foreach (ARAnchor addedAnchor in changes.added.Where(addedAnchor => !PanelDataList.Exists(e => e.AnchorID == addedAnchor.trackableId.ToString())))
             {
                 StartCoroutine(DeleteAnchorNextFrame(addedAnchor));
             }
@@ -56,7 +56,7 @@ namespace Managers
         /// <param name="panelData"></param>
         public void RemovePanel(PanelData panelData)
         {
-            PanelDatas.Remove(panelData);
+            PanelDataList.Remove(panelData);
             SaveFile.SavePanelDatas();
         }
 
@@ -74,11 +74,11 @@ namespace Managers
         
         internal void LoadEntityObjects()
         {
-            PanelDatas = SaveFile.ReadFile();
-            if (PanelDatas == null)
+            PanelDataList = SaveFile.ReadFile();
+            if (PanelDataList == null)
                 return;
 
-            PanelsToLoad = PanelDatas.ToList();
+            PanelsToLoad = PanelDataList.ToList();
             LoadPanels();
         }
 
@@ -98,9 +98,9 @@ namespace Managers
             }
         }
 
-        public void AddNewEntity(PanelData panelData)
+        public void AddNewPanelData(PanelData panelData)
         {
-            PanelDatas.Add(panelData);
+            PanelDataList.Add(panelData);
             SaveFile.SavePanelDatas();
         }
 
@@ -112,6 +112,16 @@ namespace Managers
         public void SpawnNewEntity(string selectedEntityID, Vector3 transformPosition)
         {
             _panelSpawner.SpawnNewEntity(selectedEntityID, transformPosition);
+        }
+
+        public void SpawnNewEntity(string selectedEntityID)
+        {
+            _panelSpawner.SpawnNewEntity(selectedEntityID, transform.position);
+        }
+
+        public void DeletePanel(string panelID)
+        {
+            PanelDataList.FirstOrDefault(p => p.ID == panelID)?.DeletePanel();
         }
     }
 }

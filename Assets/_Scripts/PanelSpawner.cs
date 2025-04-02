@@ -34,7 +34,7 @@ public class PanelSpawner : MonoBehaviour
 
         string id = ((DateTimeOffset)DateTime.Now).ToUnixTimeMilliseconds().ToString();
         PanelData panelData = new (id, selectedEntityID, newPosition);
-        PanelManager.Instance.AddNewEntity(panelData);
+        PanelManager.Instance.AddNewPanelData(panelData);
         
         // Set the panel ID to the new panel
         newPanel.InitPanel(panelData);

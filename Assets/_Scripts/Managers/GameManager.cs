@@ -1,16 +1,6 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using AOT;
-using Microsoft.Win32.SafeHandles;
-#if QUEST_BUILD && FALSE
-using Meta.XR.MRUtilityKit;
-#endif
-using Structs;
 using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.XR.ARFoundation;
 using Utils;
 
 
@@ -19,9 +9,9 @@ namespace Managers
     public class GameManager : Singleton<GameManager>
     {
         public Uri HassUri { get; private set; }
-        public string HassURL { get; private set; }
+        public string HassURL { get; private set; } = "";
         public int HassPort { get; private set; }
-        public string HassToken { get; private set; }
+        public string HassToken { get; private set; } = "";
 
         [Tooltip("The refresh rate of the Home Assistant API in seconds.")]
         [SerializeField] private int HassStateRefreshRate = 10;
@@ -45,15 +35,17 @@ namespace Managers
         /// Only used for debugging in the inspector.
         /// </summary>
         [SerializeField] public HassState[] InspectorHassStates;
-        
+
         private void OnEnable()
         {
             // Initialize PlayerPrefs
             ZPlayerPrefs.Initialize("Hass", "Password");
-            
+        }
+
+        private void Start()
+        {
             // Load saved connection settings
             LoadConnectionSettings();
-            Debug.Log(Application.persistentDataPath);
             EventManager.OnConnectionTested += OnConnectionTested;
             EventManager.OnHassStatesChanged += OnHassStatesChanged;
         }
@@ -139,7 +131,7 @@ namespace Managers
             HassURL = SecurePlayerPrefs.GetString("HassURL");
             HassPort = SecurePlayerPrefs.GetInt("HassPort");
             HassToken = SecurePlayerPrefs.GetString("HassToken");
-
+            
             if (HassURL != "")
             {
                 try

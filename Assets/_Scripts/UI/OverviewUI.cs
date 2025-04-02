@@ -34,7 +34,7 @@ namespace UI
             int index = 0;
 
             // Iterate over all panel objects in the game manager
-            foreach (PanelData panelData in PanelManager.Instance.PanelDatas)
+            foreach (PanelData panelData in PanelManager.Instance.PanelDataList)
             {
                 // Get the panel, either by reusing an existing one or instantiating a new one
                 OverviewUIPanel overviewUIPanel;
@@ -73,9 +73,9 @@ namespace UI
             panelData.Panel.HighlightPanel();
         }
 
-        private void OnDeletePanelButtonPressed(PanelData entity)
+        private void OnDeletePanelButtonPressed(PanelData panel)
         {
-            PanelManager.Instance.PanelDatas.FirstOrDefault(e => e.ID == entity.ID)?.DeletePanel();
+            PanelManager.Instance.DeletePanel(panel.ID);
             ShowEntityPanels();
         }
     }

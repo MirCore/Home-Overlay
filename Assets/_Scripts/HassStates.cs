@@ -49,6 +49,11 @@ public static class HassStates
         // Iterate over the entities and handle each one
         foreach (HassState entity in hassStates)
         {
+            if (string.IsNullOrEmpty(entity.attributes.friendly_name))
+            {
+                entity.attributes.friendly_name = entity.entity_id.Split(".")[1];
+            }
+            
             // Update or add the entity state
             if (HassStatesDict.TryGetValue(entity.entity_id, out HassState existingEntity))
             {
@@ -67,7 +72,6 @@ public static class HassStates
                 // Update or add the entity
                 HassStatesDict[entity.entity_id] = entity;
             }
-            
         }
             
         // Invoke the event that the Hass states have changed

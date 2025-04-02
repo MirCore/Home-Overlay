@@ -1,15 +1,6 @@
 import Foundation
 import SwiftUI
 
-// These methods are exported from Swift with an explicit C-style name using @_cdecl,
-// to match what DllImport expects. You will need to do appropriate conversion from
-// C-style argument types (including UnsafePointers and other friends) into Swift
-// as appropriate.
-
-// SetNativeCallback is called from the SwiftUIDriver MonoBehaviour in OnEnable,
-// to give Swift code a way to make calls back into C#. You can use one callback or
-// many, as appropriate for your application.
-//
 // Declared in C# as: delegate void CallbackDelegate(string command);
 typealias CallbackDelegateType = @convention(c) (UnsafePointer<CChar>, UnsafePointer<CChar>, UnsafePointer<CChar>, UnsafePointer<CChar>) -> Void
 
@@ -17,7 +8,9 @@ var callbackDelegate: CallbackDelegateType? = nil
 var hassUrl = "http://homeassistant.local/"
 var hassPort = "8123"
 var hassToken = ""
-public var entitiesDict: [String:String] = [:]
+var connectionStatus = "Checking connection..."
+public var entitiesData: [Item] = []
+public var panelsData: [Item] = []
 
 // Declared in C# as: static extern void SetNativeCallback(CallbackDelegate callback);
 @_cdecl("SetNativeCallback")
@@ -75,32 +68,73 @@ func setSwiftUIConnectionValues(_ cUrl: UnsafePointer<CChar>, _ cPort: UnsafePoi
     }
 }
 
-// Define the structures to match the JSON format
-struct Item: Codable {
-    let key: String
-    let value: String
+
+@MainActor
+public class ConnectionStatusModel: ObservableObject {
+    @Published public var message: StatusMessage?
+
+    public static let shared = ConnectionStatusModel()
+    
+    private init() {}
+    
+    public func setMessage(status: Int, text: String, savedUri: String) {
+        message = StatusMessage(status: status, text: text, savedUri: savedUri)
+    }
+    
+    public func setMessage(status: Int, text: String) {
+        message = StatusMessage(status: status, text: text, savedUri: "")
+    }
 }
 
-struct ItemsWrapper: Codable {
-    let Items: [Item]
+
+// Struct to hold the status and message
+public struct StatusMessage {
+    public var status: Int
+    public var text: String
+    public var savedUri: String
+    
+    public init(status: Int, text: String, savedUri: String) {
+        self.status = status
+        self.text = text
+        self.savedUri = savedUri
+    }
+}
+
+// Struct for the Panels-Overview tab
+public struct Item: Codable {
+    public let entityId: String
+    public let panelId: String
+    public let name: String
+    public let active: Bool
+}
+
+struct ItemsWrapper<T: Codable>: Codable {
+    let Items: [T]
+}
+
+@_cdecl("SetSwiftUIConnectionStatus")
+public func setSwiftUIConnectionStatus(_ status: Int32, _ cMessage: UnsafePointer<CChar>, _ cSavedUri: UnsafePointer<CChar>) {
+    let message = String(cString: cMessage)
+    let savedUri = String(cString: cSavedUri)
+    print("Setting message from Unity: \(status) - \(message)")
+    
+    Task { @MainActor in
+        ConnectionStatusModel.shared.setMessage(status: Int(status), text: message, savedUri: savedUri)
+    }
 }
 
 @_cdecl("SetSwiftUIHassEntities")
 func setSwiftUIHassEntities(_ cEntities: UnsafePointer<CChar>) {
-    // Convert the C string to a Swift string
     let entitiesString = String(cString: cEntities)
 
     // Attempt to convert the string to Data
     if let data = entitiesString.data(using: .utf8) {
         do {
             // Decode the JSON data into the ItemsWrapper structure
-            let itemsWrapper = try JSONDecoder().decode(ItemsWrapper.self, from: data)
+            let decoded = try JSONDecoder().decode(ItemsWrapper<Item>.self, from: data)
 
             // Convert the list of items into a dictionary
-            entitiesDict = Dictionary(uniqueKeysWithValues: itemsWrapper.Items.map { ($0.key, $0.value) })
-
-            // Log the parsed entities
-            print("Parsed entities: \(entitiesDict)")
+            entitiesData = decoded.Items
         } catch {
             // Handle any errors that occur during decoding
             print("Failed to parse JSON string: \(error)")
@@ -108,6 +142,22 @@ func setSwiftUIHassEntities(_ cEntities: UnsafePointer<CChar>) {
     }
 }
 
+@_cdecl("SetSwiftUIPanels")
+public func setSwiftUIPanels(_ cPanels: UnsafePointer<CChar>) {
+    let panelsString = String(cString: cPanels)
+    
+    // Attempt to convert the string to Data
+    guard let jsonData = panelsString.data(using: .utf8) else { return }
+    
+    do {
+        // Decode the JSON data into the ItemsWrapper structure
+        let decoded = try JSONDecoder().decode(ItemsWrapper<Item>.self, from: jsonData)
+        
+        panelsData = decoded.Items
+    } catch {
+        print("Failed to decode JSON: \(error)")
+    }
+}
 
 // Declared in C# as: static extern void CloseSwiftUIWindow(string name);
 @_cdecl("CloseSwiftUIWindow")

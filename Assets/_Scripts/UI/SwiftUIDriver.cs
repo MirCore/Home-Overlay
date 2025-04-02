@@ -6,7 +6,6 @@ using Managers;
 using Proyecto26;
 using Unity.PolySpatial;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using Utils;
 
 #if UNITY_VISIONOS 
@@ -33,7 +32,7 @@ namespace UI
         {
             string message = status is 200 or 201 ? "Connection successful." : $"Connection error: {status}; {HttpStatusCodes.GetDescription(status)}";
 
-            SetSwiftUIConnectionStatus(status, message);
+            SetSwiftUIConnectionStatus(status, message, new Uri($"{GameManager.Instance.HassURL.TrimEnd('/')}:{GameManager.Instance.HassPort}").ToString());
         }
 
         private delegate void SwiftCallbackDelegate(string command, string url, string port, string token);
@@ -47,17 +46,6 @@ namespace UI
             // MonoPInvokeCallback methods will leak exceptions and cause crashes; always use a try/catch in these methods
             try
             {
-                Debug.Log($"Received Command: {command}\n" +
-                          $"Received arg0: {arg0}\n" +
-                          $"Received arg1: {arg1}\n" +
-                          $"Received arg2: {arg2}");
-                
-                // This could be stored in a static field or a singleton.
-                // If you need to deal with multiple windows and need to distinguish between them,
-                // you could add an ID to this callback and use that to distinguish windows.
-                if (!_settingsUI)
-                    _settingsUI = FindFirstObjectByType<SettingsUI>();
-
                 int.TryParse(arg1, out int portInt);
 
                 switch (command)
@@ -68,11 +56,33 @@ namespace UI
                     case "getConnectionValues":
                         SendConnectionValuesToSwiftUI();
                         return;
+                    case "getConnectionStatus":
+                        RestHandler.TestConnection(GameManager.Instance.HassURL, GameManager.Instance.HassPort, GameManager.Instance.HassToken);
+                        return;
                     case "testConnection":
-                        _settingsUI.TestConnection(arg0, portInt, arg2);
+                        RestHandler.TestConnection(arg0, portInt, arg2);
                         return;
                     case "saveConnection":
-                        _settingsUI.SaveConnectionSettings(arg0, portInt, arg2);
+                        GameManager.Instance.SaveConnectionSettings(arg0, portInt, arg2);
+                        return;
+                    case "windowClosed":
+                        CloseSwiftMainUI();
+                        return;
+                    case "createEntity":
+                        PanelManager.Instance.SpawnNewEntity(arg0);
+                        CloseSwiftMainUI();
+                        return;
+                    case "getPanels":
+                        SendPanelsToSwiftUI();
+                        return;
+                    case "deletePanel":
+                        PanelManager.Instance.DeletePanel(arg0);
+                        SendPanelsToSwiftUI();
+                        return;
+                    default:
+                        Debug.Log(
+                            $"Unhandled Command: {command}\n" +
+                            $"Received arg0: {arg0}\nReceived arg1: {arg1}\nReceived arg2: {arg2}");
                         return;
                 }
             }
@@ -80,6 +90,37 @@ namespace UI
             {
                 Debug.LogException(exception);
             }
+        }
+
+        private static void SendPanelsToSwiftUI()
+        {
+            List<JsonData> jsonData = PanelManager.Instance.PanelDataList.Select(panelData => new JsonData
+            {
+                entityId = panelData.EntityID,
+                panelId = panelData.ID, 
+                name = HassStates.GetHassState(panelData.EntityID)?.attributes.friendly_name,
+                active = panelData.Panel != null
+            }).ToList();
+            string json = JsonHelper.ArrayToJsonString(jsonData.ToArray());
+
+            Debug.Log("sending: " + json);
+
+            SetSwiftUIPanels(json);
+        }
+
+        [Serializable]
+        public struct JsonData
+        {
+            public string entityId;
+            public string panelId;
+            public string name;
+            public bool active;
+        }
+
+        private static void CloseSwiftMainUI()
+        {
+            CloseSwiftUIWindow("MainMenu");
+            UIManager.Instance.ShowHomeButton();
         }
 
         private static void SendConnectionValuesToSwiftUI()
@@ -91,13 +132,14 @@ namespace UI
         {
             Dictionary<string, HassState> hassStates = HassStates.GetHassStates();
 
-            Dictionary<string, string> dict = hassStates.ToDictionary(state => state.Key,
-                state => string.IsNullOrEmpty(state.Value.attributes.friendly_name)
-                    ? state.Key.Split(".")[1]
-                    : state.Value.attributes.friendly_name)
-                .OrderBy(pair => pair.Value, StringComparer.OrdinalIgnoreCase).ToDictionary(pair => pair.Key, pair => pair.Value);
             
-            string json = JsonHelpers.DictToJsonString(dict);
+            List<JsonData> jsonData = hassStates.Select(entity => new JsonData
+            {
+                entityId = entity.Key, 
+                name = entity.Value.attributes.friendly_name
+            }).ToList();
+            
+            string json = JsonHelper.ArrayToJsonString(jsonData.ToArray());
 
             Debug.Log("sending: " + json);
             
@@ -113,8 +155,7 @@ namespace UI
                     break;
                 case VolumeCamera.WindowEvent.Backgrounded: //Close window when your app is on background
                     Debug.Log("Window Backgrounded");
-                    UIManager.Instance.ShowHomeButton();
-                    CloseSwiftUIWindow("MainMenu"); //Imported native function located in the SwiftUIPlugin.swift
+                    CloseSwiftMainUI();
                     break;
                 case VolumeCamera.WindowEvent.Focused:
                     Debug.Log("Window (un)focused");
@@ -122,12 +163,11 @@ namespace UI
                     if (windowState.IsFocused == false)
                     {
                         Debug.Log("Window unfocused");
-                        UIManager.Instance.ShowHomeButton();
-                        CloseSwiftUIWindow("MainMenu");
+                        CloseSwiftMainUI();
                     }
                     break;
-                case VolumeCamera.WindowEvent.Resized:
                 case VolumeCamera.WindowEvent.Closed:
+                case VolumeCamera.WindowEvent.Resized:
                 default:
                     break;
             }
@@ -144,13 +184,16 @@ namespace UI
         public static extern void CloseSwiftUIWindow(string name);
 
         [DllImport("__Internal")]
-        private static extern void SetSwiftUIHassEntities(string name);
+        private static extern void SetSwiftUIHassEntities(string json);
+
+        [DllImport("__Internal")]
+        private static extern void SetSwiftUIPanels(string json);
         
         [DllImport("__Internal")]
         private static extern void SetSwiftUIConnectionValues(string url, string port, string token);
         
         [DllImport("__Internal")]
-        private static extern void SetSwiftUIConnectionStatus(int status, string message);
+        private static extern void SetSwiftUIConnectionStatus(int status, string message, string savedUri);
 #else
         private static void SetNativeCallback(SwiftCallbackDelegate swiftCallback)
         {

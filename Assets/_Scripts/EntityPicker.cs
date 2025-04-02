@@ -191,7 +191,7 @@ public class EntityPicker : MonoBehaviour
             return true;
         
         string eID = state.Key;
-        string eName = HassStates.GetHassState(eID).attributes.friendly_name ?? "";
+        string eName = HassStates.GetHassState(eID).attributes.friendly_name;
             
         return eName.Contains(_searchText, StringComparison.CurrentCultureIgnoreCase) ||
                eID.Contains(_searchText, StringComparison.CurrentCultureIgnoreCase);
@@ -205,7 +205,7 @@ public class EntityPicker : MonoBehaviour
     {
         // Sort entities by friendly_name (default to entityID if name is null)
         List<string> sortedEntityList = entityIDList
-            .OrderBy(entityID => HassStates.GetHassState(entityID)?.attributes.friendly_name ?? entityID.Split('.')[1])
+            .OrderBy(entityID => HassStates.GetHassState(entityID)?.attributes.friendly_name)
             .ToList();
         
         foreach (string entityID in sortedEntityList)

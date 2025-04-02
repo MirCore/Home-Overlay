@@ -59,7 +59,7 @@ namespace Utils
 
         public static void SavePanelDatas()
         {
-            WriteFile(PanelManager.Instance.PanelDatas);
+            WriteFile(PanelManager.Instance.PanelDataList);
         }
 
         public static PanelData ReadEncryptedFile()
