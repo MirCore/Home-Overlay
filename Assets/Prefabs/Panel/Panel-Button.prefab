@@ -727,9 +727,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HighlightImage: {fileID: 6513151547911117981}
   Icon: {fileID: 5706165741701347998}
+  NameText: {fileID: 0}
+  StateText: {fileID: 0}
   SettingsButton: {fileID: 5021326457533859491}
   WindowControls: {fileID: 3904307504107716888}
+  CanvasRectTransform: {fileID: 8622971570471764161}
   Button: {fileID: 8909964121112961152}
+  CompactCanvasSize: {x: 0, y: 0}
+  ExpandedCanvasSize: {x: 0, y: 0}
 --- !u!224 &8622971570471764161 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2623621052029450925, guid: 56729b3eda175f046830741f79f8d92f, type: 3}

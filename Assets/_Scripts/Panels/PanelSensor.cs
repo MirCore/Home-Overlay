@@ -7,9 +7,6 @@ namespace Panel
 {
     public class PanelSensor : Panels.Panel
     {
-        [SerializeField] private TMP_Text SensorState;
-        [SerializeField] private TMP_Text SensorUnit;
-    
         private void UpdateSensorValue()
         {
             if (!PanelIsReady())
@@ -23,14 +20,22 @@ namespace Panel
             // Sensor as a temperature float
             if (HassState.DeviceType == EDeviceType.CLIMATE)
                 stateText = $"{HassState.attributes.current_temperature} ({HassState.attributes.temperature})"; // current (target)
-            SensorState.text = $"{stateText}";
-            SensorUnit.text = $"{(HassState.attributes == null ? "" : HassState.attributes.unit_of_measurement)}";
+            
+            string sensorText = "";
             if (HassState.DeviceType == EDeviceType.CLIMATE && !string.IsNullOrEmpty(GameManager.Instance.HassConfig.unit_system.temperature))
-                SensorUnit.text = $"{GameManager.Instance.HassConfig.unit_system.temperature}";
+                sensorText = $" {GameManager.Instance.HassConfig.unit_system.temperature}";
+            else if (HassState.attributes != null)
+                sensorText = $" {HassState.attributes.unit_of_measurement}";
+            
+            StateText.text = $"{stateText}{sensorText}";
         }
 
+       
         protected override void UpdatePanel()
         {
+            base.UpdatePanel();
+            
+            UpdatePanelLayout();
             UpdateSensorValue();
             UpdateIcon();
         }

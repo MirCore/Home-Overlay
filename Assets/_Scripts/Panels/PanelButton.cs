@@ -3,12 +3,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using Utils;
 
-namespace Panel
+namespace Panels
 {
-    public class PanelButton : Panels.Panel
+    public class PanelButton : Panel
     {
         [SerializeField] private Button Button;
-        
     
         protected override void OnEnable()
         {
@@ -19,6 +18,17 @@ namespace Panel
 
         protected override void UpdatePanel()
         {
+            base.UpdatePanel();
+            
+            if (!PanelIsReady())
+                return;
+            
+            if (HassState.attributes.brightness != 0)
+                StateText.text = Mathf.Round((float)HassState.attributes.brightness / 255 * 100) + "%";
+            else
+                StateText.text = HassState.state;
+
+            UpdatePanelLayout();
             UpdateIcon();
         }
 

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Managers;
 using Structs;
 using TMPro;
+using UI;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
@@ -19,8 +20,17 @@ namespace Panels
     {
         [SerializeField] private Image HighlightImage;
         [SerializeField] internal TMP_Text Icon;
+        [SerializeField] internal TMP_Text NameText;
+        [SerializeField] internal TMP_Text StateText;
         [SerializeField] private Button SettingsButton;
         [SerializeField] private GameObject WindowControls;
+        private Canvas _canvas;
+        private RectTransform _canvasRectTransform;
+        private RoundedQuadMesh _roundedQuadMesh;
+        
+        [SerializeField] private Vector2 CompactCanvasSize = new (120, 120);
+        [SerializeField] private Vector2 ExpandedCanvasSize = new (320, 120);
+        
         private LazyFollow _lazyFollow;
         private XRBaseInteractable _interactable;
 
@@ -34,6 +44,14 @@ namespace Panels
 
         protected virtual void OnEnable()
         {
+            if (Icon != null) Icon.text = "";
+            if (NameText != null) NameText.text = "";
+            if (StateText != null) StateText.text = "";
+
+            _canvas = GetComponentInChildren<Canvas>();
+            _canvasRectTransform = _canvas.GetComponent<RectTransform>();
+            _roundedQuadMesh = _canvas.GetComponent<RoundedQuadMesh>();
+            
             _lazyFollow = GetComponent<LazyFollow>();
             SettingsButton.onClick.AddListener(OnSettingsButtonClicked);
             _interactable = GetComponent<XRBaseInteractable>();
@@ -67,6 +85,8 @@ namespace Panels
             }, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
+        #region ARAnchors
+
         private async Task CreateNewAnchor()
         {
             Debug.Log("Creating new anchor");
@@ -85,7 +105,7 @@ namespace Panels
                     {
                         Debug.Log("No plane found, turning off AlignWindowToWall");
                         PanelData.Settings.AlignWindowToWall = false;
-                        UpdateRotationBehaviour();
+                        OnSettingsChanged();
                         return;
                     }
                 }
@@ -141,6 +161,8 @@ namespace Panels
             }
         }
 
+        #endregion
+
         /// <summary>
         /// Called when Hass states change.
         /// </summary>
@@ -171,10 +193,7 @@ namespace Panels
 
             // If there is no EntityID, there is nothing to update.
             if (PanelData.EntityID == null)
-            {
-                Icon.text = "";
                 return;
-            }
 
             // Get the current state of the panel.
             HassState ??= HassStates.GetHassState(PanelData.EntityID);
@@ -194,12 +213,18 @@ namespace Panels
 
             // Get the current state of the panel.
             HassState = HassStates.GetHassState(PanelData.EntityID);
-
+            
             UpdatePanel();
             PanelSettingsWindowManager.Instance.UpdatePanelSettingsWindow(this);
         }
 
-        protected abstract void UpdatePanel();
+        protected virtual void UpdatePanel()
+        {
+            if (!PanelIsReady())
+                return;
+
+            if (NameText != null) NameText.text = HassState.attributes.friendly_name;
+        }
 
         public void DeletePanel()
         {
@@ -245,6 +270,29 @@ namespace Panels
             _setButtonColorTemporarilyCoroutine = null;
         }
         
+        
+
+        protected void UpdatePanelLayout()
+        {
+            if (NameText.gameObject.activeSelf == PanelData.Settings.ShowName && StateText.gameObject.activeSelf == PanelData.Settings.ShowState)
+                return;
+            
+            NameText.gameObject.SetActive(PanelData.Settings.ShowName);
+            StateText.gameObject.SetActive(PanelData.Settings.ShowState);
+            
+            if (PanelData.Settings.ShowName || PanelData.Settings.ShowState)
+            {
+                _canvasRectTransform.sizeDelta = ExpandedCanvasSize;
+            }
+            else
+            {
+                _canvasRectTransform.sizeDelta = CompactCanvasSize;
+            }
+
+            if (_roundedQuadMesh)
+                _roundedQuadMesh.UpdateMesh();
+        }
+        
         private void OnSettingsButtonClicked() => PanelSettingsWindowManager.Instance.ToggleSettingsWindow(this);
 
         public EDeviceType GetDeviceType() => HassState.DeviceType;
@@ -254,7 +302,7 @@ namespace Panels
         public void SetWindowControlVisibility() => WindowControls.SetActive(!PanelData.Settings.HideWindowControls);
         
 
-        public void UpdateRotationBehaviour()
+        public void OnSettingsChanged()
         {
             // toggle the LazyFollow component on/off
             if (PanelData.Settings.AlignWindowToWall || !PanelData.Settings.RotationEnabled)
@@ -265,6 +313,7 @@ namespace Panels
             else
                 _lazyFollow.enabled = true;
             
+            UpdatePanel();
             ReloadSettingsWindow();
         }
 

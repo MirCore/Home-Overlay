@@ -53,8 +53,6 @@ public abstract class RestHandler
             EventManager.InvokeOnConnectionTested(400); // Use 400 Bad Request for invalid URI
             return;
         }
-
-        Debug.Log("testing connection to: " + uri);
         
         RequestHelper get = new()
         {
@@ -144,7 +142,6 @@ public abstract class RestHandler
     public static void GetCalendar(string entityID, Action<string> updateCalendar)
     {
         string start = DateTime.Now.ToString("yyyy-MM-ddT00:00:00.000Z");
-        Debug.Log(start);
         string end = DateTime.Now.AddDays(31).ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
         Uri uri = new (GameManager.Instance.HassUri, $"calendars/{entityID}?start={Uri.EscapeDataString(start)}&end={Uri.EscapeDataString(end)}");       
         SendGetRequest(uri, updateCalendar);

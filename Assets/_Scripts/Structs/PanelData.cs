@@ -123,9 +123,61 @@ namespace Structs
         [Serializable]
         public class PanelSettings
         {
-            public bool HideWindowControls;
-            public bool AlignWindowToWall;
-            public bool RotationEnabled = true;
+            public bool _showName = true;
+            public bool _showState = true;
+            public bool _hideWindowControls;
+            public bool _alignWindowToWall;
+            public bool _rotationEnabled = true;
+
+            public bool ShowName
+            {
+                get => _showName;
+                set
+                {
+                    _showName = value;
+                    SaveFile.SavePanelDatas();
+                }
+            }
+
+            public bool ShowState
+            {
+                get => _showState;
+                set
+                {
+                    _showState = value;
+                    SaveFile.SavePanelDatas();
+                }
+            }
+
+            public bool HideWindowControls
+            {
+                get => _hideWindowControls;
+                set
+                {
+                    _hideWindowControls = value;
+                    SaveFile.SavePanelDatas();
+                }
+            }
+
+            public bool AlignWindowToWall
+            {
+                get => _alignWindowToWall;
+                set
+                {
+                    _alignWindowToWall = value;
+                    SaveFile.SavePanelDatas();
+                }
+            }
+
+            public bool RotationEnabled
+            {
+                get => _rotationEnabled;
+                set
+                {
+                    _rotationEnabled = value;
+                    SaveFile.SavePanelDatas();
+                }
+            }
         }
     }
 

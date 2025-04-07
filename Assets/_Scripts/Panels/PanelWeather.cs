@@ -175,6 +175,8 @@ namespace Panel
         /// </summary>
         protected override void UpdatePanel()
         {
+            base.UpdatePanel();
+            
             if (!PanelIsReady())
                 return;
             UpdateCurrentWeather();

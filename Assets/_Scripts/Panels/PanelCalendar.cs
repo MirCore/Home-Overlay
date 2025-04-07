@@ -117,8 +117,11 @@ namespace Panel
             }
         }
 
+        
         protected override void UpdatePanel()
         {
+            base.UpdatePanel();
+            
             if (!PanelIsReady())
                 return;
             

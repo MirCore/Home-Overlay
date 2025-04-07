@@ -4,11 +4,11 @@ using System.Linq;
 using AOT;
 using Managers;
 using Proyecto26;
-using Unity.PolySpatial;
 using UnityEngine;
 using Utils;
 
 #if UNITY_VISIONOS 
+using Unity.PolySpatial;
 using System.Runtime.InteropServices;
 #endif
 
@@ -136,6 +136,7 @@ namespace UI
             SetSwiftUIHassEntities(json);
         }
 
+#if UNITY_VISIONOS 
         public void WindowEvent(VolumeCamera volumeCamera, VolumeCamera.WindowState windowState) //Set this public method into your VolumeCamera>Events in the inspector, dont forget to Choose Dynamic WindowState!
         {
             switch (windowState.WindowEvent)
@@ -162,6 +163,7 @@ namespace UI
                     break;
             }
         }
+#endif
             
 #if UNITY_VISIONOS && !UNITY_EDITOR
         [DllImport("__Internal")]

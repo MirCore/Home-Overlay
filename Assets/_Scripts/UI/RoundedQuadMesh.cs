@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace UI
 {
@@ -28,25 +29,10 @@ namespace UI
         private Vector2[] m_UV;
         private int[] m_Triangles;
 
-
         [SerializeField] private RectTransform RectTransform;
-
-
-        private void OnEnable()
-        {
-            if (RectTransform != null)
-            {
-                rect = new Rect(rect.x,rect.y,RectTransform.rect.width,RectTransform.rect.height);
-            }
-        }
 
         void Start ()
         {
-            if (RectTransform != null)
-            {
-                rect = new Rect(rect.x,rect.y,RectTransform.rect.width,RectTransform.rect.height);
-            }
-            
             m_MeshFilter = GetComponent<MeshFilter>();
             if (m_MeshFilter == null)
                 m_MeshFilter = gameObject.AddComponent<MeshFilter>();
@@ -57,9 +43,14 @@ namespace UI
             UpdateMesh();
         }
 
-
         public Mesh UpdateMesh()
         {
+            Profiler.BeginSample("Update RoundedQuadMesh");
+            if (!m_Mesh)
+                return null;
+            if (RectTransform)
+                rect = new Rect(-RectTransform.rect.width/2,-RectTransform.rect.height/2,RectTransform.rect.width,RectTransform.rect.height);
+            
             if (CornerVertexCount<2)
                 CornerVertexCount = 2;
             int sides = DoubleSided ? 2 : 1;
@@ -218,6 +209,9 @@ namespace UI
             if (CreateUV)
                 m_Mesh.uv = m_UV;
             m_Mesh.triangles = m_Triangles;
+            
+            Profiler.EndSample();
+            
             return m_Mesh;
         }
 

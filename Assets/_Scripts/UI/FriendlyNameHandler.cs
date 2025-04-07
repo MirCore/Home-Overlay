@@ -1,9 +1,11 @@
 ﻿using Structs;
 using TMPro;
-using Unity.PolySpatial;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
+#if UNITY_VISIONOS 
+using Unity.PolySpatial;
+#endif
 
 namespace UI
 {
@@ -63,6 +65,7 @@ namespace UI
             UpdateTitle(entityID);
         }
 
+#if UNITY_VISIONOS 
         public void RemoveFromSortingGroup()
         {
             VisionOSSortingGroup sorting = GetComponentInParent<VisionOSSortingGroup>();
@@ -77,6 +80,7 @@ namespace UI
                 return;
             }
         }
+#endif
 
         public void Highlight(string entityID)
         {

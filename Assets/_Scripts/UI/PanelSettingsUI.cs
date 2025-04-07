@@ -17,6 +17,8 @@ namespace UI
         [SerializeField] private ColorPicker ColorPicker;
         
         [Header("Panel Settings")]
+        [SerializeField] private Toggle ShowNameToggle;
+        [SerializeField] private Toggle ShowStateToggle;
         [SerializeField] private Toggle WindowControlToggle;
         [SerializeField] private Toggle AlignWindowToWallToggle;
         [SerializeField] private Toggle RotationToggle;
@@ -53,6 +55,8 @@ namespace UI
             
             ChangeEntityButton.onClick.AddListener(OnChangeEntityButtonClicked);
             DeleteButton.onClick.AddListener(OnDeleteButtonClicked);
+            ShowNameToggle.onValueChanged.AddListener(OnShowNameChanged);
+            ShowStateToggle.onValueChanged.AddListener(OnShowStateChanged);
             WindowControlToggle.onValueChanged.AddListener(OnWindowControlToggleValueChanged);
             AlignWindowToWallToggle.onValueChanged.AddListener(OnAlignToWallToggleValueChanged);
             RotationToggle.onValueChanged.AddListener(OnRotationToggleValueChanged);
@@ -63,12 +67,26 @@ namespace UI
         {
             ChangeEntityButton.onClick.RemoveListener(OnChangeEntityButtonClicked);
             DeleteButton.onClick.RemoveListener(OnDeleteButtonClicked);
+            ShowNameToggle.onValueChanged.RemoveListener(OnShowNameChanged);
+            ShowStateToggle.onValueChanged.RemoveListener(OnShowStateChanged);
             WindowControlToggle.onValueChanged.RemoveListener(OnWindowControlToggleValueChanged);
             AlignWindowToWallToggle.onValueChanged.RemoveListener(OnAlignToWallToggleValueChanged);
             RotationToggle.onValueChanged.RemoveListener(OnRotationToggleValueChanged);
             EventManager.OnHassStatesChanged -= OnHassStatesChanged;
         }
-        
+
+        private void OnShowNameChanged(bool value)
+        {
+            Panel.PanelData.Settings.ShowName = value;
+            Panel.OnSettingsChanged();
+        }
+
+        private void OnShowStateChanged(bool value)
+        {
+            Panel.PanelData.Settings.ShowState = value;
+            Panel.OnSettingsChanged();
+        }
+
         private void OnWindowControlToggleValueChanged(bool value)
         {
             Panel.PanelData.Settings.HideWindowControls = value;
@@ -80,7 +98,7 @@ namespace UI
             Panel.PanelData.Settings.AlignWindowToWall = value;
             if (value == true)
                 Panel.PanelData.Settings.RotationEnabled = false;
-            Panel.UpdateRotationBehaviour();
+            Panel.OnSettingsChanged();
         }
         
         private void OnRotationToggleValueChanged(bool value)
@@ -88,7 +106,7 @@ namespace UI
             Panel.PanelData.Settings.RotationEnabled = value;
             if (value == true)
                 Panel.PanelData.Settings.AlignWindowToWall = false;
-            Panel.UpdateRotationBehaviour();
+            Panel.OnSettingsChanged();
         }
 
         /// <summary>
@@ -173,6 +191,8 @@ namespace UI
                 ColorPicker.gameObject.SetActive(false);
             }
 
+            ShowNameToggle.SetIsOnWithoutNotify(Panel.PanelData.Settings.ShowName);
+            ShowStateToggle.SetIsOnWithoutNotify(Panel.PanelData.Settings.ShowState);
             WindowControlToggle.SetIsOnWithoutNotify(Panel.PanelData.Settings.HideWindowControls);
             AlignWindowToWallToggle.SetIsOnWithoutNotify(Panel.PanelData.Settings.AlignWindowToWall);
             RotationToggle.SetIsOnWithoutNotify(Panel.PanelData.Settings.RotationEnabled);
