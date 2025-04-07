@@ -84,3 +84,4 @@ crashlytics-build.properties
 
 # Mac folder files
 .DS_Store
+mono_crash.0.0.json
