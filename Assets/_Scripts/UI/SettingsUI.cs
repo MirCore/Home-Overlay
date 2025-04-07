@@ -130,7 +130,7 @@ namespace UI
 
         private void OnLoadTokenButtonClicked()
         {
-            FileBrowserUtility.LoadStringFromFile(this);
+            //FileBrowserUtility.LoadStringFromFile(this); // Deleted, because not working on VisionOS
         }
 
         /// <summary>

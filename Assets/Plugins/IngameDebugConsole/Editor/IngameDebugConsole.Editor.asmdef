@@ -1,17 +1,17 @@
 {
     "name": "IngameDebugConsole.Editor",
     "references": [
-        "IngameDebugConsole.Runtime",
-        "Unity.TextMeshPro"
+        "IngameDebugConsole.Runtime"
     ],
     "includePlatforms": [
         "Editor"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "autoReferenced": true,
     "overrideReferences": false,
     "precompiledReferences": [],
+    "autoReferenced": true,
     "defineConstraints": [],
-    "optionalUnityReferences": []
+    "versionDefines": [],
+    "noEngineReferences": false
 }

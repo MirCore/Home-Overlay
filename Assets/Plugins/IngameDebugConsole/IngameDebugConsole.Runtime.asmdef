@@ -1,5 +1,6 @@
 {
     "name": "IngameDebugConsole.Runtime",
+    "rootNamespace": "",
     "references": [
         "Unity.InputSystem",
         "Unity.TextMeshPro"
@@ -7,9 +8,16 @@
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "autoReferenced": true,
     "overrideReferences": false,
     "precompiledReferences": [],
+    "autoReferenced": true,
     "defineConstraints": [],
-    "optionalUnityReferences": []
+    "versionDefines": [
+        {
+            "name": "com.unity.modules.androidjni",
+            "expression": "",
+            "define": "UNITY_ANDROID_JNI"
+        }
+    ],
+    "noEngineReferences": false
 }

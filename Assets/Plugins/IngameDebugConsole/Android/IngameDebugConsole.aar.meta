@@ -35,6 +35,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 68068
   packageName: In-game Debug Console
-  packageVersion: 1.6.8
+  packageVersion: 1.8.0
   assetPath: Assets/Plugins/IngameDebugConsole/Android/IngameDebugConsole.aar
-  uploadId: 716095
+  uploadId: 744541
