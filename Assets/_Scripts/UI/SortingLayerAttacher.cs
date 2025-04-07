@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -33,7 +34,7 @@ namespace UI
             }
             
             ObservableList<VisionOSSortingGroup.RendererSorting> groupMembers = _sortingGroup.Renderers;
-
+            
             for (int i = 0; i < groupMembers.Count; i++)
             {
                 if (groupMembers[i].Renderer != gameObject)

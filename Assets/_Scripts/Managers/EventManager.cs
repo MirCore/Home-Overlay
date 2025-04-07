@@ -8,12 +8,14 @@ namespace Managers
         /// Event triggered when the connection to Home Assistant is tested.
         /// The parameter is the status of the connection test.
         /// </summary>
-        public static event Action<int> OnConnectionTested;
+        public static event Action<int, Uri> OnConnectionTested;
+
         /// <summary>
         /// Invokes the <see cref="OnConnectionTested"/> event.
         /// </summary>
         /// <param name="status">The status of the connection test.</param>
-        public static void InvokeOnConnectionTested(int status) => OnConnectionTested?.Invoke(status);
+        /// <param name="uri">The tested Uri</param>
+        public static void InvokeOnConnectionTested(int status, Uri uri = null) => OnConnectionTested?.Invoke(status, uri);
 
         
         /// <summary>

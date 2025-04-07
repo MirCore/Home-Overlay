@@ -102,6 +102,11 @@ namespace Managers
         /// </summary>
         internal void ShowSettingsTab()
         {
+#if UNITY_VISIONOS && !UNITY_EDITOR
+            SwiftUIDriver.OpenSwiftUIWindow("MainMenu", "Settings");
+            HomeButtonUI.SetActive(false);
+            return;
+#endif
             ShowTab(SettingsTab);
             
             HeaderText.text = SettingsTitle;

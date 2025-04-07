@@ -61,7 +61,7 @@ namespace Managers
             _lastHassStateRefresh = DateTime.Now;
         }
 
-        private void OnConnectionTested(int response)
+        private void OnConnectionTested(int response, Uri uri)
         {
             if (response is 200 or 201)
             {
@@ -80,7 +80,7 @@ namespace Managers
             }
         }
 
-        private void OnInitialConnectionTested(int statusCode)
+        private void OnInitialConnectionTested(int statusCode, Uri uri)
         {
             EventManager.OnConnectionTested -= OnInitialConnectionTested;
 
@@ -91,18 +91,6 @@ namespace Managers
             }
             PanelManager.Instance.LoadEntityObjects();
             EventManager.InvokeOnAppStateLoaded();
-        }
-
-
-        /// <summary>
-        /// Tests the connection to Home Assistant using the provided URL, port, and token.
-        /// </summary>
-        /// <param name="url">The base URL of Home Assistant.</param>
-        /// <param name="port">The port number of Home Assistant.</param>
-        /// <param name="token">The authorization token of Home Assistant.</param>
-        private static void TestConnection(string url, int port, string token)
-        {
-            RestHandler.TestConnection(url, port, token);
         }
 
         /// <summary>
@@ -153,7 +141,7 @@ namespace Managers
             }
             else
             {
-                TestConnection(HassURL, HassPort, HassToken);
+                RestHandler.TestConnection(HassURL, HassPort, HassToken);
                 EventManager.OnConnectionTested += OnInitialConnectionTested;
             }
         }

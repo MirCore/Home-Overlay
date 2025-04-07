@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Text;
 using Managers;
@@ -91,13 +92,6 @@ namespace UI
             ChangeConnectionSettingsButton.onClick.AddListener(ChangeConnectionSettings);
             SaveButton.onClick.AddListener(OnSaveButtonClicked);
             EventManager.OnConnectionTested += OnConnectionTested;
-
-#if UNITY_VISIONOS
-            URLInputField.interactable = false;
-            PortInputField.interactable = false;
-            TokenInputField.interactable = false;
-            SwiftUIDriver.OpenSwiftUIWindow("MainMenu");
-#endif
         }
 
         private void OnDisable()
@@ -143,7 +137,7 @@ namespace UI
         /// Called when the connection test is done.
         /// </summary>
         /// <param name="status">The status of the connection test.</param>
-        private void OnConnectionTested(int status)
+        private void OnConnectionTested(int status, Uri uri)
         {
             if (status is 200 or 201)
             {

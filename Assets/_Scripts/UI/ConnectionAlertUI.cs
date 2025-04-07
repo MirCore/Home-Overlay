@@ -31,7 +31,7 @@ namespace UI
             CloseButton.onClick.RemoveListener(() => AlertWindow.SetActive(false));
         }
         
-        private void OnConnectionTested(int status)
+        private void OnConnectionTested(int status, Uri uri)
         {
             Icon.gameObject.SetActive(false);
             switch (status)

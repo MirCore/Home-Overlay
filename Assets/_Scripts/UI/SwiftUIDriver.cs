@@ -28,13 +28,6 @@ namespace UI
             EventManager.OnConnectionTested -= OnConnectionTested;
         }
 
-        private static void OnConnectionTested(int status)
-        {
-            string message = status is 200 or 201 ? "Connection successful." : $"Connection error: {status}; {HttpStatusCodes.GetDescription(status)}";
-
-            SetSwiftUIConnectionStatus(status, message, new Uri($"{GameManager.Instance.HassURL.TrimEnd('/')}:{GameManager.Instance.HassPort}").ToString());
-        }
-
         private delegate void SwiftCallbackDelegate(string command, string url, string port, string token);
 
         // This attribute is required for methods that are going to be called from native code
@@ -92,6 +85,13 @@ namespace UI
             }
         }
 
+        private static void OnConnectionTested(int status, Uri uri)
+        {
+            string message = status is 200 or 201 ? "Connection successful." : $"Connection error: {status}; {HttpStatusCodes.GetDescription(status)}";
+            
+            SetSwiftUIConnectionStatus(status, message, uri.ToString());
+        }
+
         private static void SendPanelsToSwiftUI()
         {
             List<JsonData> jsonData = PanelManager.Instance.PanelDataList.Select(panelData => new JsonData
@@ -108,14 +108,6 @@ namespace UI
             SetSwiftUIPanels(json);
         }
 
-        [Serializable]
-        public struct JsonData
-        {
-            public string entityId;
-            public string panelId;
-            public string name;
-            public bool active;
-        }
 
         private static void CloseSwiftMainUI()
         {
@@ -140,8 +132,6 @@ namespace UI
             }).ToList();
             
             string json = JsonHelper.ArrayToJsonString(jsonData.ToArray());
-
-            Debug.Log("sending: " + json);
             
             SetSwiftUIHassEntities(json);
         }
@@ -173,12 +163,12 @@ namespace UI
             }
         }
             
-#if UNITY_VISIONOS 
+#if UNITY_VISIONOS && !UNITY_EDITOR
         [DllImport("__Internal")]
         static extern void SetNativeCallback(SwiftCallbackDelegate swiftCallback);
-
+        
         [DllImport("__Internal")]
-        public static extern void OpenSwiftUIWindow(string name);
+        public static extern void OpenSwiftUIWindow(string name, string tab = "");
 
         [DllImport("__Internal")]
         public static extern void CloseSwiftUIWindow(string name);
@@ -195,17 +185,29 @@ namespace UI
         [DllImport("__Internal")]
         private static extern void SetSwiftUIConnectionStatus(int status, string message, string savedUri);
 #else
-        private static void SetNativeCallback(SwiftCallbackDelegate swiftCallback)
-        {
-        }
+        private static void SetNativeCallback(SwiftCallbackDelegate swiftCallback){}
 
-        internal static void OpenSwiftUIWindow(string name)
-        {
-        }
+        internal static void OpenSwiftUIWindow(string name, string tab = ""){}
 
-        internal static void CloseSwiftUIWindow(string name)
-        {
-        }
+        internal static void CloseSwiftUIWindow(string name){}
+        
+        private static void SetSwiftUIHassEntities(string json){}
+
+        private static void SetSwiftUIPanels(string json){}
+        
+        private static void SetSwiftUIConnectionValues(string url, string port, string token){}
+        
+        private static void SetSwiftUIConnectionStatus(int status, string message, string savedUri){}
 #endif
+        
+        
+        [Serializable]
+        public struct JsonData
+        {
+            public string entityId;
+            public string panelId;
+            public string name;
+            public bool active;
+        }
     }
 }

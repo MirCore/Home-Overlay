@@ -120,6 +120,7 @@ public class EntityPicker : MonoBehaviour
     {
         TypeDropdown.ClearOptions();
         TypeDropdown.AddOptions(Enum.GetValues(typeof(EDeviceType)).Cast<EDeviceType>().Select(e => e.GetDisplayName()).ToList());
+        TypeDropdown.value = (int)_selectedEDeviceType;
     }
     
     /// <summary>
@@ -246,14 +247,16 @@ public class EntityPicker : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets the Panel this EntityPicker is part of. Also selects the entity in the dropdown
+    /// Sets the Panel this EntityPicker is part of. Also selects the entity in the list
     /// </summary>
     /// <param name="panel"></param>
     public void SetEntity(Panels.Panel panel)
     {
         _panel = panel;
         _selectedEntityID = _panel.PanelData.EntityID;
+        _selectedEDeviceType = _panel.GetDeviceType();
         TypeDropdown.value = (int)_panel.GetDeviceType();
         SaveChangesButton.gameObject.SetActive(true);
+        GenerateEntityList();
     }
 }

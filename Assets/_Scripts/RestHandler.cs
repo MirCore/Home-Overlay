@@ -53,6 +53,8 @@ public abstract class RestHandler
             EventManager.InvokeOnConnectionTested(400); // Use 400 Bad Request for invalid URI
             return;
         }
+
+        Debug.Log("testing connection to: " + uri);
         
         RequestHelper get = new()
         {
@@ -65,17 +67,17 @@ public abstract class RestHandler
         };
         
         RestClient.Get(get).Then(response => {
-            EventManager.InvokeOnConnectionTested((int)response.StatusCode);
+            EventManager.InvokeOnConnectionTested((int)response.StatusCode, uri);
         })
         .Catch(err => {
             if (err is RequestException requestException)
             {
                 int statusCode = (int)requestException.StatusCode;
-                EventManager.InvokeOnConnectionTested(statusCode);
+                EventManager.InvokeOnConnectionTested(statusCode, uri);
             }
             else
             {
-                EventManager.InvokeOnConnectionTested(err.HResult);
+                EventManager.InvokeOnConnectionTested(err.HResult, uri);
                 Debug.LogError("Error: " + err.Message + "\n" + err.StackTrace);
             }
         });

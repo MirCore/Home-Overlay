@@ -1,6 +1,8 @@
 ﻿using Structs;
 using TMPro;
+using Unity.PolySpatial;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 namespace UI
@@ -10,15 +12,18 @@ namespace UI
         [SerializeField] private TMP_Text Title;
         [SerializeField] private TMP_Text Subtitle;
         [SerializeField] internal Button Button;
-        ColorBlock _colorBlock;
+        private ColorBlock _colorBlock;
+        private readonly Color _colorBlockNormalColor = new (1, 1, 1, 0f);
+        private readonly Color _colorBlockHighlightedColor = new (1, 1, 1, 0.1f);
+        private readonly Color _colorBlockSelectedHighlightedColor = new (1, 1, 1, 0.2f);
 
         private void OnEnable()
         {
             if (Button == null)
                 return;
             _colorBlock = Button.colors;
-            _colorBlock.normalColor = new Color(1, 1, 1, 0f);
-            _colorBlock.highlightedColor = new Color(1, 1, 1, 0.1f);
+            _colorBlock.normalColor = _colorBlockNormalColor;
+            _colorBlock.highlightedColor = _colorBlockHighlightedColor;
             Button.colors = _colorBlock;
         }
 
@@ -42,8 +47,6 @@ namespace UI
             HassState hassState = HassStates.GetHassState(entityID == "" ? Subtitle.text : entityID);
             if (hassState != null)
                 Title.text = hassState.attributes.friendly_name;
-            else if (Subtitle.text.Split('.').Length > 1)
-                Title.text = Subtitle.text.Split('.')[1];
         }
 
         public void SetNewEntity(PanelData panelData)
@@ -60,19 +63,34 @@ namespace UI
             UpdateTitle(entityID);
         }
 
+        public void RemoveFromSortingGroup()
+        {
+            VisionOSSortingGroup sorting = GetComponentInParent<VisionOSSortingGroup>();
+            if (sorting == null) return;
+            ObservableList<VisionOSSortingGroup.RendererSorting> groupMembers = sorting.Renderers;
+
+            for (int i = 0; i < groupMembers.Count; i++)
+            {
+                if (groupMembers[i].Renderer != gameObject)
+                    continue;
+                groupMembers.RemoveAt(i);
+                return;
+            }
+        }
+
         public void Highlight(string entityID)
         {
             if (Button == null)
                 return;
             if (entityID == Subtitle.text)
             {
-                _colorBlock.normalColor = new Color(1, 1, 1, 0.1f);
-                _colorBlock.highlightedColor = new Color(1, 1, 1, 0.2f);
+                _colorBlock.normalColor = _colorBlockHighlightedColor;
+                _colorBlock.highlightedColor = _colorBlockSelectedHighlightedColor;
             }
             else
             {
-                _colorBlock.normalColor = new Color(1, 1, 1, 0f);
-                _colorBlock.highlightedColor = new Color(1, 1, 1, 0.1f);
+                _colorBlock.normalColor = _colorBlockNormalColor;
+                _colorBlock.highlightedColor = _colorBlockHighlightedColor;
             }
 
             Button.colors = _colorBlock;

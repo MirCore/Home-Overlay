@@ -46,13 +46,14 @@ public func CallCSharpCallback(_ str: String, _ arg0: String = "", _ arg1: Strin
 
 // Declared in C# as: static extern void OpenSwiftUIWindow(string name);
 @_cdecl("OpenSwiftUIWindow")
-func openSwiftUIWindow(_ cname: UnsafePointer<CChar>)
+func openSwiftUIWindow(_ cWindow: UnsafePointer<CChar>, _ cTab: UnsafePointer<CChar>)
 {
     let openWindow = EnvironmentValues().openWindow
 
-    let name = String(cString: cname)
-    print("############ OPEN WINDOW \(name)")
-    openWindow(id: name)
+    let window = String(cString: cWindow)
+    let tab = String(cString: cTab)
+    print("############ OPEN WINDOW \(window), with tab \(tab)")
+    openWindow(id: window, value: tab)
 }
 
 @_cdecl("SetSwiftUIConnectionValues")
@@ -68,7 +69,6 @@ func setSwiftUIConnectionValues(_ cUrl: UnsafePointer<CChar>, _ cPort: UnsafePoi
     }
 }
 
-
 @MainActor
 public class ConnectionStatusModel: ObservableObject {
     @Published public var message: StatusMessage?
@@ -77,26 +77,25 @@ public class ConnectionStatusModel: ObservableObject {
     
     private init() {}
     
-    public func setMessage(status: Int, text: String, savedUri: String) {
-        message = StatusMessage(status: status, text: text, savedUri: savedUri)
+    public func setMessage(status: Int, text: String, uri: String) {
+        message = StatusMessage(status: status, text: text, uri: uri)
     }
     
     public func setMessage(status: Int, text: String) {
-        message = StatusMessage(status: status, text: text, savedUri: "")
+        message = StatusMessage(status: status, text: text, uri: "")
     }
 }
-
 
 // Struct to hold the status and message
 public struct StatusMessage {
     public var status: Int
     public var text: String
-    public var savedUri: String
+    public var uri: String
     
-    public init(status: Int, text: String, savedUri: String) {
+    public init(status: Int, text: String, uri: String) {
         self.status = status
         self.text = text
-        self.savedUri = savedUri
+        self.uri = uri
     }
 }
 
@@ -113,13 +112,13 @@ struct ItemsWrapper<T: Codable>: Codable {
 }
 
 @_cdecl("SetSwiftUIConnectionStatus")
-public func setSwiftUIConnectionStatus(_ status: Int32, _ cMessage: UnsafePointer<CChar>, _ cSavedUri: UnsafePointer<CChar>) {
+public func setSwiftUIConnectionStatus(_ status: Int32, _ cMessage: UnsafePointer<CChar>, _ cUri: UnsafePointer<CChar>) {
     let message = String(cString: cMessage)
-    let savedUri = String(cString: cSavedUri)
-    print("Setting message from Unity: \(status) - \(message)")
+    let uri = String(cString: cUri)
+    print("Setting message from Unity: \(status) - \(message) - \(uri)")
     
     Task { @MainActor in
-        ConnectionStatusModel.shared.setMessage(status: Int(status), text: message, savedUri: savedUri)
+        ConnectionStatusModel.shared.setMessage(status: Int(status), text: message, uri: uri)
     }
 }
 

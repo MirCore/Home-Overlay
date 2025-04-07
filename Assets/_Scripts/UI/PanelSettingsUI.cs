@@ -48,7 +48,7 @@ namespace UI
             UpdateHeader();
             LoadElements();
             
-            ChangeEntityButton.gameObject.SetActive(true);
+            //ChangeEntityButton.gameObject.SetActive(true);
             TogglesPanel.SetActive(true);
             
             ChangeEntityButton.onClick.AddListener(OnChangeEntityButtonClicked);
@@ -100,9 +100,9 @@ namespace UI
             ChangeEntityButton.gameObject.SetActive(false);
             ColorPicker.gameObject.SetActive(false);
             TogglesPanel.SetActive(false);
+            EntityPicker.SetEntity(Panel);
             EntityPicker.gameObject.SetActive(true);
             
-            EntityPicker.SetEntity(Panel);
         }
  
         private void OnDeleteButtonClicked()

@@ -8,10 +8,10 @@ import SwiftUI
 struct SwiftUIInjectedScene {
     @SceneBuilder
     static var scene: some Scene {
-        WindowGroup(id: "MainMenu") {
+        WindowGroup(id: "MainMenu", for: String.self) { $tab in
+            MainMenu(initialTab: tab ?? "Overview")
             // The sample defines a custom view, but you can also put your entire window's
             // structure here as you can with SwiftUI.
-            MainMenu()
         }.defaultSize(width: 920.0, height: 640.0)
 
         // You can create multiple WindowGroups here for different wnidows;
