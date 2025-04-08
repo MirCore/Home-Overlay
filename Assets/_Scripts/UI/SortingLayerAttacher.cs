@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -22,6 +23,14 @@ namespace UI
         private void OnEnable()
         {
 #if PLATFORM_VISIONOS
+            IEnumerable<SortingLayerAttacher> sortingLayerAttacher = GetComponentsInParent<SortingLayerAttacher>().Where(sla => sla.ApplyToChildren);
+            foreach (SortingLayerAttacher attacher in sortingLayerAttacher)
+            {
+                if (attacher.gameObject == gameObject)
+                    return;
+                Debug.Error("SortingLayerAttacher with enabled ApplyToChildren: " + attacher.gameObject.name, attacher.gameObject);
+            }
+            
             if (_sortingGroup == null)
             {
                 _sortingGroup = GetComponentInParent<VisionOSSortingGroup>();

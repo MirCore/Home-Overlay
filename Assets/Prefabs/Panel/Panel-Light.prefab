@@ -228,7 +228,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 90
+  m_PixelsPerUnitMultiplier: 4
 --- !u!114 &1870480753336769268
 MonoBehaviour:
   m_ObjectHideFlags: 0

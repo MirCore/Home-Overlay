@@ -2265,7 +2265,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3878924148041608015, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}
       propertyPath: m_Size
-      value: 0.7946136
+      value: 0.79461354
       objectReference: {fileID: 0}
     - target: {fileID: 3878924148041608015, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}
       propertyPath: m_Value
@@ -2299,13 +2299,17 @@ PrefabInstance:
       propertyPath: m_ChildForceExpandHeight
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7330614103202572960, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}
+      propertyPath: ApplyToChildren
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8185954209503414733, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8185954209503414733, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.005434497
+      value: 0.00022288456
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
