@@ -1,0 +1,28 @@
+fileFormatVersion: 2
+guid: 7dc49ecbba027bb49bafe5638ecfed5d
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Inter
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 265406
+  packageName: UI Kit For Vision Pro OS
+  packageVersion: 1.2.0
+  assetPath: Assets/JetXR/UI Kit For Vision Pro OS/Runtime/Fonts/Source/Inter-SemiBold.ttf
+  uploadId: 689755

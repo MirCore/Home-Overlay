@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 443d5a1263846304aac25c1d87aa6106
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 32357
+  packageName: Secured PlayerPrefs
+  packageVersion: 1.1
+  assetPath: Assets/ZFrame/ZPlayerPrefs.cs
+  uploadId: 61592
