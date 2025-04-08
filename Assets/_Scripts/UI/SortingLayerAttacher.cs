@@ -23,12 +23,10 @@ namespace UI
         private void OnEnable()
         {
 #if PLATFORM_VISIONOS
-            IEnumerable<SortingLayerAttacher> sortingLayerAttacher = GetComponentsInParent<SortingLayerAttacher>().Where(sla => sla.ApplyToChildren);
+            IEnumerable<SortingLayerAttacher> sortingLayerAttacher = GetComponentsInParent<SortingLayerAttacher>().Where(sla => sla.ApplyToChildren).Where(sla => sla.gameObject != gameObject);
             foreach (SortingLayerAttacher attacher in sortingLayerAttacher)
             {
-                if (attacher.gameObject == gameObject)
-                    return;
-                Debug.Error("SortingLayerAttacher with enabled ApplyToChildren: " + attacher.gameObject.name, attacher.gameObject);
+                Debug.LogWarning("SortingLayerAttacher with enabled ApplyToChildren: " + attacher.gameObject.name, attacher.gameObject);
             }
             
             if (_sortingGroup == null)
@@ -39,7 +37,7 @@ namespace UI
             if (_sortingGroup == null)
             {
                 _sortingGroup = transform.root.gameObject.AddComponent<VisionOSSortingGroup>();
-                Debug.Log("Could not find VisionOSSortingGroup, created a new one.");
+                Debug.Log("Could not find VisionOSSortingGroup, created a new one.", gameObject);
             }
             
             ObservableList<VisionOSSortingGroup.RendererSorting> groupMembers = _sortingGroup.Renderers;

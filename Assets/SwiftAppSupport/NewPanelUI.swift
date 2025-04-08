@@ -13,7 +13,7 @@ struct NewPanel: View {
     @State private var selectedEntityId: String = ""
     @State private var filteredEntities: [Item] = []
 
-    var deviceTypes = ["All types", "Light", "Sensor", "Switch", "Camera"]
+    @State var entityTypes = ["All types", "Light", "Sensor", "Switch", "Camera"]
     @State private var selectedDeviceType = "All types"
     
     var body: some View {
@@ -23,7 +23,7 @@ struct NewPanel: View {
             GridRow {
                 Text("Filter device types")
                 Picker("Device Type", selection: $selectedDeviceType) {
-                    ForEach(deviceTypes, id: \.self) {
+                    ForEach(entityTypes, id: \.self) {
                         Text($0)
                     }
                 }
@@ -68,13 +68,14 @@ struct NewPanel: View {
         .navigationTitle("Add new entity")
         .onAppear {
             CallCSharpCallback("getEntities")
+            entityTypes = entityTypesData
             filterEntities(searchText: "")
         }
     }
     
     private func filterEntities(searchText: String) {
         filteredEntities = entitiesData.filter { item in
-            let matchesDeviceType = selectedDeviceType == "All types" || item.entityId.hasPrefix(selectedDeviceType.lowercased())
+            let matchesDeviceType = selectedDeviceType == entityTypes[0] || item.entityId.hasPrefix(selectedDeviceType.lowercased().replacingOccurrences(of: " ", with: "_"))
             let matchesSearchText = searchText.isEmpty || item.entityId.localizedCaseInsensitiveContains(searchText) || item.name.localizedCaseInsensitiveContains(searchText)
             return matchesDeviceType && matchesSearchText
         }

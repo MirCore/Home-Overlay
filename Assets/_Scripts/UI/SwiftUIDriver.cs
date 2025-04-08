@@ -28,6 +28,21 @@ namespace UI
             EventManager.OnConnectionTested -= OnConnectionTested;
         }
 
+        private static void OnConnectionTested(int status, Uri uri)
+        {
+            string message = status is 200 or 201 ? "Connection successful." : $"Connection error: {status}; {HttpStatusCodes.GetDescription(status)}";
+            
+            SetSwiftUIConnectionStatus(status, message, uri.ToString());
+        }
+        
+        private static void CloseSwiftMainUI()
+        {
+            CloseSwiftUIWindow("MainMenu");
+            UIManager.Instance.ShowHomeButton();
+        }
+        
+        #region Swift Callbacks
+
         private delegate void SwiftCallbackDelegate(string command, string url, string port, string token);
 
         // This attribute is required for methods that are going to be called from native code
@@ -84,58 +99,7 @@ namespace UI
                 Debug.LogException(exception);
             }
         }
-
-        private static void OnConnectionTested(int status, Uri uri)
-        {
-            string message = status is 200 or 201 ? "Connection successful." : $"Connection error: {status}; {HttpStatusCodes.GetDescription(status)}";
-            
-            SetSwiftUIConnectionStatus(status, message, uri.ToString());
-        }
-
-        private static void SendPanelsToSwiftUI()
-        {
-            List<JsonData> jsonData = PanelManager.Instance.PanelDataList.Select(panelData => new JsonData
-            {
-                entityId = panelData.EntityID,
-                panelId = panelData.ID, 
-                name = HassStates.GetHassState(panelData.EntityID)?.attributes.friendly_name,
-                active = panelData.Panel != null
-            }).ToList();
-            string json = JsonHelper.ArrayToJsonString(jsonData.ToArray());
-
-            Debug.Log("sending: " + json);
-
-            SetSwiftUIPanels(json);
-        }
-
-
-        private static void CloseSwiftMainUI()
-        {
-            CloseSwiftUIWindow("MainMenu");
-            UIManager.Instance.ShowHomeButton();
-        }
-
-        private static void SendConnectionValuesToSwiftUI()
-        {
-            SetSwiftUIConnectionValues(GameManager.Instance.HassURL, GameManager.Instance.HassPort.ToString(), GameManager.Instance.HassToken);
-        }
-
-        private static void SendEntitiesToSwiftUI()
-        {
-            Dictionary<string, HassState> hassStates = HassStates.GetHassStates();
-
-            
-            List<JsonData> jsonData = hassStates.Select(entity => new JsonData
-            {
-                entityId = entity.Key, 
-                name = entity.Value.attributes.friendly_name
-            }).ToList();
-            
-            string json = JsonHelper.ArrayToJsonString(jsonData.ToArray());
-            
-            SetSwiftUIHassEntities(json);
-        }
-
+        
 #if UNITY_VISIONOS 
         public void WindowEvent(VolumeCamera volumeCamera, VolumeCamera.WindowState windowState) //Set this public method into your VolumeCamera>Events in the inspector, dont forget to Choose Dynamic WindowState!
         {
@@ -145,7 +109,7 @@ namespace UI
                     Debug.Log("Window opened");
                     break;
                 case VolumeCamera.WindowEvent.Backgrounded: //Close window when your app is on background
-                    Debug.Log("Window Backgrounded");
+                    Debug.Log("Window backgrounded");
                     CloseSwiftMainUI();
                     break;
                 case VolumeCamera.WindowEvent.Focused:
@@ -164,6 +128,54 @@ namespace UI
             }
         }
 #endif
+        
+        #endregion
+
+        #region Send to Swift functions
+
+        private static void SendPanelsToSwiftUI()
+        {
+            List<JsonData> jsonData = PanelManager.Instance.PanelDataList.Select(panelData => new JsonData
+            {
+                entityId = panelData.EntityID,
+                panelId = panelData.ID, 
+                name = HassStates.GetHassState(panelData.EntityID)?.attributes.friendly_name,
+                active = panelData.Panel != null
+            }).ToList();
+            string json = JsonHelper.ArrayToJsonString(jsonData.ToArray());
+
+            SetSwiftUIPanels(json);
+        }
+        
+        private static void SendConnectionValuesToSwiftUI()
+        {
+            SetSwiftUIConnectionValues(GameManager.Instance.HassURL, GameManager.Instance.HassPort.ToString(), GameManager.Instance.HassToken);
+        }
+
+        private static void SendEntitiesToSwiftUI()
+        {
+            // Generate a List of supported device types
+            string[] deviceTypes = Enum.GetValues(typeof(EDeviceType)).Cast<EDeviceType>()
+                .Select(e => e.GetDisplayName()).ToArray();
+            string deviceJson = JsonHelper.ArrayToJsonString(deviceTypes);
+
+            Debug.Log("Sending: " + deviceJson);
+            
+            // Generate a List of hass entities
+            Dictionary<string, HassState> hassStates = HassStates.GetHassStates();
+            JsonData[] jsonData = hassStates.Select(entity => new JsonData
+            {
+                entityId = entity.Key, 
+                name = entity.Value.attributes.friendly_name
+            }).ToArray();
+            string entityJson = JsonHelper.ArrayToJsonString(jsonData);
+            
+            SetSwiftUIHassEntities(entityJson, deviceJson);
+        }
+
+        #endregion
+
+        #region DllImports
             
 #if UNITY_VISIONOS && !UNITY_EDITOR
         [DllImport("__Internal")]
@@ -176,7 +188,7 @@ namespace UI
         public static extern void CloseSwiftUIWindow(string name);
 
         [DllImport("__Internal")]
-        private static extern void SetSwiftUIHassEntities(string json);
+        private static extern void SetSwiftUIHassEntities(string entityJson, string deviceJson);
 
         [DllImport("__Internal")]
         private static extern void SetSwiftUIPanels(string json);
@@ -193,8 +205,8 @@ namespace UI
 
         internal static void CloseSwiftUIWindow(string name){}
         
-        private static void SetSwiftUIHassEntities(string json){}
-
+        private static void SetSwiftUIHassEntities(string entityJson, string deviceJson){}
+        
         private static void SetSwiftUIPanels(string json){}
         
         private static void SetSwiftUIConnectionValues(string url, string port, string token){}
@@ -202,6 +214,7 @@ namespace UI
         private static void SetSwiftUIConnectionStatus(int status, string message, string savedUri){}
 #endif
         
+        #endregion
         
         [Serializable]
         public struct JsonData

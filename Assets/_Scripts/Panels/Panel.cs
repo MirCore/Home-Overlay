@@ -143,7 +143,7 @@ namespace Panels
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine("CreateNewAnchor Error: " + e);
                 throw;
             }
 

@@ -90,7 +90,11 @@ namespace Utils
 
         private static bool AnchorsAreSupported()
         {
-            return LoaderUtility.GetActiveLoader()?.GetLoadedSubsystem<XRAnchorSubsystem>() != null;
+            if (SystemInfo.graphicsDeviceName.Contains("simulator"))
+                return false;
+            
+            XRAnchorSubsystem anchorSubsystem =  LoaderUtility.GetActiveLoader()?.GetLoadedSubsystem<XRAnchorSubsystem>();
+            return anchorSubsystem is { running: true };
         }
 
         /// <summary>
