@@ -798,7 +798,7 @@ MonoBehaviour:
   m_TargetOffset: {x: 0, y: 0, z: 0.5}
   m_FollowInLocalSpace: 0
   m_ApplyTargetInLocalSpace: 0
-  m_MovementSpeed: 2
+  m_MovementSpeed: 1000
   m_MovementSpeedVariancePercentage: 0.25
   m_SnapOnEnable: 1
   m_PositionFollowMode: 0
@@ -808,7 +808,7 @@ MonoBehaviour:
   m_RotationFollowMode: 1
   m_MinAngleAllowed: 0.1
   m_MaxAngleAllowed: 5
-  m_TimeUntilThresholdReachesMaxAngle: 3
+  m_TimeUntilThresholdReachesMaxAngle: 1
 --- !u!1001 &1030469612433367103
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2265,7 +2265,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3878924148041608015, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}
       propertyPath: m_Size
-      value: 0.79461354
+      value: 0.7946136
       objectReference: {fileID: 0}
     - target: {fileID: 3878924148041608015, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}
       propertyPath: m_Value
@@ -2305,7 +2305,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8185954209503414733, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00012988322
+      value: 0.005434497
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

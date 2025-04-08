@@ -49,7 +49,10 @@ namespace UI
             EntityPicker.gameObject.SetActive(false);
             UpdateHeader();
             LoadElements();
-            
+
+            if (Camera.main != null) transform.LookAt(Camera.main.transform);
+            transform.Rotate(Vector3.up, 180);
+
             //ChangeEntityButton.gameObject.SetActive(true);
             TogglesPanel.SetActive(true);
             

@@ -651,7 +651,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SortingLayer: 50
-  ApplyToChildren: 1
+  ApplyToChildren: 0
 --- !u!114 &2398645671528445738
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1284,9 +1284,13 @@ PrefabInstance:
       propertyPath: Entity
       value: 
       objectReference: {fileID: 8281280488977203932}
+    - target: {fileID: 564356491023665425, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
+      propertyPath: ApplyToChildren
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2522370098298039945, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
       propertyPath: m_Name
-      value: EntityWeather
+      value: Panel-Weather
       objectReference: {fileID: 0}
     - target: {fileID: 3298352653756780895, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
       propertyPath: m_Pivot.y
@@ -1346,8 +1350,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HighlightImage: {fileID: 0}
   Icon: {fileID: 4016058435295100767}
+  NameText: {fileID: 0}
+  StateText: {fileID: 0}
   SettingsButton: {fileID: 8297586591055066645}
   WindowControls: {fileID: 47081332350235054}
+  CompactCanvasSize: {x: 120, y: 120}
+  ExpandedCanvasSize: {x: 320, y: 120}
   State: {fileID: 1779759598034595140}
   Temperature: {fileID: 6099263789454769517}
   ForecastPanel: {fileID: 5669456847920794739}
