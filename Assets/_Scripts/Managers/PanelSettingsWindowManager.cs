@@ -11,6 +11,7 @@ namespace Managers
     public class PanelSettingsWindowManager : Singleton<PanelSettingsWindowManager>
     {
         [SerializeField] private PanelSettingsUI PanelSettingsWindowPrefab;
+        [SerializeField] private float WindowPositionOffset = 15;
 
         /// <summary>
         /// List of all Panel Settings Windows.
@@ -26,7 +27,7 @@ namespace Managers
             PanelSettingsUI panelSettingsUI = _entitySettingsWindows.Find(w => w.Panel == panel);
             if (panelSettingsUI)
             {
-                panelSettingsUI.gameObject.SetActive(!panelSettingsUI.gameObject.activeSelf);
+                panelSettingsUI.SetActive(!panelSettingsUI.gameObject.activeSelf);
             }
             else
             {
@@ -40,7 +41,7 @@ namespace Managers
         /// <param name="panel">The panel to spawn the settings window for.</param>
         private void SpawnNewWindow(Panels.Panel panel)
         {
-            PanelSettingsUI newSettingsWindow = Instantiate(PanelSettingsWindowPrefab, panel.transform.position, panel.transform.rotation);
+            PanelSettingsUI newSettingsWindow = Instantiate(PanelSettingsWindowPrefab, panel.transform);
 
             // Find the Canvas of the panel
             Canvas entityCanvas = panel.transform.GetComponentInChildren<Canvas>();
@@ -55,8 +56,7 @@ namespace Managers
                     newSettingsWindow.transform.SetParent(panel.transform, true);
 
                     // Calculate the new position: directly to the left of the canvas
-                    float offset = entityCanvasRect.rect.width * entityCanvasRect.transform.localScale.x / 2 + entitySettingsWindowRect.rect.width * entitySettingsWindowRect.transform.localScale.x / 2;
-                    //float offset = panel.GetComponent<MeshRenderer>().bounds.size.x / 2 + newSettingsWindow.GetComponent<MeshRenderer>().bounds.size.x / 2;
+                    float offset = entityCanvasRect.rect.width * entityCanvasRect.transform.localScale.x / 2 + WindowPositionOffset * entitySettingsWindowRect.transform.localScale.x;
                     entitySettingsWindowRect.anchoredPosition = new Vector2(offset, 0);
                 }
             }

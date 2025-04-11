@@ -223,7 +223,7 @@ namespace Panels
             if (!PanelIsReady())
                 return;
 
-            if (NameText != null) NameText.text = HassState.attributes.friendly_name;
+            if (NameText) NameText.text = HassState.attributes.friendly_name;
         }
 
         public void DeletePanel()

@@ -371,7 +371,7 @@ GameObject:
   - component: {fileID: 7801126744250565632}
   - component: {fileID: 7289379686559040912}
   - component: {fileID: 3541227831581329807}
-  - component: {fileID: 2500263776688775055}
+  - component: {fileID: 1649440597259239537}
   - component: {fileID: 140886629408779509}
   m_Layer: 5
   m_Name: Scroll View
@@ -416,13 +416,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6455743007993764673}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 024bfb74829340208e9663d4e70c4e72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scrollRect: {fileID: 140886629408779509}
-  content: {fileID: 8185954209503414733}
+  ScrollRect: {fileID: 0}
+  RectTransform: {fileID: 0}
 --- !u!114 &3541227831581329807
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -437,7 +437,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortingLayer: 50
   ApplyToChildren: 0
---- !u!114 &2500263776688775055
+--- !u!114 &1649440597259239537
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -446,27 +446,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 6455743007993764673}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Script: {fileID: 11500000, guid: 7e267fcde29a48c5b23479f6e70fa0fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.39215687}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 6bee6a96d75e46c4390be877984c7e22, type: 3}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 10
+  ScrollRect: {fileID: 3193148906059874506}
+  Content: {fileID: 8185954209503414733}
+  MaxHeight: 200
 --- !u!114 &140886629408779509
 MonoBehaviour:
   m_ObjectHideFlags: 0

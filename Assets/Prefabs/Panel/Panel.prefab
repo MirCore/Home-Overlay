@@ -76,6 +76,7 @@ GameObject:
   - component: {fileID: 8625779276851179412}
   - component: {fileID: 891948664756838743}
   - component: {fileID: 7545607764148289413}
+  - component: {fileID: 7911034964254084514}
   m_Layer: 0
   m_Name: Panel
   m_TagString: Untagged
@@ -277,6 +278,29 @@ MonoBehaviour:
   m_MinAngleAllowed: 0.1
   m_MaxAngleAllowed: 5
   m_TimeUntilThresholdReachesMaxAngle: 3
+--- !u!114 &7911034964254084514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2522370098298039945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0a1302d0d134fa8a2a5b3bf4aec3c20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PermittedDisplacementAxes: 0
+  m_ConstrainedAxisDisplacementMode: 1
+  m_TwoHandedRotationMode: 1
+  m_AllowOneHandedScaling: 1
+  m_AllowTwoHandedScaling: 0
+  m_OneHandedScaleSpeed: 0.5
+  m_ThresholdMoveRatioForScale: 0.05
+  m_ClampScaling: 1
+  m_MinimumScaleRatio: 0.25
+  m_MaximumScaleRatio: 2
+  m_ScaleMultiplier: 0.25
 --- !u!1 &2691962882843127974
 GameObject:
   m_ObjectHideFlags: 0
@@ -446,7 +470,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6669906975591623752
 Transform:
   m_ObjectHideFlags: 0
@@ -758,6 +782,8 @@ GameObject:
   - component: {fileID: 3813146046905726308}
   - component: {fileID: 3344700166324973333}
   - component: {fileID: 8116627543906507180}
+  - component: {fileID: 6249936181504516889}
+  - component: {fileID: 757089347667236815}
   m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
@@ -925,6 +951,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortingLayer: 0
   ApplyToChildren: 0
+--- !u!114 &6249936181504516889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8548494967115247867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52d2f044061b401ba85376942f6298a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!225 &757089347667236815
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8548494967115247867}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1001 &1054564423491576815
 PrefabInstance:
   m_ObjectHideFlags: 0

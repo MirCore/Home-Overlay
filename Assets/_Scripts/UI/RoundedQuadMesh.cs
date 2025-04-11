@@ -49,7 +49,11 @@ namespace UI
             if (!m_Mesh)
                 return null;
             if (RectTransform)
-                rect = new Rect(-RectTransform.rect.width/2,-RectTransform.rect.height/2,RectTransform.rect.width,RectTransform.rect.height);
+            {
+                Vector2 pivot = RectTransform.pivot;
+                Rect rtRect = RectTransform.rect;
+                rect = new Rect(-rtRect.width * pivot.x, -rtRect.height * pivot.y, rtRect.width, rtRect.height);
+            }
             
             if (CornerVertexCount<2)
                 CornerVertexCount = 2;
