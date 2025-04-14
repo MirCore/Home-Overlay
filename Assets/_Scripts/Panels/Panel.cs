@@ -18,12 +18,13 @@ namespace Panels
 {
     public abstract class Panel : MonoBehaviour
     {
-        [SerializeField] private Image HighlightImage;
+        private static readonly int HighlightFader = Shader.PropertyToID("_HighlightFader");
         [SerializeField] internal TMP_Text Icon;
         [SerializeField] internal TMP_Text NameText;
         [SerializeField] internal TMP_Text StateText;
         [SerializeField] private Button SettingsButton;
         [SerializeField] private GameObject WindowControls;
+        [SerializeField] private Renderer MeshRenderer;
         private Canvas _canvas;
         private RectTransform _canvasRectTransform;
         private RoundedQuadMesh _roundedQuadMesh;
@@ -42,20 +43,26 @@ namespace Panels
         /// </summary>
         private IEnumerator _setButtonColorTemporarilyCoroutine;
 
+        
+        private void Awake()
+        {
+            if (!MeshRenderer)
+                MeshRenderer = GetComponentInChildren<MeshRenderer>();
+            _canvas = GetComponentInChildren<Canvas>();
+            _canvasRectTransform = _canvas.GetComponent<RectTransform>();
+            _roundedQuadMesh = _canvas.GetComponent<RoundedQuadMesh>();
+            _lazyFollow = GetComponent<LazyFollow>();
+            _interactable = GetComponent<XRBaseInteractable>();
+            _interactable.selectExited.AddListener(OnSelectExited);
+        }
+        
         protected virtual void OnEnable()
         {
             if (Icon != null) Icon.text = "";
             if (NameText != null) NameText.text = "";
             if (StateText != null) StateText.text = "";
-
-            _canvas = GetComponentInChildren<Canvas>();
-            _canvasRectTransform = _canvas.GetComponent<RectTransform>();
-            _roundedQuadMesh = _canvas.GetComponent<RoundedQuadMesh>();
             
-            _lazyFollow = GetComponent<LazyFollow>();
             SettingsButton.onClick.AddListener(OnSettingsButtonClicked);
-            _interactable = GetComponent<XRBaseInteractable>();
-            _interactable.selectExited.AddListener(OnSelectExited);
             EventManager.OnHassStatesChanged += OnHassStatesChanged;
         }
 
@@ -243,7 +250,7 @@ namespace Panels
             if (_setButtonColorTemporarilyCoroutine != null)
                 return;
 
-            _setButtonColorTemporarilyCoroutine = SetButtonColorTemporarily(Color.red, 10f);
+            _setButtonColorTemporarilyCoroutine = SetButtonColorTemporarily(5f);
             StartCoroutine(_setButtonColorTemporarilyCoroutine);
         }
 
@@ -252,25 +259,46 @@ namespace Panels
         /// </summary>
         /// <param name="color">The color to set the button to.</param>
         /// <param name="duration">The duration of the color change in seconds.</param>
-        private IEnumerator SetButtonColorTemporarily(Color color, float duration)
+        private IEnumerator SetButtonColorTemporarily(float duration)
         {
-            // Store the original color of the button
-            Color originalColor = HighlightImage.color;
+            if (!MeshRenderer && !MeshRenderer.material.HasProperty(HighlightFader))
+            {
+                Debug.Log("No MeshRenderer set " + this);
+                yield break;
+            }
+            
+            float elapsed = 0f;
+            while (elapsed < 0.5f)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / 0.5f);
+                float alpha = Mathf.Lerp(0, 0.5f, t);
 
-            // Change the color of the button to the given color
-            HighlightImage.color = color;
+                MeshRenderer.material.SetFloat(HighlightFader, alpha);
+                
+                yield return null;
+            }
 
             // Wait for the specified duration
             yield return new WaitForSeconds(duration);
 
-            // Change the color of the button back to the original color
-            HighlightImage.color = originalColor;
+            elapsed = 0f;
+            while (elapsed < 0.5f)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / 0.5f);
+                float alpha = Mathf.Lerp(0.5f, 0f, t);
+
+                MeshRenderer.material.SetFloat(HighlightFader, alpha);
+                
+                yield return null;
+            }
+            
+            MeshRenderer.material.SetFloat(HighlightFader, 0f);
 
             // Set the flag to indicate that the coroutine has finished
             _setButtonColorTemporarilyCoroutine = null;
         }
-        
-        
 
         protected void UpdatePanelLayout()
         {

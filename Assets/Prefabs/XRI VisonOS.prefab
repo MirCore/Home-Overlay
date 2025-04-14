@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0924bcaa9eb50df458a783ae0e2b59f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_InteractionManager: {fileID: 0}
+  m_InteractionManager: {fileID: 6116257703706049628}
   m_InteractionLayers:
     m_Bits: 4294967295
   m_Handedness: 0
@@ -163,7 +163,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_GroupName: Primary Interactors
-  m_InteractionManager: {fileID: 0}
+  m_InteractionManager: {fileID: 6116257703706049628}
   m_StartingGroupMembers:
   - {fileID: 6048400819136173819}
   - {fileID: 4630197944932303128}
@@ -338,7 +338,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_GroupName: Secondary Interactors
-  m_InteractionManager: {fileID: 0}
+  m_InteractionManager: {fileID: 6116257703706049628}
   m_StartingGroupMembers:
   - {fileID: 4722837014509581421}
   - {fileID: 181266029531417416}
@@ -394,7 +394,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25a07ef133a37d140a87cdf1f1c75fdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_InteractionManager: {fileID: 0}
+  m_InteractionManager: {fileID: 6116257703706049628}
   m_InteractionLayers:
     m_Bits: 4294967295
   m_Handedness: 2
@@ -979,7 +979,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25a07ef133a37d140a87cdf1f1c75fdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_InteractionManager: {fileID: 0}
+  m_InteractionManager: {fileID: 6116257703706049628}
   m_InteractionLayers:
     m_Bits: 4294967295
   m_Handedness: 2
@@ -1338,7 +1338,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0924bcaa9eb50df458a783ae0e2b59f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_InteractionManager: {fileID: 0}
+  m_InteractionManager: {fileID: 6116257703706049628}
   m_InteractionLayers:
     m_Bits: 4294967295
   m_Handedness: 0

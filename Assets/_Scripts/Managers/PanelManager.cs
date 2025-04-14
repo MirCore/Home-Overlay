@@ -123,5 +123,11 @@ namespace Managers
         {
             PanelDataList.FirstOrDefault(p => p.ID == panelID)?.DeletePanel();
         }
+
+        public void HighlightPanel(string panelID)
+        {
+            PanelData panelData = PanelDataList.FirstOrDefault(p => p.ID == panelID);
+            panelData?.Panel.HighlightPanel();
+        }
     }
 }

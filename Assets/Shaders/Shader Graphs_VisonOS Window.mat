@@ -46,6 +46,7 @@ Material:
     - _CastShadows: 1
     - _Cull: 2
     - _DstBlend: 10
+    - _HighlightFader: 0
     - _QueueControl: 0
     - _QueueOffset: 0
     - _SrcBlend: 5
@@ -53,7 +54,8 @@ Material:
     - _ZTest: 4
     - _ZWrite: 0
     - _ZWriteControl: 0
-    m_Colors: []
+    m_Colors:
+    - _HighlightColor: {r: 1, g: 0.62352943, b: 0.039215688, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &3550639447030606152

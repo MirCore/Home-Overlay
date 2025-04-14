@@ -430,8 +430,14 @@ MonoBehaviour:
   StateText: {fileID: 2634595123110456048}
   SettingsButton: {fileID: 8297586591055066645}
   WindowControls: {fileID: 47081332350235054}
+  MeshRenderer: {fileID: 5413729549613524431}
   CompactCanvasSize: {x: 120, y: 120}
   ExpandedCanvasSize: {x: 320, y: 120}
+--- !u!23 &5413729549613524431 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 3344700166324973333, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
+  m_PrefabInstance: {fileID: 7299118124748671706}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &6516482965802746907 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4549937412642180801, guid: 56729b3eda175f046830741f79f8d92f, type: 3}

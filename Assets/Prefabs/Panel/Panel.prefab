@@ -76,7 +76,6 @@ GameObject:
   - component: {fileID: 8625779276851179412}
   - component: {fileID: 891948664756838743}
   - component: {fileID: 7545607764148289413}
-  - component: {fileID: 7911034964254084514}
   m_Layer: 0
   m_Name: Panel
   m_TagString: Untagged
@@ -278,29 +277,6 @@ MonoBehaviour:
   m_MinAngleAllowed: 0.1
   m_MaxAngleAllowed: 5
   m_TimeUntilThresholdReachesMaxAngle: 3
---- !u!114 &7911034964254084514
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2522370098298039945}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0a1302d0d134fa8a2a5b3bf4aec3c20, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_PermittedDisplacementAxes: 0
-  m_ConstrainedAxisDisplacementMode: 1
-  m_TwoHandedRotationMode: 1
-  m_AllowOneHandedScaling: 1
-  m_AllowTwoHandedScaling: 0
-  m_OneHandedScaleSpeed: 0.5
-  m_ThresholdMoveRatioForScale: 0.05
-  m_ClampScaling: 1
-  m_MinimumScaleRatio: 0.25
-  m_MaximumScaleRatio: 2
-  m_ScaleMultiplier: 0.25
 --- !u!1 &2691962882843127974
 GameObject:
   m_ObjectHideFlags: 0
@@ -966,6 +942,7 @@ MonoBehaviour:
   CanvasGroup: {fileID: 757089347667236815}
   MeshRenderer: {fileID: 3344700166324973333}
   VisionOSSwapMaterial: {fileID: -876546973899608171, guid: 1949d76069d4c4eac842f56fbacc3348, type: 3}
+  GameObject: {fileID: 0}
 --- !u!225 &757089347667236815
 CanvasGroup:
   m_ObjectHideFlags: 0

@@ -39,13 +39,13 @@ struct Overview: View {
             
             List {
                 Section(header: Text("Active Panels")) {
-                    ForEach(panels.filter { $0.active }.sorted(by: { $0.entityId < $1.entityId }), id: \.entityId) { item in
+                    ForEach(panels.filter { $0.active }.sorted(by: { $0.entityId < $1.entityId }), id: \.panelId) { item in
                         OverviewListRow(item: item, refreshPanels: reloadPanels)
                     }
                 }
 
                 Section(header: Text("Inactive Panels")) {
-                    ForEach(panels.filter { !$0.active }.sorted(by: { $0.entityId < $1.entityId }), id: \.entityId) { item in
+                    ForEach(panels.filter { !$0.active }.sorted(by: { $0.entityId < $1.entityId }), id: \.panelId) { item in
                         OverviewListRow(item: item, refreshPanels: reloadPanels)
                     }
                 }

@@ -11,6 +11,7 @@ namespace UI
     public class ConnectionAlertUI : MonoBehaviour
     {
         [SerializeField] private GameObject AlertWindow;
+        [SerializeField] private CanvasFader CanvasFader;
         [SerializeField] private float CloseTime = 5f;
         [SerializeField] private TMP_Text TitleText;
         [SerializeField] private TMP_Text DescriptionText;
@@ -21,8 +22,16 @@ namespace UI
         private void OnEnable()
         {
             EventManager.OnConnectionTested += OnConnectionTested;
-            CloseButton.onClick.AddListener(() => AlertWindow.SetActive(false));
+            CloseButton.onClick.AddListener(CloseAlertWindow);
             _buttonText = CloseButton.GetComponentInChildren<TMP_Text>();
+        }
+
+        private void CloseAlertWindow()
+        {
+            if (CanvasFader)
+                CanvasFader.FadeOut(AlertWindow);
+            else
+                AlertWindow.SetActive(false);
         }
 
         private void OnDisable()
@@ -50,12 +59,12 @@ namespace UI
                     break;
             }
             
-            StartCoroutine(CloseAlertWindow());
+            StartCoroutine(CloseAlertWindowCoroutine());
         }
 
         
 
-        private IEnumerator CloseAlertWindow()
+        private IEnumerator CloseAlertWindowCoroutine()
         {
             int timer = (int)CloseTime;
             while (timer > 0)
@@ -64,7 +73,7 @@ namespace UI
                 _buttonText.text = $"({timer}) Close";
                 yield return new WaitForSeconds(1);
             }
-            AlertWindow.SetActive(false);
+            CloseAlertWindow();
         }
     }
 }

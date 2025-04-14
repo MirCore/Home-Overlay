@@ -11,6 +11,8 @@ namespace UI
         [SerializeField] private Renderer MeshRenderer;
         
         [SerializeField] private Material VisionOSSwapMaterial;
+        
+        [SerializeField] private GameObject GameObject;
 
         private static readonly int Alpha = Shader.PropertyToID("_Alpha");
 
@@ -24,20 +26,24 @@ namespace UI
                 CanvasGroup = GetComponent<CanvasGroup>();
             if (!MeshRenderer)
                 MeshRenderer = GetComponent<MeshRenderer>();
+            if (!GameObject)
+                GameObject = gameObject;
 #if UNITY_VISIONOS
             if (VisionOSSwapMaterial)
                 MeshRenderer.material = VisionOSSwapMaterial;
 #endif
         }
 
-        void OnEnable()
+        private void OnEnable()
         {
             SetAlpha(0f);
             StartFadeIn();
         }
 
-        public void StartFadeIn()
+        private void StartFadeIn()
         {
+            if (!gameObject.activeInHierarchy)
+                return;
             if (_fadeRoutine != null)
                 StopCoroutine(_fadeRoutine);
             _fadeRoutine = StartCoroutine(Fade(0f, 1f));
@@ -45,9 +51,17 @@ namespace UI
 
         public void FadeOut()
         {
+            if (!gameObject.activeInHierarchy)
+                return;
             if (_fadeRoutine != null)
                 StopCoroutine(_fadeRoutine);
             _fadeRoutine = StartCoroutine(Fade(1f, 0f));
+        }
+
+        public void FadeOut(GameObject go)
+        {
+            GameObject = go;
+            FadeOut();
         }
 
         private IEnumerator Fade(float start, float end)
@@ -69,7 +83,7 @@ namespace UI
 
             SetAlpha(end);
             if (end == 0f)
-                gameObject.SetActive(false);
+                GameObject.SetActive(false);
         }
 
         private void SetAlpha(float value)

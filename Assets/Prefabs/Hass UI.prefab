@@ -1018,6 +1018,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AlertWindow: {fileID: 5887536501860253578}
+  CanvasFader: {fileID: 5632651731476754935}
   CloseTime: 6
   TitleText: {fileID: 4328056662214211647}
   DescriptionText: {fileID: 9036761075820636944}

@@ -87,6 +87,9 @@ namespace UI
                         PanelManager.Instance.DeletePanel(arg0);
                         SendPanelsToSwiftUI();
                         return;
+                    case "highlightPanel":
+                        PanelManager.Instance.HighlightPanel(arg0);
+                        return;
                     default:
                         Debug.Log(
                             $"Unhandled Command: {command}\n" +
@@ -158,12 +161,10 @@ namespace UI
             string[] deviceTypes = Enum.GetValues(typeof(EDeviceType)).Cast<EDeviceType>()
                 .Select(e => e.GetDisplayName()).ToArray();
             string deviceJson = JsonHelper.ArrayToJsonString(deviceTypes);
-
-            Debug.Log("Sending: " + deviceJson);
             
             // Generate a List of hass entities
             Dictionary<string, HassState> hassStates = HassStates.GetHassStates();
-            JsonData[] jsonData = hassStates.Select(entity => new JsonData
+            JsonData[] jsonData = hassStates.Where(state => state.Value.DeviceType != EDeviceType.DEFAULT).Select(entity => new JsonData
             {
                 entityId = entity.Key, 
                 name = entity.Value.attributes.friendly_name
