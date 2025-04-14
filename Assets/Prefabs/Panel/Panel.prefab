@@ -963,6 +963,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52d2f044061b401ba85376942f6298a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CanvasGroup: {fileID: 757089347667236815}
+  MeshRenderer: {fileID: 3344700166324973333}
+  VisionOSSwapMaterial: {fileID: -876546973899608171, guid: 1949d76069d4c4eac842f56fbacc3348, type: 3}
 --- !u!225 &757089347667236815
 CanvasGroup:
   m_ObjectHideFlags: 0

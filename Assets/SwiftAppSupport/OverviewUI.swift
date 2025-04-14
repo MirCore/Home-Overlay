@@ -59,7 +59,7 @@ struct Overview: View {
         .padding([.leading, .bottom, .trailing], 26)
         .navigationTitle("Overview")
         .onAppear {
-            CallCSharpCallback("GetConnectionStatus")
+            CallCSharpCallback("getConnectionStatus")
             CallCSharpCallback("getPanels")
             panels = panelsData
         }

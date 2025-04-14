@@ -803,9 +803,9 @@ MonoBehaviour:
   rect:
     serializedVersion: 2
     x: -0
-    y: -369
+    y: -0
     width: 500
-    height: 738
+    height: 0
   Scale: 1
   CornerVertexCount: 26
   CreateUV: 1
@@ -844,7 +844,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b3fc90c2156ebe54da0c63dfdd6b1e51, type: 2}
+  - {fileID: -876546973899608171, guid: 1949d76069d4c4eac842f56fbacc3348, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -878,6 +878,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52d2f044061b401ba85376942f6298a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CanvasGroup: {fileID: 1849421583598972006}
+  MeshRenderer: {fileID: 119667994048800655}
+  VisionOSSwapMaterial: {fileID: -876546973899608171, guid: 1949d76069d4c4eac842f56fbacc3348, type: 3}
 --- !u!114 &7984421940929867758
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2158,7 +2161,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8185954209503414733, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.013277702
+      value: -0.00472123
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7289379686559040912, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}

@@ -6,9 +6,11 @@ namespace UI
 {
     public class CanvasFader : MonoBehaviour
     {
-        private CanvasGroup _canvasGroup;
+        [SerializeField] private CanvasGroup CanvasGroup;
 
-        private Renderer _meshRenderer;
+        [SerializeField] private Renderer MeshRenderer;
+        
+        [SerializeField] private Material VisionOSSwapMaterial;
 
         private static readonly int Alpha = Shader.PropertyToID("_Alpha");
 
@@ -18,8 +20,14 @@ namespace UI
 
         private void Awake()
         {
-            _canvasGroup = GetComponent<CanvasGroup>();
-            _meshRenderer = GetComponent<MeshRenderer>();
+            if (!CanvasGroup)
+                CanvasGroup = GetComponent<CanvasGroup>();
+            if (!MeshRenderer)
+                MeshRenderer = GetComponent<MeshRenderer>();
+#if UNITY_VISIONOS
+            if (VisionOSSwapMaterial)
+                MeshRenderer.material = VisionOSSwapMaterial;
+#endif
         }
 
         void OnEnable()
@@ -66,16 +74,16 @@ namespace UI
 
         private void SetAlpha(float value)
         {
-            if (_canvasGroup)
+            if (CanvasGroup)
             {
-                _canvasGroup.alpha = value;
-                _canvasGroup.interactable = value > 0.99f;
-                _canvasGroup.blocksRaycasts = value > 0.99f;
+                CanvasGroup.alpha = value;
+                CanvasGroup.interactable = value > 0.99f;
+                CanvasGroup.blocksRaycasts = value > 0.99f;
             }
 
-            if (_meshRenderer && _meshRenderer.material.HasProperty(Alpha))
+            if (MeshRenderer && MeshRenderer.material.HasProperty(Alpha))
             {
-                _meshRenderer.material.SetFloat(Alpha, value);
+                MeshRenderer.material.SetFloat(Alpha, value);
             }
         }
     }

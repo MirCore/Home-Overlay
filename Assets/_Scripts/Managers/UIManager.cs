@@ -20,6 +20,7 @@ namespace Managers
         [SerializeField] private Button HomeButton;
         [SerializeField] private Button CloseMainUIButton;
         private LazyFollow _mainUILazyFollow;
+        private CanvasFader _canvasFader;
         
         [Header("Tabs")]
         [SerializeField] private GameObject OverviewTab;
@@ -34,9 +35,11 @@ namespace Managers
         [SerializeField] private Button NewDeviceButton;
         [SerializeField] private Button SettingsButton;
 
+
         private void OnEnable()
         {
             HideMainMenu();
+            _canvasFader = HomeButtonUI.GetComponent<CanvasFader>();
             OverviewButton.onClick.AddListener(ShowOverviewTab);
             NewDeviceButton.onClick.AddListener(ShowNewDeviceTab);
             SettingsButton.onClick.AddListener(ShowSettingsTab);
@@ -104,7 +107,7 @@ namespace Managers
         {
 #if UNITY_VISIONOS && !UNITY_EDITOR
             SwiftUIDriver.OpenSwiftUIWindow("MainMenu", "Settings");
-            HomeButtonUI.SetActive(false);
+            HomeButtonSetActive(false);
             return;
 #endif
             ShowTab(SettingsTab);
@@ -127,16 +130,25 @@ namespace Managers
             // Show the selected tab
             tab.SetActive(true);
             
-            
             // Show the main UI and hide the home button
             MainUI.SetActive(true);
-            HomeButtonUI.SetActive(false);
+            HomeButtonSetActive(false);
             
             // Disable lazy follow while the main UI is open
             if (_mainUILazyFollow == null)
                 _mainUILazyFollow = MainUI.GetComponentInParent<LazyFollow>();
             if (_mainUILazyFollow != null)
                 _mainUILazyFollow.positionFollowMode = LazyFollow.PositionFollowMode.None;
+        }
+
+        private void HomeButtonSetActive(bool setActive)
+        {
+            if (!setActive && _canvasFader)
+            {
+                _canvasFader.FadeOut();
+                return;
+            }
+            HomeButtonUI.SetActive(setActive);
         }
 
         /// <summary>
@@ -146,7 +158,7 @@ namespace Managers
         private void HideMainMenu()
         {
             MainUI.SetActive(false);
-            HomeButtonUI.SetActive(true);
+            HomeButtonSetActive(true);
             
             if (_mainUILazyFollow == null)
                 _mainUILazyFollow = MainUI.GetComponentInParent<LazyFollow>();
@@ -161,7 +173,7 @@ namespace Managers
 
         public void ShowHomeButton()
         {
-            HomeButtonUI.SetActive(true);
+            HomeButtonSetActive(true);
         }
     }
 }

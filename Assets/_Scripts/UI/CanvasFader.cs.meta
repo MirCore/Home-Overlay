@@ -1,3 +1,14 @@
 fileFormatVersion: 2
 guid: 52d2f044061b401ba85376942f6298a6
-timeCreated: 1744307010
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - CanvasGroup: {instanceID: 0}
+  - MeshRenderer: {instanceID: 0}
+  - VisionOSSwapMaterial: {fileID: 2100000, guid: 5b970e2360a7d433c98206ee26a48a4b, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
