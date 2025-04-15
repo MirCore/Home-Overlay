@@ -67,7 +67,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\U000F1136"
+  m_text: "\U000F0625"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9281487e2c1241a42a40d2b953cc8863, type: 2}
   m_sharedMaterial: {fileID: -3114780081389149998, guid: 9281487e2c1241a42a40d2b953cc8863, type: 2}
@@ -424,7 +424,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c672fa11a3ae154f91ebc78617ac004, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HighlightImage: {fileID: 0}
   Icon: {fileID: 4016058435295100767}
   NameText: {fileID: 1801083678258014752}
   StateText: {fileID: 2634595123110456048}

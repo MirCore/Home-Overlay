@@ -232,7 +232,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\U000F0F32"
+  m_text: "\U000F0625"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9281487e2c1241a42a40d2b953cc8863, type: 2}
   m_sharedMaterial: {fileID: -3114780081389149998, guid: 9281487e2c1241a42a40d2b953cc8863, type: 2}
@@ -1424,12 +1424,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 027d37d9e8fb44f4b8be649f612cb38c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HighlightImage: {fileID: 0}
   Icon: {fileID: 4016058435295100767}
   NameText: {fileID: 0}
   StateText: {fileID: 0}
   SettingsButton: {fileID: 8297586591055066645}
   WindowControls: {fileID: 47081332350235054}
+  MeshRenderer: {fileID: 0}
   CompactCanvasSize: {x: 120, y: 120}
   ExpandedCanvasSize: {x: 320, y: 120}
   State: {fileID: 1779759598034595140}

@@ -1,318 +1,177 @@
-﻿using System.Collections;
-using System.Threading.Tasks;
-using Managers;
+﻿using Managers;
 using Structs;
 using TMPro;
-using UI;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.XR.ARSubsystems;
-using UnityEngine.XR.Interaction.Toolkit;
-using UnityEngine.XR.Interaction.Toolkit.Interactables;
-using UnityEngine.XR.Interaction.Toolkit.UI;
 using Utils;
 
 namespace Panels
 {
+    /// <summary>
+    /// Abstract base class for panels in the UI, handling initialization, updates, and settings.
+    /// </summary>
     public abstract class Panel : MonoBehaviour
     {
-        private static readonly int HighlightFader = Shader.PropertyToID("_HighlightFader");
-        private static readonly int Alpha = Shader.PropertyToID("_Alpha");
+        /// <summary>
+        /// The icon text component of the panel.
+        /// </summary>
         [SerializeField] internal TMP_Text Icon;
-        [SerializeField] internal TMP_Text NameText;
-        [SerializeField] internal TMP_Text StateText;
-        [SerializeField] private Button SettingsButton;
-        [SerializeField] private GameObject WindowControls;
-        [SerializeField] private Renderer MeshRenderer;
-        private Canvas _canvas;
-        private RectTransform _canvasRectTransform;
-        private RoundedQuadMesh _roundedQuadMesh;
-        
-        [SerializeField] private Vector2 CompactCanvasSize = new (120, 120);
-        [SerializeField] private Vector2 ExpandedCanvasSize = new (320, 120);
-        
-        private LazyFollow _lazyFollow;
-        private XRBaseInteractable _interactable;
 
+        /// <summary>
+        /// The name text component of the panel.
+        /// </summary>
+        [SerializeField] internal TMP_Text NameText;
+
+        /// <summary>
+        /// The state text component of the panel.
+        /// </summary>
+        [SerializeField] internal TMP_Text StateText;
+
+        /// <summary>
+        /// The settings button of the panel.
+        /// </summary>
+        [SerializeField] private Button SettingsButton;
+
+        /// <summary>
+        /// The window controls game object of the panel.
+        /// </summary>
+        [SerializeField] private GameObject WindowControls;
+
+        /// <summary>
+        /// The compact size of the panel's canvas.
+        /// </summary>
+        [SerializeField] public Vector2 CompactCanvasSize = new(120, 120);
+
+        /// <summary>
+        /// The expanded size of the panel's canvas.
+        /// </summary>
+        [SerializeField] public Vector2 ExpandedCanvasSize = new(320, 120);
+
+        
+        /// <summary>
+        /// The current state of the Home Assistant entity associated with the panel.
+        /// </summary>
         protected HassState HassState;
+
+        /// <summary>
+        /// The data associated with this panel.
+        /// </summary>
         public PanelData PanelData { get; private set; }
 
         /// <summary>
-        /// A coroutine that is currently setting the color of the button temporarily.
+        /// The behavior controlling the window's state and interactions.
         /// </summary>
-        private IEnumerator _setButtonColorTemporarilyCoroutine;
+        public WindowBehaviour WindowBehaviour;
 
-        
+        /// <summary>
+        /// Initializes the window behavior when the panel is awakened.
+        /// </summary>
         private void Awake()
         {
-            if (!MeshRenderer)
-                MeshRenderer = GetComponentInChildren<MeshRenderer>();
-            _canvas = GetComponentInChildren<Canvas>();
-            _canvasRectTransform = _canvas.GetComponent<RectTransform>();
-            _roundedQuadMesh = _canvas.GetComponent<RoundedQuadMesh>();
-            _lazyFollow = GetComponent<LazyFollow>();
-            _interactable = GetComponent<XRBaseInteractable>();
+            WindowBehaviour = new WindowBehaviour(this, WindowControls);
         }
-        
+
         protected virtual void OnEnable()
         {
-            if (Icon != null) Icon.text = "";
-            if (NameText != null) NameText.text = "";
-            if (StateText != null) StateText.text = "";
-            
+            // Clear the name and state text
+            if (NameText) NameText.text = "";
+            if (StateText) StateText.text = "";
+
+            // Subscribe to the settings button click event
             SettingsButton.onClick.AddListener(OnSettingsButtonClicked);
-            _interactable.selectEntered.AddListener(OnSelectEntered);
-            _interactable.selectExited.AddListener(OnSelectExited);
-            EventManager.OnHassStatesChanged += OnHassStatesChanged;
+            // Register event listeners for window behavior
+            WindowBehaviour.RegisterEventListeners();
+            // Subscribe to the Home Assistant states changed event
+            EventManager.OnHassStatesChanged += UpdatePanel;
         }
 
         protected virtual void OnDisable()
         {
-            _interactable.selectEntered.RemoveListener(OnSelectEntered);
+            // Unregister event listeners for window behavior
+            WindowBehaviour.UnregisterEventListeners();
+            // Unsubscribe from the settings button click event
             SettingsButton.onClick.RemoveListener(OnSettingsButtonClicked);
-            _interactable.selectExited.RemoveListener(OnSelectExited);
-            EventManager.OnHassStatesChanged -= OnHassStatesChanged;
-        }
-
-        private void OnSelectEntered(SelectEnterEventArgs eventData)
-        {
-            MeshRenderer.material.SetFloat(Alpha, 0.5f);
-        }
-
-        private void OnSelectExited(SelectExitEventArgs eventData)
-        {
-            MeshRenderer.material.SetFloat(Alpha, 1f);
-            
-            if (PanelData == null)
-                return;
-            
-            // Save the new pose of the panel
-            PanelData.Position = transform.position;
-            PanelData.Rotation = transform.rotation;
-            PanelData.Scale = transform.localScale;
-
-            // Create a new anchor
-            // Run async with explicit error handling
-            _ = CreateNewAnchor().ContinueWith(task =>
-            {
-                if (task.IsFaulted)
-                    Debug.LogError($"CreateNewAnchor encountered an error: {task.Exception}");
-            }, TaskScheduler.FromCurrentSynchronizationContext());
-        }
-        
-        private async Task CreateNewAnchor()
-        {
-            TrackableId? anchorId = await AnchorHelper.CreateNewAnchor(transform, PanelData.Settings.AlignWindowToWall, PanelData.AnchorID);
-
-            if (anchorId != null)
-            {
-                PanelData.AnchorID = anchorId.ToString();
-                return;
-            }
-
-            if (PanelData.Settings.AlignWindowToWall)
-            {
-                Debug.Log("No plane found, turning off AlignWindowToWall");
-                PanelData.Settings.AlignWindowToWall = false;
-                OnSettingsChanged();
-            }
-        }
-        
-        /// <summary>
-        /// Called when Hass states change.
-        /// </summary>
-        private void OnHassStatesChanged()
-        {
-            // Get the current state of the panel.
-            HassState ??= HassStates.GetHassState(PanelData.EntityID);
-
-            // Update the Panel UI
-            UpdatePanel();
+            // Unsubscribe from the Home Assistant states changed event
+            EventManager.OnHassStatesChanged -= UpdatePanel;
         }
 
         /// <summary>
-        /// Initiates the Panel
+        /// Initializes the panel with the provided panel data.
         /// </summary>
-        /// <param name="panelData">The panel object to be associated with this panel.</param>
+        /// <param name="panelData">The panel data to associate with this panel.</param>
         public void InitPanel(PanelData panelData)
         {
-            // Assign the provided panel object to the current panel
+            // Assign the provided panel data to the current panel
             PanelData = panelData;
-            panelData.Panel = this;
-            
             transform.localPosition = panelData.Position;
             transform.localScale = panelData.Scale;
-            
+            panelData.Panel = this;
+
+            // Try to attach to the panels anchor
             AnchorHelper.TryAttachToExistingAnchor(transform, PanelData.AnchorID);
-            SetWindowControlVisibility();
+            // Load the window state based on the panel settings
+            WindowBehaviour.LoadWindowState(PanelData.Settings.AlignWindowToWall, PanelData.Settings.RotationEnabled, !PanelData.Settings.HideWindowControls);
 
-            // If there is no EntityID, there is nothing to update.
-            if (PanelData.EntityID == null)
-                return;
-
-            // Get the current state of the panel.
-            HassState ??= HassStates.GetHassState(PanelData.EntityID);
-
-            if (HassState != null)
-            {
-                // Update the Panel to reflect the current state of the entity
-                UpdatePanel();
-            }
-
-        }
-
-        // Assign a new Panel ID to the panel
-        public void AssignNewEntityID(string entityID)
-        {
-            PanelData.EntityID = entityID;
-
-            // Get the current state of the panel.
-            HassState = HassStates.GetHassState(PanelData.EntityID);
-            
+            // Update the panel to reflect the current state of the entity
             UpdatePanel();
-            PanelSettingsWindowManager.Instance.UpdatePanelSettingsWindow(this);
         }
 
+        /// <summary>
+        /// Updates the panel to reflect the current state of the Home Assistant entity.
+        /// </summary>
         protected virtual void UpdatePanel()
         {
             if (!PanelIsReady())
                 return;
 
+            // Update the name text with the friendly name of the entity
             if (NameText) NameText.text = HassState.attributes.friendly_name;
         }
 
-        public void DeletePanel()
-        {
-            PanelManager.Instance.RemovePanel(PanelData);
-            Destroy(gameObject);
-        }
-
-
         /// <summary>
-        /// Temporarily highlights the panel by changing the color of its button to red.
-        /// The highlighting is done by starting a coroutine that changes the color of the button to red
-        /// and then waits for the specified duration and then changes the color back to the original color.
+        /// Handles the settings button click event.
         /// </summary>
-        public void HighlightPanel()
+        private void OnSettingsButtonClicked()
         {
-            if (_setButtonColorTemporarilyCoroutine != null)
-                return;
-
-            _setButtonColorTemporarilyCoroutine = SetHighlightColorTemporarily(5f);
-            StartCoroutine(_setButtonColorTemporarilyCoroutine);
+            PanelSettingsWindowManager.Instance.ToggleSettingsWindow(this);
         }
 
         /// <summary>
-        /// Temporarily sets the color of the panel to the given color for the given duration.
+        /// Turns off the align window to wall setting and updates the panel.
         /// </summary>
-        /// <param name="duration">The duration of the change in seconds.</param>
-        private IEnumerator SetHighlightColorTemporarily(float duration)
+        public void TurnOffAlignWindowToWall()
         {
-            if (!MeshRenderer && !MeshRenderer.material.HasProperty(HighlightFader))
-            {
-                Debug.Log("No MeshRenderer set " + this);
-                yield break;
-            }
-            
-            float elapsed = 0f;
-            while (elapsed < 0.5f)
-            {
-                elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / 0.5f);
-                float alpha = Mathf.Lerp(0, 0.5f, t);
-
-                MeshRenderer.material.SetFloat(HighlightFader, alpha);
-                
-                yield return null;
-            }
-
-            // Wait for the specified duration
-            yield return new WaitForSeconds(duration);
-
-            elapsed = 0f;
-            while (elapsed < 0.5f)
-            {
-                elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / 0.5f);
-                float alpha = Mathf.Lerp(0.5f, 0f, t);
-
-                MeshRenderer.material.SetFloat(HighlightFader, alpha);
-                
-                yield return null;
-            }
-            
-            MeshRenderer.material.SetFloat(HighlightFader, 0f);
-
-            // Set the flag to indicate that the coroutine has finished
-            _setButtonColorTemporarilyCoroutine = null;
+            Debug.Log("AlignWindowToWall failed, turning off AlignWindowToWall");
+            PanelData.Settings.AlignWindowToWall = false;
+            OnSettingsChanged();
         }
 
-        protected void UpdatePanelLayout()
-        {
-            if (NameText.gameObject.activeSelf == PanelData.Settings.ShowName && StateText.gameObject.activeSelf == PanelData.Settings.ShowState)
-                return;
-            
-            NameText.gameObject.SetActive(PanelData.Settings.ShowName);
-            StateText.gameObject.SetActive(PanelData.Settings.ShowState);
-            
-            if (PanelData.Settings.ShowName || PanelData.Settings.ShowState)
-            {
-                _canvasRectTransform.sizeDelta = ExpandedCanvasSize;
-            }
-            else
-            {
-                _canvasRectTransform.sizeDelta = CompactCanvasSize;
-            }
-
-            if (_roundedQuadMesh)
-                _roundedQuadMesh.UpdateMesh();
-        }
-        
-        private void OnSettingsButtonClicked() => PanelSettingsWindowManager.Instance.ToggleSettingsWindow(this);
-
-        public EDeviceType GetDeviceType() => HassState.DeviceType;
-
-        public void ReloadSettingsWindow() => PanelSettingsWindowManager.Instance.UpdatePanelSettingsWindow(this);
-
-        public void SetWindowControlVisibility() => WindowControls.SetActive(!PanelData.Settings.HideWindowControls);
-        
-
+        /// <summary>
+        /// Handles changes to the panel's settings.
+        /// </summary>
         public void OnSettingsChanged()
         {
-            // toggle the LazyFollow component on/off
-            if (PanelData.Settings.AlignWindowToWall || !PanelData.Settings.RotationEnabled)
-            {
-                _lazyFollow.enabled = false;
-                _ = CreateNewAnchor();
-            }
-            else
-            {
-                if (Camera.main != null)
-                {
-                    Vector3 directionToCamera = transform.position - Camera.main.transform.position;
-                    transform.rotation = Quaternion.LookRotation(directionToCamera);
-                }
+            // Load the window state based on the updated panel settings
+            WindowBehaviour.LoadWindowState(PanelData.Settings.AlignWindowToWall, PanelData.Settings.RotationEnabled, !PanelData.Settings.HideWindowControls);
 
-                _lazyFollow.enabled = true;
-            }
-            
+            // Update the panel to reflect the current state of the entity
             UpdatePanel();
-            ReloadSettingsWindow();
+            // Update the panel settings window
+            PanelSettingsWindowManager.Instance.UpdatePanelSettingsWindow(this);
         }
 
+        /// <summary>
+        /// Checks if the panel is ready
+        /// </summary>
+        /// <returns>True if the panel is ready, false otherwise.</returns>
         protected bool PanelIsReady()
         {
-            if (PanelData.EntityID == null)
-                return false;
-            if (HassState == null)
-                return false;
-            
-            return true;
-        }
+            if (PanelData.EntityID == null) return false;
 
-        public void OnEndDrag()
-        {
-            OnSelectExited(null);
+            // Get the current state of the Home Assistant entity
+            HassState ??= HassStates.GetHassState(PanelData.EntityID);
+
+            return HassState != null;
         }
     }
 }

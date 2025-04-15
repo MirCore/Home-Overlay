@@ -34,9 +34,11 @@ namespace UI
         private void OnCreateEmptyEntityButtonClicked()
         {
             // Spawn a new panel at the position of the CreateEmtpyEntityButton with the selected panel ID
-            PanelManager.Instance.SpawnNewEmptyEntity(CreateEmtpyEntityButton.transform.position);
+            //PanelManager.Instance.SpawnNewEmptyEntity(CreateEmtpyEntityButton.transform.position);
             
-            UIManager.Instance.CloseMainMenu();
+            //UIManager.Instance.CloseMainMenu();
+
+            Debug.LogWarning("Method is disabled");
         }
         
     }

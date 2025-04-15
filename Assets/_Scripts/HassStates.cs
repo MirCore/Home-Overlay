@@ -22,7 +22,12 @@ public static class HassStates
     {
         return HassStatesDict;
     }
-        
+
+    /// <summary>
+    /// The configuration data of Home Assistant.
+    /// </summary>
+    private static HassConfig _hassConfig;
+    
     /// <summary>
     /// Gets the HassState object from the specified entityID.
     /// </summary>
@@ -39,9 +44,10 @@ public static class HassStates
     /// <param name="responseText">The response text from Home Assistant containing entity states.</param>
     public static void OnHassStatesResponse(string responseText)
     {
-        
+#if UNITY_EDITOR
         if (GameManager.Instance.DebugLogGetHassEntities)
             Debug.Log(responseText);
+#endif
         
         // Parse the response text into an array of HassState objects
         HassState[] hassStates = JsonHelper.ArrayFromJson<HassState>(responseText);
@@ -77,14 +83,15 @@ public static class HassStates
         // Invoke the event that the Hass states have changed
         EventManager.InvokeOnHassStatesChanged();
             
+#if UNITY_EDITOR
         // Copy the entities to the inspector field for debugging
         GameManager.Instance.InspectorHassStates = HassStatesDict.Values.ToArray();
+#endif
     }
 
     public static void OnHassConfigResponse(string responseText)
     {
-        HassConfig config = JsonUtility.FromJson<HassConfig>(responseText);
-        GameManager.Instance.OnHassConfigLoaded(config);
+        _hassConfig = JsonUtility.FromJson<HassConfig>(responseText);
     }
     
     public static List<WeatherForecast> ConvertHassWeatherResponse(string responseText)
@@ -97,6 +104,11 @@ public static class HassStates
     {
         CalendarEvent[] events = JsonHelper.ArrayFromJson<CalendarEvent>(calendarResponse);
         return events.ToList();
+    }
+
+    public static HassConfig GetHassConfig()
+    {
+        return _hassConfig;
     }
 }
     

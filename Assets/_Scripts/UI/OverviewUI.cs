@@ -68,9 +68,9 @@ namespace UI
             }
         }
 
-        private void OnHighlightPanelButtonPressed(PanelData panelData)
+        private static void OnHighlightPanelButtonPressed(PanelData panelData)
         {
-            panelData.Panel.HighlightPanel();
+            PanelManager.Instance.HighlightPanel(panelData.ID);
         }
 
         private void OnDeletePanelButtonPressed(PanelData panel)

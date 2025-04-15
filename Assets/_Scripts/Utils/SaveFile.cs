@@ -2,21 +2,36 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using Managers;
 using Structs;
 using UnityEngine;
 
 namespace Utils
 {
+    /// <summary>
+    /// Abstract utility class for handling file saving and loading operations, including encryption.
+    /// </summary>
     public abstract class SaveFile
     {
         // Key for reading and writing encrypted data.
         // (This is a "hardcoded" secret key.)
         private static readonly byte[] SavedKey = { 0xE6, 0xDA, 0x48, 0x8E, 0xD2, 0x15, 0x8A, 0x26, 0x2E, 0xA4, 0x7D, 0x78, 0x96 ,0x0 ,0xCD, 0x90 };
         
-        private static readonly string SaveDataPath = Application.persistentDataPath + "/saveData.json";
-        private static readonly string HassConfigPath = Application.persistentDataPath + "/hassConfig.json";
+        /// <summary>
+        /// The path where the save data file is stored.
+        /// </summary>
+        private static readonly string SaveDataPath = Path.Combine(Application.persistentDataPath, "saveData.json");
         
+        /// <summary>
+        /// Flag to indicate if a save operation is currently in progress.
+        /// </summary>
+        private static bool _isSaving;
+        
+        /// <summary>
+        /// Reads the save file and deserializes it into a list of PanelData objects.
+        /// </summary>
+        /// <returns>A list of PanelData objects, or null if the file does not exist.</returns>
         public static List<PanelData> ReadFile()
         {
             if (!File.Exists(SaveDataPath))
@@ -28,9 +43,10 @@ namespace Utils
             {
                 // Read the entire file into a String value.
                 string json = File.ReadAllText(SaveDataPath);
+                // Deserialize the JSON data into a PanelDataListWrapper.
                 PanelDataListWrapper wrapper = JsonUtility.FromJson<PanelDataListWrapper>(json);
             
-                // Deserialize the JSON data into a pattern matching the GameData class.
+                // Return the list of PanelData objects.
                 return wrapper.PanelDatas ?? new List<PanelData>();
             }
             catch (Exception e)
@@ -39,15 +55,19 @@ namespace Utils
                 throw;
             }
         }
+        
+        /// <summary>
+        /// Writes the list of PanelData objects to the save file.
+        /// </summary>
+        /// <param name="gameData">The list of PanelData objects to save.</param>
         private static void WriteFile(List<PanelData> gameData)
         {
             try
-            {
+            {                
+                // Serialize the list of PanelData objects to JSON.
                 string json = JsonUtility.ToJson(new PanelDataListWrapper { PanelDatas = gameData }, true);
-                
+                // Write the JSON string to the save file.
                 File.WriteAllText(SaveDataPath, json);
-                
-                //Debug.Log(Application.persistentDataPath);
             }
             
             catch (Exception e)
@@ -56,12 +76,45 @@ namespace Utils
                 throw;
             }
         }
-
-        public static void SavePanelDatas()
+        
+        /// <summary>
+        /// Marks the panel data as dirty, indicating that it needs to be saved.
+        /// </summary>
+        public static void SetPanelDataDirty()
         {
-            WriteFile(PanelManager.Instance.PanelDataList);
+            _ = SavePanelData();
         }
 
+        /// <summary>
+        /// Asynchronously saves the panel data to the file, yielding to await all changed data in the frame.
+        /// </summary>
+        private static async Task SavePanelData()
+        {
+            if (_isSaving) return;
+
+            _isSaving = true;
+
+            try
+            {                
+                // Yield to the next frame to await all changed data.
+                await Task.Yield();
+                // Write the panel data to the file.
+                WriteFile(PanelManager.Instance.PanelDataList);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[SavePanelData] Error while saving: {ex}");
+            }
+            finally
+            {
+                _isSaving = false;
+            }
+        }
+
+        /// <summary>
+        /// Reads and decrypts the save file, returning a PanelData object.
+        /// </summary>
+        /// <returns>The deserialized PanelData object, or null if the file does not exist.</returns>
         public static PanelData ReadEncryptedFile()
         {
             if (!File.Exists(SaveDataPath))
@@ -107,15 +160,14 @@ namespace Utils
             
         }
 
+        /// <summary>
+        /// Encrypts and writes the PanelData object to the save file.
+        /// </summary>
+        /// <param name="gameData">The PanelData object to save.</param>
         public static void WriteEncryptedFile(PanelData gameData)
         {
             try
             {
-#if UNITY_EDITOR
-                File.WriteAllText(Application.persistentDataPath + "/saveData.vbi", JsonUtility.ToJson(gameData));
-                //Debug.Log(Application.persistentDataPath);
-#endif
-                
                 // Create a FileStream for creating files.
                 using FileStream dataStream = new FileStream(SaveDataPath, FileMode.Create);
 

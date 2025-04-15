@@ -109,18 +109,14 @@ namespace UI
             switch (windowState.WindowEvent)
             {
                 case VolumeCamera.WindowEvent.Opened: //Open window when your app is on focus
-                    Debug.Log("Window opened");
                     break;
                 case VolumeCamera.WindowEvent.Backgrounded: //Close window when your app is on background
-                    Debug.Log("Window backgrounded");
                     CloseSwiftMainUI();
                     break;
                 case VolumeCamera.WindowEvent.Focused:
-                    Debug.Log("Window (un)focused");
                     GameManager.OnWindowFocused(windowState.IsFocused);
                     if (windowState.IsFocused == false)
                     {
-                        Debug.Log("Window unfocused");
                         CloseSwiftMainUI();
                     }
                     break;

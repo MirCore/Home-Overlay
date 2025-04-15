@@ -12,6 +12,7 @@ using Uri = System.Uri;
 public abstract class RestHandler
 {
     private static RequestHelper _getRequestHelper;
+    private static DateTime _lastHassStateRefresh;
 
     /// <summary>
     /// Sets the default headers for REST requests to Home Assistant.
@@ -83,12 +84,8 @@ public abstract class RestHandler
 
     #region Get
 
-
     public static void GetHassConfig()
     {
-        if (GameManager.Instance.HassStatesRecentlyUpdated())
-            return;
-        
         RequestHelper get = new()
         {
             Uri = new Uri(GameManager.Instance.HassUri, "config").ToString(),
@@ -109,15 +106,7 @@ public abstract class RestHandler
         _getRequestHelper.Uri = uri.ToString();
         
         RestClient.Get(_getRequestHelper)
-            .Then(response => {
-                if (action != null)
-                    action.Invoke(response.Text);
-                else
-                    HassStates.OnHassStatesResponse(response.Text);
-                
-                if (GameManager.Instance.DebugLogPostResponses)
-                    Debug.Log(response.Text);
-            })
+            .Then(response => HandleResponse(action, response))
             .Catch(err => {
                 Debug.LogError("Error: " + err.Message + err.StackTrace + " Uri: " + uri);
             });
@@ -128,7 +117,7 @@ public abstract class RestHandler
     /// </summary>
     public static void GetHassEntities()
     {
-        if (GameManager.Instance.HassStatesRecentlyUpdated())
+        if (HassStatesUpdatedRecently())
             return;
         if (!RestClient.DefaultRequestHeaders.ContainsKey("Authorization"))
             return;
@@ -138,7 +127,8 @@ public abstract class RestHandler
         Uri uri = new (GameManager.Instance.HassUri, "states");
         SendGetRequest(uri);
     }
-    
+
+
     public static void GetCalendar(string entityID, Action<string> updateCalendar)
     {
         string start = DateTime.Now.ToString("yyyy-MM-ddT00:00:00.000Z");
@@ -166,20 +156,12 @@ public abstract class RestHandler
         };
         
         RestClient.Post(postRequest)
-            .Then(response => {
-                if (action != null)
-                    action.Invoke(response.Text);
-                else
-                    HassStates.OnHassStatesResponse(response.Text);
-                
-                if (GameManager.Instance.DebugLogPostResponses)
-                    Debug.Log(response.Text);
-            })
+            .Then(response => HandleResponse(action, response))
             .Catch(err => {
                 Debug.LogError("Error: " + err.Message + err.StackTrace);
             });
     }
-    
+
     /// <summary>
     /// Toggles the light state for the specified panel ID.
     /// </summary>
@@ -225,16 +207,38 @@ public abstract class RestHandler
         SendPostRequest(uri, body);
     }
 
-    #endregion
-
     public static void GetWeatherForecast(string entityID, Action<string> entityWeather)
     {
         Uri uri = new (GameManager.Instance.HassUri, "services/weather/get_forecasts?return_response=true");
         GetForecast body = new() { entity_id = entityID, type = "daily" };
         SendPostRequest(uri, body, entityWeather);
     }
+    
+    #endregion
 
+    private static void HandleResponse(Action<string> action, ResponseHelper response)
+    {
+        if (action == null)
+        {
+            HassStates.OnHassStatesResponse(response.Text);
+            _lastHassStateRefresh = DateTime.Now;
+        }
+        else
+            action.Invoke(response.Text);
 
+#if UNITY_EDITOR
+        if (GameManager.Instance.DebugLogPostResponses)
+            Debug.Log(response.Text);
+#endif
+    }
+
+    private static bool HassStatesUpdatedRecently()
+    {
+        return _lastHassStateRefresh.AddSeconds((float)GameManager.Instance.HassStateRefreshRate / 2) > DateTime.Now;
+    }
+    
+    #region Json Data Classes
+    
     /// <summary>
     /// Represents the data to be sent in a POST request.
     /// </summary>
@@ -298,4 +302,6 @@ public abstract class RestHandler
         public string entity_id;
         public string type;
     }
+    
+    #endregion
 }

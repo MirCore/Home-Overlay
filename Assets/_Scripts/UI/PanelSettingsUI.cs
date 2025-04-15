@@ -101,7 +101,7 @@ namespace UI
         private void OnWindowControlToggleValueChanged(bool value)
         {
             Panel.PanelData.Settings.HideWindowControls = value;
-            Panel.SetWindowControlVisibility();
+            Panel.WindowBehaviour.SetWindowControlVisibility(!Panel.PanelData.Settings.HideWindowControls);
         }
         
         private void OnAlignToWallToggleValueChanged(bool value)
@@ -122,7 +122,7 @@ namespace UI
  
         private void OnDeleteButtonClicked()
         {
-            Panel.DeletePanel();
+            PanelManager.Instance.DeletePanel(Panel.PanelData.ID);
         }
 
         /// <summary>

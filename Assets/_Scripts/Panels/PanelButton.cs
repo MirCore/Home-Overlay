@@ -50,7 +50,7 @@ namespace Panels
                 StateText.text = HassState.state;
 
             // Update the panel layout and icon
-            UpdatePanelLayout();
+            WindowBehaviour.UpdatePanelLayout();
             UpdateIcon();
         }
 

@@ -1,9 +1,7 @@
 using System.Globalization;
-using Managers;
-using TMPro;
 using UnityEngine;
 
-namespace Panel
+namespace Panels
 {
     public class PanelSensor : Panels.Panel
     {
@@ -22,8 +20,8 @@ namespace Panel
                 stateText = $"{HassState.attributes.current_temperature} ({HassState.attributes.temperature})"; // current (target)
             
             string sensorText = "";
-            if (HassState.DeviceType == EDeviceType.CLIMATE && !string.IsNullOrEmpty(GameManager.Instance.HassConfig.unit_system.temperature))
-                sensorText = $" {GameManager.Instance.HassConfig.unit_system.temperature}";
+            if (HassState.DeviceType == EDeviceType.CLIMATE && !string.IsNullOrEmpty(HassStates.GetHassConfig().unit_system.temperature))
+                sensorText = $" {HassStates.GetHassConfig().unit_system.temperature}";
             else if (HassState.attributes != null)
                 sensorText = $" {HassState.attributes.unit_of_measurement}";
             
@@ -35,7 +33,7 @@ namespace Panel
         {
             base.UpdatePanel();
             
-            UpdatePanelLayout();
+            WindowBehaviour.UpdatePanelLayout();
             UpdateSensorValue();
             UpdateIcon();
         }

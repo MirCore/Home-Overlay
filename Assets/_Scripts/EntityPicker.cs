@@ -5,8 +5,6 @@ using Managers;
 using TMPro;
 using UI;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Utils;
 
@@ -86,12 +84,12 @@ public class EntityPicker : MonoBehaviour
     
     private void OnSaveChangesButtonClicked()
     {
-        _panel.AssignNewEntityID(_selectedEntityID);
+        //_panel.AssignNewEntityID(_selectedEntityID);
     }
 
     private void OnCancelChangesButtonClicked()
     {
-        _panel.ReloadSettingsWindow();
+        //_panel.ReloadSettingsWindow();
     }
     
     /// <summary>
@@ -104,7 +102,7 @@ public class EntityPicker : MonoBehaviour
         string selectedEntityID = _selectedEntityID;
 
         // Spawn a new panel at the position of the CreatePanelButton with the selected panel ID
-        PanelManager.Instance.SpawnNewEntity(selectedEntityID, CreatePanelButton.transform.position);
+        PanelManager.Instance.SpawnNewEntity(selectedEntityID);
 
         UIManager.Instance.CloseMainMenu();
     }
@@ -243,20 +241,6 @@ public class EntityPicker : MonoBehaviour
     private void OnSearchInputFieldValueChanged(string value)
     {
         _searchText = value;
-        GenerateEntityList();
-    }
-
-    /// <summary>
-    /// Sets the Panel this EntityPicker is part of. Also selects the entity in the list
-    /// </summary>
-    /// <param name="panel"></param>
-    public void SetEntity(Panels.Panel panel)
-    {
-        _panel = panel;
-        _selectedEntityID = _panel.PanelData.EntityID;
-        _selectedEDeviceType = _panel.GetDeviceType();
-        TypeDropdown.value = (int)_panel.GetDeviceType();
-        SaveChangesButton.gameObject.SetActive(true);
         GenerateEntityList();
     }
 }
