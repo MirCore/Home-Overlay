@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
+using Object = UnityEngine.Object;
 
 namespace Utils
 {
@@ -12,27 +14,25 @@ namespace Utils
         private static readonly ARRaycastManager RaycastManager;
         private static readonly ARPlaneManager PlaneMeshManager;
         public static readonly ARAnchorManager ARAnchorManager;
-        private static readonly Vector3[] Directions = { Vector3.forward, Vector3.back, Vector3.up, Vector3.down, Vector3.left, Vector3.right }; // Directions to cast rays
+        private static readonly Vector3[] Directions = { Vector3.forward, Vector3.back, Vector3.left, Vector3.right }; // Directions to cast rays
 
         static AnchorHelper()
         {
             RaycastManager = Object.FindFirstObjectByType<ARRaycastManager>();
             ARAnchorManager = Object.FindFirstObjectByType<ARAnchorManager>();
             PlaneMeshManager = Object.FindFirstObjectByType<ARPlaneManager>();
-            
         }
-
-
+        
         private static ARPlane FindNearestPlane(Transform transform)
         {
-            List<ARRaycastHit> raycastHits = new ();
             ARPlane nearestPlane = null;
             float shortestDistance = float.MaxValue;
-            Debug.Log("casting rays");
-            if (RaycastManager.descriptor is { supportsWorldBasedRaycast: true })
+            
+            foreach (Vector3 direction in Directions)
             {
-                foreach (Vector3 direction in Directions)
+                if (RaycastManager.descriptor is { supportsWorldBasedRaycast: true })
                 {
+                    List<ARRaycastHit> raycastHits = new ();
                     // Perform raycast in the current direction
                     if (!RaycastManager.Raycast(new Ray(transform.position, direction), raycastHits, TrackableType.Planes))
                         continue;
@@ -43,22 +43,12 @@ namespace Utils
                         nearestPlane = hit.trackable as ARPlane;
                     }
                 }
-
-                Debug.Log("nearest plane: " + nearestPlane);
-            }
-            else
-            {
-                Debug.Log("World based raycast not supported");
-                
-                foreach (Vector3 direction in Directions)
+                else
                 {
-                    if (Physics.Raycast(transform.position, direction, out RaycastHit hit, shortestDistance))
-                    {
-                        Debug.Log("hit distance: " + hit.distance);
-                        shortestDistance = hit.distance;
-                        nearestPlane = hit.collider.GetComponent<ARPlane>(); // If ARPlane is not available, change this to a relevant component
-                        Debug.Log(nearestPlane.trackableId);
-                    }
+                    if (!Physics.Raycast(transform.position, direction, out RaycastHit hit, shortestDistance))
+                        continue;
+                    shortestDistance = hit.distance;
+                    nearestPlane = hit.collider.GetComponent<ARPlane>();
                 }
             }
 
@@ -70,22 +60,16 @@ namespace Utils
         /// </summary>
         /// <param name="transform"></param>
         /// <param name="anchorRotation"></param>
-        
-        public static async Task<Result<ARAnchor>> CreateAnchorAsync(Transform transform, Quaternion anchorRotation = default)
+        private static async Task<ARAnchor> CreateAnchorAsync(Transform transform, Quaternion anchorRotation = default)
         {
             if (!AnchorsAreSupported())
-                return new Result<ARAnchor>();
+                return null;
             
-            Quaternion rotation = anchorRotation == default ? transform.rotation : anchorRotation;
+            Quaternion rotation = anchorRotation != default ? anchorRotation : Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
             // Attempt to add a new anchor at the current position and rotation
             Result<ARAnchor> result = await ARAnchorManager.TryAddAnchorAsync(new Pose(transform.position, rotation));
-            if (!result.status.IsSuccess())
-            {
-                // Log a warning if the anchor creation fails
-                Debug.LogWarning("Failed to create anchor");
-            }
             
-            return result;
+            return result.value;
         }
 
         private static bool AnchorsAreSupported()
@@ -115,7 +99,7 @@ namespace Utils
         /// <summary>
         /// Sets the parent of a given transform to an ARAnchor.
         /// </summary>
-        public static void AttachTransformToAnchor(Transform target, ARAnchor anchor)
+        private static void AttachTransformToAnchor(Transform target, ARAnchor anchor)
         {
             if (target == null || anchor == null) return;
 
@@ -127,7 +111,7 @@ namespace Utils
         /// <summary>
         /// Sets the parent of a given transform to an ARAnchor.
         /// </summary>
-        public static void AttachTransformToAnotherAnchor(Transform target, ARAnchor anchor, string oldAnchorID)
+        private static void AttachTransformToAnotherAnchor(Transform target, ARAnchor anchor, string oldAnchorID)
         {
             if (target == null || anchor == null) return;
 
@@ -141,29 +125,27 @@ namespace Utils
         /// <summary>
         /// Tries to attach a transform to the nearest detected ARPlane.
         /// </summary>
-        public static bool TryCreateAnchorOnNearestPlane(Transform target, out ARAnchor anchor)
+        private static ARAnchor TryCreateAnchorOnNearestPlane(Transform target)
         {
-            anchor = null;
+            ARAnchor anchor;
             
-            if (!AnchorsAreSupported())
-                return false;
-            if (target == null) return false;
+            if (!AnchorsAreSupported() || target == null)
+                return null;
 
             ARPlane nearestPlane = FindNearestPlane(target);
-            if (nearestPlane == null) return false;
+            if (nearestPlane == null)
+                return null;
 
             Quaternion anchorRotation = Quaternion.LookRotation(-nearestPlane.normal, Vector3.up);
-            Debug.Log(new Pose(target.position, anchorRotation));
             if (ARAnchorManager.descriptor.supportsTrackableAttachments)
                 anchor = ARAnchorManager.AttachAnchor(nearestPlane, new Pose(target.position, anchorRotation));
             else
             {
-                Task<Result<ARAnchor>> result = CreateAnchorAsync(target, anchorRotation);
-                anchor = result.Result.value;
+                Task<ARAnchor> result = CreateAnchorAsync(target, anchorRotation);
+                anchor = result.Result;
             }
-
             
-            return anchor != null;
+            return anchor;
         }
 
         private static void TryRemoveAnchor(string oldAnchorID)
@@ -172,6 +154,39 @@ namespace Utils
                 return;
             if (TryGetExistingAnchor(oldAnchorID, out ARAnchor anchor))
                 ARAnchorManager.TryRemoveAnchor(anchor);
+        }
+
+        public static void TryAttachToExistingAnchor(Transform transform, string anchorID)
+        {
+            if (TryGetExistingAnchor(anchorID, out ARAnchor anchor))
+                AttachTransformToAnchor(transform, anchor);
+        }
+        
+        public static async Task<TrackableId?> CreateNewAnchor(Transform transform, bool attachToPlane, string oldAnchor)
+        {
+            if (!AnchorsAreSupported())
+                return null;
+            
+            ARAnchor anchor;
+            
+            try
+            {
+                if (attachToPlane)
+                    anchor = TryCreateAnchorOnNearestPlane(transform);
+                else
+                    anchor = await CreateAnchorAsync(transform);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("CreateNewAnchor Error: " + e);
+                return null;
+            }
+            
+            if (anchor == null)
+                return null;
+            
+            AttachTransformToAnotherAnchor(transform, anchor, oldAnchor);
+            return anchor.trackableId;
         }
     }
 }

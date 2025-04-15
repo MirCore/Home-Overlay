@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Threading.Tasks;
 using Managers;
 using Structs;
@@ -7,7 +6,6 @@ using TMPro;
 using UI;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
@@ -19,6 +17,7 @@ namespace Panels
     public abstract class Panel : MonoBehaviour
     {
         private static readonly int HighlightFader = Shader.PropertyToID("_HighlightFader");
+        private static readonly int Alpha = Shader.PropertyToID("_Alpha");
         [SerializeField] internal TMP_Text Icon;
         [SerializeField] internal TMP_Text NameText;
         [SerializeField] internal TMP_Text StateText;
@@ -53,7 +52,6 @@ namespace Panels
             _roundedQuadMesh = _canvas.GetComponent<RoundedQuadMesh>();
             _lazyFollow = GetComponent<LazyFollow>();
             _interactable = GetComponent<XRBaseInteractable>();
-            _interactable.selectExited.AddListener(OnSelectExited);
         }
         
         protected virtual void OnEnable()
@@ -63,18 +61,28 @@ namespace Panels
             if (StateText != null) StateText.text = "";
             
             SettingsButton.onClick.AddListener(OnSettingsButtonClicked);
+            _interactable.selectEntered.AddListener(OnSelectEntered);
+            _interactable.selectExited.AddListener(OnSelectExited);
             EventManager.OnHassStatesChanged += OnHassStatesChanged;
         }
 
         protected virtual void OnDisable()
         {
+            _interactable.selectEntered.RemoveListener(OnSelectEntered);
             SettingsButton.onClick.RemoveListener(OnSettingsButtonClicked);
             _interactable.selectExited.RemoveListener(OnSelectExited);
             EventManager.OnHassStatesChanged -= OnHassStatesChanged;
         }
 
+        private void OnSelectEntered(SelectEnterEventArgs eventData)
+        {
+            MeshRenderer.material.SetFloat(Alpha, 0.5f);
+        }
+
         private void OnSelectExited(SelectExitEventArgs eventData)
         {
+            MeshRenderer.material.SetFloat(Alpha, 1f);
+            
             if (PanelData == null)
                 return;
             
@@ -91,85 +99,25 @@ namespace Panels
                     Debug.LogError($"CreateNewAnchor encountered an error: {task.Exception}");
             }, TaskScheduler.FromCurrentSynchronizationContext());
         }
-
-        #region ARAnchors
-
+        
         private async Task CreateNewAnchor()
         {
-            Debug.Log("Creating new anchor");
-            try
-            {
-                ARAnchor newAnchor;
-                
-                if (SystemInfo.graphicsDeviceName == "Apple visionOS simulator GPU")
-                    return;
-                
-                if (PanelData.Settings.AlignWindowToWall)
-                {
-                    Debug.Log("Aligning to wall");
-                    bool result = AnchorHelper.TryCreateAnchorOnNearestPlane(transform, out newAnchor);
-                    if (!result)
-                    {
-                        Debug.Log("No plane found, turning off AlignWindowToWall");
-                        PanelData.Settings.AlignWindowToWall = false;
-                        OnSettingsChanged();
-                        return;
-                    }
-                }
-                else if (!PanelData.Settings.RotationEnabled)
-                {
-                    Debug.Log("Creating new fixed anchor");
-                    Quaternion rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
-                    Result<ARAnchor> result = await AnchorHelper.CreateAnchorAsync(transform, rotation);
-                    if (!result.status.IsSuccess())
-                    {
-                        Debug.LogWarning("Failed to create fixed anchor");
-                        return;
-                    }
-                    newAnchor = result.value;
-                }
-                else
-                {
-                    Debug.Log("Creating new normal anchor");
-                    Result<ARAnchor> result = await AnchorHelper.CreateAnchorAsync(transform);
-                    if (!result.status.IsSuccess())
-                    {
-                        Debug.LogWarning("Failed to create anchor");
-                        return;
-                    }
-                    newAnchor = result.value;
-                }
-                if (newAnchor == null)
-                {
-                    Debug.LogWarning("Failed to create anchor");
-                    return;
-                }
-                Debug.Log("Anchor created, attaching to anchor: " + newAnchor.trackableId);
-                AnchorHelper.AttachTransformToAnotherAnchor(transform, newAnchor, PanelData.AnchorID);
-                PanelData.AnchorID = newAnchor.trackableId.ToString();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("CreateNewAnchor Error: " + e);
-                throw;
-            }
+            TrackableId? anchorId = await AnchorHelper.CreateNewAnchor(transform, PanelData.Settings.AlignWindowToWall, PanelData.AnchorID);
 
-        }
-
-        private void ReattachToAnchor()
-        {
-            // If the panel object does not have an anchor ID, exit the method
-            if (string.IsNullOrEmpty(PanelData.AnchorID))
+            if (anchorId != null)
+            {
+                PanelData.AnchorID = anchorId.ToString();
                 return;
+            }
 
-            if (AnchorHelper.TryGetExistingAnchor(PanelData.AnchorID, out ARAnchor anchor))
+            if (PanelData.Settings.AlignWindowToWall)
             {
-                AnchorHelper.AttachTransformToAnchor(transform, anchor);
+                Debug.Log("No plane found, turning off AlignWindowToWall");
+                PanelData.Settings.AlignWindowToWall = false;
+                OnSettingsChanged();
             }
         }
-
-        #endregion
-
+        
         /// <summary>
         /// Called when Hass states change.
         /// </summary>
@@ -195,7 +143,7 @@ namespace Panels
             transform.localPosition = panelData.Position;
             transform.localScale = panelData.Scale;
             
-            ReattachToAnchor();
+            AnchorHelper.TryAttachToExistingAnchor(transform, PanelData.AnchorID);
             SetWindowControlVisibility();
 
             // If there is no EntityID, there is nothing to update.
@@ -250,16 +198,15 @@ namespace Panels
             if (_setButtonColorTemporarilyCoroutine != null)
                 return;
 
-            _setButtonColorTemporarilyCoroutine = SetButtonColorTemporarily(5f);
+            _setButtonColorTemporarilyCoroutine = SetHighlightColorTemporarily(5f);
             StartCoroutine(_setButtonColorTemporarilyCoroutine);
         }
 
         /// <summary>
-        /// Temporarily sets the color of the panel's button to the given color for the given duration.
+        /// Temporarily sets the color of the panel to the given color for the given duration.
         /// </summary>
-        /// <param name="color">The color to set the button to.</param>
-        /// <param name="duration">The duration of the color change in seconds.</param>
-        private IEnumerator SetButtonColorTemporarily(float duration)
+        /// <param name="duration">The duration of the change in seconds.</param>
+        private IEnumerator SetHighlightColorTemporarily(float duration)
         {
             if (!MeshRenderer && !MeshRenderer.material.HasProperty(HighlightFader))
             {
@@ -339,7 +286,15 @@ namespace Panels
                 _ = CreateNewAnchor();
             }
             else
+            {
+                if (Camera.main != null)
+                {
+                    Vector3 directionToCamera = transform.position - Camera.main.transform.position;
+                    transform.rotation = Quaternion.LookRotation(directionToCamera);
+                }
+
                 _lazyFollow.enabled = true;
+            }
             
             UpdatePanel();
             ReloadSettingsWindow();
