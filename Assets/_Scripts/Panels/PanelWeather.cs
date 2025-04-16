@@ -1,77 +1,104 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using TMPro;
+using UI;
 using UnityEngine;
 using Utils;
 
-namespace Panel
+namespace Panels
 {
-    public class PanelWeather : Panels.Panel
+    /// <summary>
+    /// A panel that displays weather information and forecasts.
+    /// </summary>
+    public class PanelWeather : Panel
     {
-        [SerializeField] private TMP_Text State;
-        [SerializeField] private TMP_Text Temperature;
-        [SerializeField] private ForecastPanel ForecastPanel;
-        
-        [SerializeField] private List<WeatherForecast> InspectorWeatherForecast;
-        
-        [SerializeField] private int MaxForecastPanels = 5;
-        
         /// <summary>
-        /// How often to refresh the weather forecast in seconds
+        /// The text component for displaying the current temperature.
+        /// </summary>
+        [SerializeField] private TMP_Text Temperature;
+
+        /// <summary>
+        /// The forecast field component.
+        /// </summary>
+        [SerializeField] private ForecastField ForecastField;
+
+        /// <summary>
+        /// The maximum number of forecast panels to display.
+        /// </summary>
+        [SerializeField] private int MaxForecastPanels = 5;
+
+        /// <summary>
+        /// How often to refresh the weather forecast in seconds.
         /// </summary>
         [Tooltip("How often to refresh the weather forecast in seconds")]
         [SerializeField] private float WeatherForecastRefreshRate = 600f;
-        
-        private readonly List<ForecastPanel> _forecastPanels = new ();
-        
+
+        /// <summary>
+        /// A list of the forecast fields that display the weather forecast.
+        /// </summary>
+        private readonly List<ForecastField> _forecastFields = new();
+
+        /// <summary>
+        /// The cancellation token source for managing the fetch loop.
+        /// </summary>
         private CancellationTokenSource _cancellationTokenSource;
-        
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// For debugging purposes, holds the weather forecast data.
+        /// </summary>
+        [SerializeField] private List<WeatherForecast> InspectorWeatherForecast;
+#endif
+
+        /// <summary>
+        /// Initializes the weather panel and starts the fetch loop.
+        /// </summary>
         private void Start()
         {
-            _forecastPanels.Add(ForecastPanel);
-            
-            
+            _forecastFields.Add(ForecastField);
+
             if (!PanelIsReady())
                 return;
-            _cancellationTokenSource = new CancellationTokenSource();
-            _ = GetHassWeatherForecast(_cancellationTokenSource.Token);
-        }
-        
-        protected override void OnDisable()
-        {
-            base.OnDisable();
-            _cancellationTokenSource?.Cancel();
-            _cancellationTokenSource?.Dispose();
+
+            StartFetchLoop();
         }
 
         /// <summary>
-        /// Updates the weather forecast periodically.
+        /// Cancels the fetch loop when the panel is disabled.
+        /// </summary>
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            CancelFetchLoop();
+        }
+
+        /// <summary>
+        /// Fetches the weather forecast periodically.
         /// </summary>
         /// <param name="token">The cancellation token to cancel the task.</param>
         private async Task GetHassWeatherForecast(CancellationToken token)
         {
             if (!PanelIsReady())
                 _cancellationTokenSource.Cancel();
+
             while (!token.IsCancellationRequested)
             {
                 try
                 {
-                    if (HassState != null) 
+                    if (HassState != null)
                         RestHandler.GetWeatherForecast(HassState.entity_id, UpdateWeather);
                 }
                 catch (TaskCanceledException)
                 {
-                    //Debug.Log("Weather update task was canceled.");
                     break;
                 }
                 catch (Exception ex)
                 {
                     Debug.LogError($"Error while updating weather forecast: {ex.Message}");
                 }
-                
+
                 await Task.Delay(TimeSpan.FromSeconds(WeatherForecastRefreshRate), token);
             }
         }
@@ -83,7 +110,7 @@ namespace Panel
         private void UpdateWeather(string forecastResponse)
         {
             UpdateCurrentWeather();
-            UpdateForecast(forecastResponse);
+            UpdateForecastFields(forecastResponse);
         }
 
         /// <summary>
@@ -91,41 +118,34 @@ namespace Panel
         /// </summary>
         private void UpdateCurrentWeather()
         {
-            State.text = StringManipulation.CapitalizeFirstLetter(HassState.state);
+            StateText.text = StringManipulation.CapitalizeFirstLetter(HassState.state);
             Temperature.text = $"{HassState.attributes.temperature} {HassState.attributes.temperature_unit}";
-            Icon.text = MaterialDesignIcons.GetIconByName(WeatherIcons.GetValueOrDefault(HassState.state, ""));
+            Icon.text = MaterialDesignIcons.GetWeatherIcon(HassState.state);
         }
 
         /// <summary>
-        /// Updates the forecast.
+        /// Updates the forecast fields with the weather forecast data.
         /// </summary>
         /// <param name="forecastResponse">The forecast response from Home Assistant.</param>
-        private void UpdateForecast(string forecastResponse)
+        private void UpdateForecastFields(string forecastResponse)
         {
             List<WeatherForecast> weatherForecast = HassStates.ConvertHassWeatherResponse(forecastResponse);
-            
-            // For debugging
+
+#if UNITY_EDITOR
+            // For debugging purposes
             InspectorWeatherForecast = weatherForecast;
-            
+#endif
+
             if (weatherForecast == null)
                 return;
-            
+
             int numberOfForecasts = Math.Min(MaxForecastPanels, weatherForecast.Count);
-            
-            ActivatePanels(numberOfForecasts);
+
+            ActivateFields(numberOfForecasts);
 
             for (int i = 0; i < numberOfForecasts; i++)
             {
-                ForecastPanel forecastPanel = _forecastPanels[i];
-                WeatherForecast forecast = weatherForecast[i];
-                
-                // Parse the string into a DateTime object (handling the time zone correctly), then format it as a short day name (e.g., "Mon").
-                string dayOfWeek = DateTime.Parse(forecast.datetime, null, DateTimeStyles.RoundtripKind).ToString("ddd", CultureInfo.InvariantCulture);
-                
-                forecastPanel.Date.text = dayOfWeek;
-                forecastPanel.MaxTemp.text = $"{forecast.temperature}°";
-                forecastPanel.MinTemp.text = $"{forecast.templow}°";
-                forecastPanel.Icon.text = MaterialDesignIcons.GetIconByName(WeatherIcons.GetValueOrDefault(forecast.condition, ""));
+                _forecastFields[i].UpdateForecast(weatherForecast[i]);
             }
         }
 
@@ -133,62 +153,52 @@ namespace Panel
         /// Activates or deactivates forecast panels based on the number of forecasts.
         /// </summary>
         /// <param name="numberOfForecasts">The number of forecasts to display.</param>
-        private void ActivatePanels(int numberOfForecasts)
+        private void ActivateFields(int numberOfForecasts)
         {
-            while (_forecastPanels.Count < numberOfForecasts)
+            while (_forecastFields.Count < numberOfForecasts)
             {
-                ForecastPanel newPanel = Instantiate(ForecastPanel, ForecastPanel.transform.parent);
-                _forecastPanels.Add(newPanel);
+                ForecastField newField = Instantiate(ForecastField, ForecastField.transform.parent);
+                _forecastFields.Add(newField);
             }
-            
-            for (int i = 0; i < _forecastPanels.Count; i++)
+
+            for (int i = 0; i < _forecastFields.Count; i++)
             {
-                _forecastPanels[i].gameObject.SetActive(i < numberOfForecasts);
+                _forecastFields[i].gameObject.SetActive(i < numberOfForecasts);
             }
         }
 
         /// <summary>
-        /// Gets the Material Design icon for the given weather condition.
-        /// </summary>
-        /// <returns>The Material Design icon for the given weather condition.</returns>
-        private static readonly Dictionary<string, string> WeatherIcons = new()
-        {
-            { "clear-night", "weather-night" },
-            { "cloudy", "weather-cloudy" },
-            { "exceptional", "alert-circle-outline" },
-            { "fog", "weather-fog" },
-            { "hail", "weather-hail" },
-            { "lightning", "weather-lightning" },
-            { "lightning-rainy", "weather-lightning-rainy" },
-            { "partlycloudy", "weather-partly-cloudy" },
-            { "pouring", "weather-pouring" },
-            { "rainy", "weather-rainy" },
-            { "snowy", "weather-snowy" },
-            { "snowy-rainy", "weather-snowy-rainy" },
-            { "sunny", "weather-sunny" },
-            { "windy", "weather-windy" },
-            { "windy-variant", "weather-windy-variant" }
-        };
-
-        /// <summary>
-        /// Called when the panel state changes.
+        /// Updates the panel when the panel state changes.
         /// </summary>
         protected override void UpdatePanel()
         {
             base.UpdatePanel();
-            
+
             if (!PanelIsReady())
                 return;
+
             UpdateCurrentWeather();
-            
-            if (_cancellationTokenSource != null && !_cancellationTokenSource.Token.IsCancellationRequested)
-                return;  // Prevent multiple tasks
 
-            _cancellationTokenSource?.Cancel(); // Cancel any existing token
-            _cancellationTokenSource?.Dispose(); // Dispose of the old CTS
+            CancelFetchLoop();
+            StartFetchLoop();
+        }
 
+        /// <summary>
+        /// Starts the fetch loop to periodically fetch weather forecasts.
+        /// </summary>
+        private void StartFetchLoop()
+        {
             _cancellationTokenSource = new CancellationTokenSource();
             _ = GetHassWeatherForecast(_cancellationTokenSource.Token);
+        }
+
+        /// <summary>
+        /// Cancels the fetch loop.
+        /// </summary>
+        private void CancelFetchLoop()
+        {
+            _cancellationTokenSource?.Cancel(); // Cancel any existing token
+            _cancellationTokenSource?.Dispose(); // Dispose of the old CTS
         }
     }
 }

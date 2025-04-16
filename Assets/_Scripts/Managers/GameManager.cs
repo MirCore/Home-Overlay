@@ -1,40 +1,52 @@
 using System;
-using System.Collections;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using Utils;
 
-
 namespace Managers
 {
+    /// <summary>
+    /// Manages the app state and connection settings for Home Assistant integration.
+    /// </summary>
     public class GameManager : Singleton<GameManager>
     {
+        /// <summary>
+        /// The URI for the Home Assistant API.
+        /// </summary>
         public Uri HassUri { get; private set; }
+
+        /// <summary>
+        /// The base URL of the Home Assistant instance.
+        /// </summary>
         public string HassURL { get; private set; } = "";
+
+        /// <summary>
+        /// The port number of the Home Assistant instance.
+        /// </summary>
         public int HassPort { get; private set; }
+
+        /// <summary>
+        /// The authorization token for the Home Assistant API.
+        /// </summary>
         public string HassToken { get; private set; } = "";
 
+        /// <summary>
+        /// The refresh rate of the Home Assistant API in seconds.
+        /// </summary>
         [Tooltip("The refresh rate of the Home Assistant API in seconds.")]
-        [SerializeField] private int HassStateRefreshRate = 10;
+        [field: SerializeField] public int HassStateRefreshRate { get; private set; } = 10;
         
-        private DateTime _lastHassStateRefresh;
+        private CancellationTokenSource _cancellationTokenSource;
+        
 
         
-        [field: SerializeField] public HassConfig HassConfig { get; private set; }
-        
-        /// <summary>
-        /// The PanelSpawner that spawns new entities.
-        /// </summary>
-        [SerializeField] private PanelSpawner PanelSpawner;
-
-        [SerializeField] private GameObject HassUI;
-        
+#if UNITY_EDITOR
         [Header("Debugging")]
-        public bool DebugLogPostResponses;
-        public bool DebugLogGetHassEntities;
-        /// <summary>
-        /// Only used for debugging in the inspector.
-        /// </summary>
-        [SerializeField] public HassState[] InspectorHassStates;
+        public bool DebugLogPostResponses; // Flag to enable logging of POST responses for debugging.
+        public bool DebugLogGetHassEntities; // Flag to enable logging of GET Hass entities for debugging.
+        [SerializeField] public HassState[] InspectorHassStates; // Only used for debugging in the inspector.
+#endif
 
         private void OnEnable()
         {
@@ -46,50 +58,62 @@ namespace Managers
         {
             // Load saved connection settings
             LoadConnectionSettings();
-            EventManager.OnConnectionTested += OnConnectionTested;
-            EventManager.OnHassStatesChanged += OnHassStatesChanged;
         }
 
-        private void OnDisable()
+        /// <summary>
+        /// Cancels any ongoing tasks when the application quits.
+        /// </summary>
+        private void OnApplicationQuit()
         {
-            EventManager.OnConnectionTested -= OnConnectionTested;
-            EventManager.OnHassStatesChanged -= OnHassStatesChanged;
+            _cancellationTokenSource?.Cancel();
         }
 
-        private void OnHassStatesChanged()
+        /// <summary>
+        /// Cancels any ongoing tasks when the GameManager is destroyed.
+        /// </summary>
+        private void OnDestroy()
         {
-            _lastHassStateRefresh = DateTime.Now;
+            _cancellationTokenSource?.Cancel();
         }
 
-        private void OnConnectionTested(int response, Uri uri)
+        /// <summary>
+        /// Periodically retrieves the Home Assistant states.
+        /// </summary>
+        /// <param name="cancellationToken">The token for cancellation requests.</param>
+        private async Task GetHassStatesPeriodicallyAsync(CancellationToken cancellationToken)
         {
-            if (response is 200 or 201)
-            {
-                RestHandler.GetHassConfig();
-                StartCoroutine(GetHassStatesPeriodically());
+            while (!cancellationToken.IsCancellationRequested)
+            {                
+                // Wait for the specified time before retrieving states
+                await Task.Delay(TimeSpan.FromSeconds(HassStateRefreshRate), cancellationToken);
+                RestHandler.GetHassEntities();
             }
         }
         
-        // ReSharper disable Unity.PerformanceAnalysis
-        private IEnumerator GetHassStatesPeriodically()
-        {
-            while (true)
-            {
-                yield return new WaitForSeconds(HassStateRefreshRate);
-                RestHandler.GetHassEntities();
-            }
-        }
-
+        /// <summary>
+        /// Handles the initial connection test event.
+        /// </summary>
+        /// <param name="statusCode">The HTTP status code of the connection test.</param>
+        /// <param name="uri">The URI used for the connection test.</param>
         private void OnInitialConnectionTested(int statusCode, Uri uri)
         {
             EventManager.OnConnectionTested -= OnInitialConnectionTested;
-
+            
+            // Check if the connection was successful
             if (statusCode is 200 or 201)
-            {
+            {                
+                // Set default headers, retrieve Home Assistant config and retrieve Home Assistant entities
                 RestHandler.SetDefaultHeaders();
+                RestHandler.GetHassConfig();
                 RestHandler.GetHassEntities();
-            }
-            PanelManager.Instance.LoadEntityObjects();
+            }            
+            
+            // (Re)start periodic retrieval of Home Assistant states
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource = new CancellationTokenSource();
+            _ = GetHassStatesPeriodicallyAsync(_cancellationTokenSource.Token);
+            
+            // Invoke the event to indicate that the app state has loaded
             EventManager.InvokeOnAppStateLoaded();
         }
 
@@ -101,25 +125,29 @@ namespace Managers
         /// <param name="token">The authorization token of Home Assistant.</param>
         public void SaveConnectionSettings(string url, int port, string token)
         {
+            // Save the connection settings
             if (url != "")
                 SecurePlayerPrefs.SetString("HassURL", url);
             if (port != 0)
                 SecurePlayerPrefs.SetInt("HassPort", port);
             if (token != "")
                 SecurePlayerPrefs.SetString("HassToken", token);
+            
+            // Reload the connection settings
             LoadConnectionSettings();
-            Debug.Log("Saved Settings");
         }
 
         /// <summary>
-        /// Loads the connection settings from secure storage.
+        /// Loads the connection settings.
         /// </summary>
         private void LoadConnectionSettings()
         {
+            // Retrieve the connection settings
             HassURL = SecurePlayerPrefs.GetString("HassURL");
             HassPort = SecurePlayerPrefs.GetInt("HassPort");
             HassToken = SecurePlayerPrefs.GetString("HassToken");
             
+            // Construct the URI for the Home Assistant API
             if (HassURL != "")
             {
                 try
@@ -146,16 +174,11 @@ namespace Managers
             }
         }
 
-        public bool HassStatesRecentlyUpdated()
-        {
-            return _lastHassStateRefresh.AddSeconds((float)HassStateRefreshRate / 2) > DateTime.Now;
-        }
-
-        public void OnHassConfigLoaded(HassConfig config)
-        {
-            HassConfig = config;
-        }
-
+        /// <summary>
+        /// Handles the event when the application window gains or loses focus.
+        /// This ensures that the HomeButtonUI shows up when the app lost focus on AVP
+        /// </summary>
+        /// <param name="isFocused">True if the window is focused, false otherwise.</param>
         public static void OnWindowFocused(bool isFocused)
         {
             if (!isFocused)

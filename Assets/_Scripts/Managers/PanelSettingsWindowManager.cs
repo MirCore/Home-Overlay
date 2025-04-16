@@ -72,11 +72,10 @@ namespace Managers
 
         public void UpdatePanelSettingsWindow(Panels.Panel panel)
         {
-            PanelSettingsUI panelSettingsUI = _entitySettingsWindows.Find(w => w.Panel == panel);
+            PanelSettingsUI panelSettingsUI = _entitySettingsWindows.Find(settingsUI => settingsUI.Panel == panel);
             if (panelSettingsUI)
             {
-                panelSettingsUI.gameObject.SetActive(false);
-                panelSettingsUI.gameObject.SetActive(true);
+                panelSettingsUI.ReloadUI();
             }
             else
             {

@@ -118,11 +118,12 @@ public class WindowBehaviour
         bool showName = _panel.PanelData.Settings.ShowName;
         bool showState = _panel.PanelData.Settings.ShowState;
             
-        if (_panel.NameText.gameObject.activeSelf == showName && _panel.StateText.gameObject.activeSelf == showState)
+        if ((!_panel.NameText || _panel.NameText.gameObject.activeSelf == showName) &&
+            (!_panel.StateText || _panel.StateText.gameObject.activeSelf == showState))
             return;
             
-        _panel.NameText.gameObject.SetActive(showName);
-        _panel.StateText.gameObject.SetActive(showState);
+        _panel.NameText?.gameObject.SetActive(showName);
+        _panel.StateText?.gameObject.SetActive(showState);
 
         UpdateWindowSize(showName, showState);
     }

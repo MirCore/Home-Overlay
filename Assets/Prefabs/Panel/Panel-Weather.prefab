@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 8346749362945566351}
   - component: {fileID: 5669456847920794739}
   m_Layer: 0
-  m_Name: Forecast Panel
+  m_Name: Forecast Field
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -335,7 +335,7 @@ GameObject:
   - component: {fileID: 3872964477294366018}
   - component: {fileID: 108244752955056942}
   m_Layer: 0
-  m_Name: Forecast
+  m_Name: Forecasts
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1426,18 +1426,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Icon: {fileID: 4016058435295100767}
   NameText: {fileID: 0}
-  StateText: {fileID: 0}
+  StateText: {fileID: 1779759598034595140}
   SettingsButton: {fileID: 8297586591055066645}
   WindowControls: {fileID: 47081332350235054}
-  MeshRenderer: {fileID: 0}
   CompactCanvasSize: {x: 120, y: 120}
   ExpandedCanvasSize: {x: 320, y: 120}
   State: {fileID: 1779759598034595140}
   Temperature: {fileID: 6099263789454769517}
-  ForecastPanel: {fileID: 5669456847920794739}
-  InspectorWeatherForecast: []
+  ForecastField: {fileID: 5669456847920794739}
   MaxForecastPanels: 5
   WeatherForecastRefreshRate: 600
+  InspectorWeatherForecast: []
 --- !u!224 &8163702200327889075 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1441405485455305321, guid: 56729b3eda175f046830741f79f8d92f, type: 3}

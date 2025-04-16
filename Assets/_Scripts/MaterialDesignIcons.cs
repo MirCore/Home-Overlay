@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Managers;
@@ -68,6 +69,7 @@ public abstract class MaterialDesignIcons
             InitiateCodepointsCollection();
         return (from data in _codepointsCollection where data.Name == mdiName select data.Code).FirstOrDefault();
     }
+    
 
     private static void InitiateCodepointsCollection()
     {
@@ -97,4 +99,33 @@ public abstract class MaterialDesignIcons
             Code = char.ConvertFromUtf32(unicodeValue); // Supports supplementary planes
         }
     }
+
+    public static string GetWeatherIcon(string forecastCondition)
+    {
+        string iconName = WeatherIcons.GetValueOrDefault(forecastCondition, "");
+        return GetIconByName(iconName);
+    }
+    
+    /// <summary>
+    /// Gets the Material Design icon for the given weather condition.
+    /// </summary>
+    /// <returns>The Material Design icon for the given weather condition.</returns>
+    private static readonly Dictionary<string, string> WeatherIcons = new()
+    {
+        { "clear-night", "weather-night" },
+        { "cloudy", "weather-cloudy" },
+        { "exceptional", "alert-circle-outline" },
+        { "fog", "weather-fog" },
+        { "hail", "weather-hail" },
+        { "lightning", "weather-lightning" },
+        { "lightning-rainy", "weather-lightning-rainy" },
+        { "partlycloudy", "weather-partly-cloudy" },
+        { "pouring", "weather-pouring" },
+        { "rainy", "weather-rainy" },
+        { "snowy", "weather-snowy" },
+        { "snowy-rainy", "weather-snowy-rainy" },
+        { "sunny", "weather-sunny" },
+        { "windy", "weather-windy" },
+        { "windy-variant", "weather-windy-variant" }
+    };
 }

@@ -6,19 +6,33 @@ using Utils;
 
 namespace Panels
 {
+    /// <summary>
+    /// A panel that represents a switch or a light.
+    /// </summary>
     public class PanelButton : Panel
     {
+        /// <summary>
+        /// The button component of the panel.
+        /// </summary>
         [SerializeField] private Button Button;
+
+        /// <summary>
+        /// The incremental slider component attached to the button.
+        /// </summary>
         private IncrementalSlider _incrementalSlider;
-        // Current brightness of the Light, stored to avoid overrides by Rest responses
+
+        /// <summary>
+        /// The current brightness value of the light, stored to avoid overrides by REST responses.
+        /// </summary>
         private int _brightnessValue;
-    
+
         protected override void OnEnable()
         {
             base.OnEnable();
-        
+
+            // Subscribe to the button click event
             Button.onClick.AddListener(OnButtonClicked);
-            
+
             // Get the IncrementalSlider component attached to the button and subscribe to its event
             _incrementalSlider = Button.GetComponent<IncrementalSlider>();
             if (_incrementalSlider)
@@ -28,7 +42,8 @@ namespace Panels
         protected override void OnDisable()
         {
             base.OnDisable();
-            
+
+            // Unsubscribe from the incremental slider event
             if (_incrementalSlider)
                 _incrementalSlider.OnSliderValueChanged -= OnIncrementalSliderValueChanged;
         }
@@ -39,18 +54,17 @@ namespace Panels
         protected override void UpdatePanel()
         {
             base.UpdatePanel();
-            
+
             if (!PanelIsReady())
                 return;
-            
+
             // Update the state text based on brightness or state
             if (HassState.attributes.brightness != 0)
                 StateText.text = Mathf.Round((float)HassState.attributes.brightness / 255 * 100) + "%";
             else
                 StateText.text = HassState.state;
 
-            // Update the panel layout and icon
-            WindowBehaviour.UpdatePanelLayout();
+            // Update the panel icon
             UpdateIcon();
         }
 
@@ -61,8 +75,8 @@ namespace Panels
         {
             if (!PanelIsReady())
                 return;
-        
-            // Toggle the device based on its type
+
+            // Send Toggle command based on the device type
             switch (HassState.DeviceType)
             {
                 case EDeviceType.LIGHT:
@@ -75,7 +89,7 @@ namespace Panels
                     throw new ArgumentOutOfRangeException();
             }
         }
-    
+
         /// <summary>
         /// Handles the event when the incremental slider value changes.
         /// </summary>
@@ -85,30 +99,39 @@ namespace Panels
         {
             if (!PanelIsReady() || HassState.DeviceType != EDeviceType.LIGHT)
                 return;
-           
+
             // Set the initial brightness value on the first drag
-            if (firstDrag) 
+            if (firstDrag)
                 _brightnessValue = HassStates.GetHassState(PanelData.EntityID).attributes.brightness;
-            
+
             // Update the brightness value within the valid range
             _brightnessValue = Math.Clamp(_brightnessValue + (int)brightnessDelta, 0, 255);
             RestHandler.SetLightBrightness(PanelData.EntityID, _brightnessValue);
         }
 
         /// <summary>
-        /// Updates the icon color based on the panel's state and attributes.
+        /// Updates the icon color based on the entities state
         /// </summary>
         private void UpdateIcon()
         {
             if (!PanelIsReady())
                 return;
-        
-            // Update the icon based on the panel's attributes.
+
             Icon.text = MaterialDesignIcons.GetIcon(HassState);
 
+            // Set the icon color based on the entities state and brightness
+            Icon.color = DetermineIconColor();
+        }
+
+        /// <summary>
+        /// Determines the icon color based on the entities state and brightness.
+        /// </summary>
+        /// <returns>The color to set for the icon.</returns>
+        private Color DetermineIconColor()
+        {
             Color color;
-        
-            // Determine the icon color based on the panel's state
+
+            // Determine the icon color based on the entities state
             if (HassState.state == "off")
             {
                 color = Color.black;
@@ -121,14 +144,14 @@ namespace Panels
             {
                 color = Color.white;
             }
-            
+
             // Adjust the color based on brightness
             if (HassState.attributes != null && HassState.attributes.brightness != 0)
             {
                 color = Color.Lerp(Color.black, color, HassState.attributes.brightness / 255f);
             }
-        
-            Icon.color = color;
+
+            return color;
         }
     }
 }

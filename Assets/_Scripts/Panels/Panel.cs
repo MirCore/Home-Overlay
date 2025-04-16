@@ -124,6 +124,9 @@ namespace Panels
             if (!PanelIsReady())
                 return;
 
+            // Update the panel layout
+            WindowBehaviour.UpdatePanelLayout();
+            
             // Update the name text with the friendly name of the entity
             if (NameText) NameText.text = HassState.attributes.friendly_name;
         }

@@ -33,7 +33,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _Alpha: 1
+    - _BaseColorValue: -6.67
     - _ColorMask: 15
+    - _HighlightFader: 0
     - _Stencil: 0
     - _StencilComp: 8
     - _StencilOp: 0
@@ -43,7 +46,7 @@ Material:
     m_Colors:
     - _AddColor: {r: 0.36862746, g: 0.36862746, b: 0.36862746, a: 0.2980392}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _MultColor: {r: 1, g: 1, b: 1, a: 0.33333334}
+    - _MultColor: {r: 1, g: 0.62352943, b: 0.039215688, a: 1}
     - _StaticColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.9}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

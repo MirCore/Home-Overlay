@@ -195,5 +195,10 @@ namespace UI
             else
                 OnCloseButtonClicked();
         }
+
+        public void ReloadUI()
+        {
+            LoadElements();
+        }
     }
 }
