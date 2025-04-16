@@ -153,7 +153,7 @@ namespace Managers
         public void HighlightPanel(string panelID)
         {
             PanelData panelData = PanelDataList.FirstOrDefault(p => p.ID == panelID);
-            panelData?.Panel.WindowBehaviour.HighlightPanel(panelData.Panel);
+            panelData?.Panel.WindowHighlighter.HighlightWindow(panelData.Panel);
         }
     }
 }

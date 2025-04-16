@@ -1,6 +1,7 @@
 ﻿using Managers;
 using Structs;
 using TMPro;
+using UI;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils;
@@ -8,9 +9,9 @@ using Utils;
 namespace Panels
 {
     /// <summary>
-    /// Abstract base class for panels in the UI, handling initialization, updates, and settings.
+    /// Abstract base class for panels in the environment, handling initialization, updates, and settings.
     /// </summary>
-    public abstract class Panel : MonoBehaviour
+    public abstract class Panel : Window
     {
         /// <summary>
         /// The icon text component of the panel.
@@ -33,11 +34,6 @@ namespace Panels
         [SerializeField] private Button SettingsButton;
 
         /// <summary>
-        /// The window controls game object of the panel.
-        /// </summary>
-        [SerializeField] private GameObject WindowControls;
-
-        /// <summary>
         /// The compact size of the panel's canvas.
         /// </summary>
         [SerializeField] public Vector2 CompactCanvasSize = new(120, 120);
@@ -47,6 +43,10 @@ namespace Panels
         /// </summary>
         [SerializeField] public Vector2 ExpandedCanvasSize = new(320, 120);
 
+        /// <summary>
+        /// The component responsible for highlighting the window.
+        /// </summary>
+        public WindowHighlighter WindowHighlighter;
         
         /// <summary>
         /// The current state of the Home Assistant entity associated with the panel.
@@ -58,37 +58,27 @@ namespace Panels
         /// </summary>
         public PanelData PanelData { get; private set; }
 
-        /// <summary>
-        /// The behavior controlling the window's state and interactions.
-        /// </summary>
-        public WindowBehaviour WindowBehaviour;
-
-        /// <summary>
-        /// Initializes the window behavior when the panel is awakened.
-        /// </summary>
-        private void Awake()
+        protected new virtual void OnEnable()
         {
-            WindowBehaviour = new WindowBehaviour(this, WindowControls);
-        }
-
-        protected virtual void OnEnable()
-        {
+            base.OnEnable();
+            
+            // Get the MeshRenderer component from the window
+            Renderer meshRenderer = GetComponentInChildren<MeshRenderer>();
+            WindowHighlighter = new WindowHighlighter(meshRenderer);
+            
             // Clear the name and state text
             if (NameText) NameText.text = "";
             if (StateText) StateText.text = "";
 
             // Subscribe to the settings button click event
             SettingsButton.onClick.AddListener(OnSettingsButtonClicked);
-            // Register event listeners for window behavior
-            WindowBehaviour.RegisterEventListeners();
             // Subscribe to the Home Assistant states changed event
             EventManager.OnHassStatesChanged += UpdatePanel;
         }
 
-        protected virtual void OnDisable()
+        protected new virtual void OnDisable()
         {
-            // Unregister event listeners for window behavior
-            WindowBehaviour.UnregisterEventListeners();
+            base.OnDisable();
             // Unsubscribe from the settings button click event
             SettingsButton.onClick.RemoveListener(OnSettingsButtonClicked);
             // Unsubscribe from the Home Assistant states changed event
@@ -110,7 +100,7 @@ namespace Panels
             // Try to attach to the panels anchor
             AnchorHelper.TryAttachToExistingAnchor(transform, PanelData.AnchorID);
             // Load the window state based on the panel settings
-            WindowBehaviour.LoadWindowState(PanelData.Settings.AlignWindowToWall, PanelData.Settings.RotationEnabled, !PanelData.Settings.HideWindowControls);
+            LoadWindowState(PanelData.Settings.AlignWindowToWall, PanelData.Settings.RotationEnabled, !PanelData.Settings.HideWindowControls);
 
             // Update the panel to reflect the current state of the entity
             UpdatePanel();
@@ -125,7 +115,7 @@ namespace Panels
                 return;
 
             // Update the panel layout
-            WindowBehaviour.UpdatePanelLayout();
+            UpdatePanelLayout();
             
             // Update the name text with the friendly name of the entity
             if (NameText) NameText.text = HassState.attributes.friendly_name;
@@ -155,7 +145,7 @@ namespace Panels
         public void OnSettingsChanged()
         {
             // Load the window state based on the updated panel settings
-            WindowBehaviour.LoadWindowState(PanelData.Settings.AlignWindowToWall, PanelData.Settings.RotationEnabled, !PanelData.Settings.HideWindowControls);
+            LoadWindowState(PanelData.Settings.AlignWindowToWall, PanelData.Settings.RotationEnabled, !PanelData.Settings.HideWindowControls);
 
             // Update the panel to reflect the current state of the entity
             UpdatePanel();
@@ -175,6 +165,83 @@ namespace Panels
             HassState ??= HassStates.GetHassState(PanelData.EntityID);
 
             return HassState != null;
+        }
+        
+        /// <inheritdoc />
+        public override void OnDragStarted()
+        {
+            base.OnDragStarted();
+            PanelSettingsWindowManager.Instance.PanelIsMoving(this, true);
+        }
+        
+        /// <inheritdoc />
+        public override void OnDragEnded()
+        {
+            base.OnDragEnded();
+            PanelSettingsWindowManager.Instance.PanelIsMoving(this, false);
+
+            SetNewPanelPose();
+        }
+        
+        /// <inheritdoc />
+        protected override void UpdateWindowSize(bool expanded, bool compact)
+        {
+            CanvasRectTransform.sizeDelta = expanded || compact ? ExpandedCanvasSize : CompactCanvasSize;
+            base.UpdateWindowSize(expanded, compact);
+        }
+
+
+        /// <inheritdoc />
+        protected override void LoadLazyFollowBehaviour(bool alignWindowToWall, bool rotationEnabled)
+        {
+            base.LoadLazyFollowBehaviour(alignWindowToWall, rotationEnabled);
+            if (alignWindowToWall || rotationEnabled)
+            {
+                AnchorHelper.CreateNewAnchor(this);
+            }
+        }
+        
+        /// <summary>
+        /// Handles the event when the panel is scaled.
+        /// </summary>
+        public void OnScaled()
+        {
+            PanelData.Scale = transform.localScale;
+        }
+
+        /// <summary>
+        /// Sets the Pose to PanelData and creates a new Anchor
+        /// </summary>
+        private void SetNewPanelPose()
+        {
+            if (PanelData == null)
+                return;
+
+            // Save the new pose of the panel
+            PanelData.Position = transform.position;
+            PanelData.Rotation = transform.rotation;
+            PanelData.Scale = transform.localScale;
+
+            // Create a new anchor
+            AnchorHelper.CreateNewAnchor(this);
+        }
+
+        /// <summary>
+        /// Updates the panel layout based on the panel's settings.
+        /// </summary>
+        protected void UpdatePanelLayout()
+        {
+            bool showName = PanelData.Settings.ShowName;
+            bool showState = PanelData.Settings.ShowState;
+
+            if ((!NameText || NameText.gameObject.activeSelf == showName) &&
+                (!StateText || StateText.gameObject.activeSelf == showState))
+                return;
+
+            NameText?.gameObject.SetActive(showName);
+            StateText?.gameObject.SetActive(showState);
+
+            UpdateWindowSize(showName, showState);
         }
     }
 }

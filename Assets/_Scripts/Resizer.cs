@@ -57,7 +57,7 @@ public class Resizer : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointe
         CacheInitialScaleAndDistance(_interactor.position);
 
         // Notify the panel that it is being moved
-        _panel?.WindowBehaviour.OnDragStarted();
+        _panel?.OnDragStarted();
     }
 
     /// <summary>
@@ -72,7 +72,7 @@ public class Resizer : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointe
         UpdatePanelScale();
 
         // Notify the panel that it has stopped moving
-        _panel?.WindowBehaviour.OnDragEnded();
+        _panel?.OnDragEnded();
     }
 
     /// <summary>
@@ -118,7 +118,7 @@ public class Resizer : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointe
         CacheInitialScaleAndDistance(eventData.position);
 
         // Notify the panel that it is being moved
-        _panel?.WindowBehaviour.OnDragStarted();
+        _panel?.OnDragStarted();
     }
 
     /// <summary>
@@ -135,7 +135,7 @@ public class Resizer : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointe
         UpdatePanelScale();
 
         // Notify the panel that it has stopped moving
-        _panel?.WindowBehaviour.OnDragEnded();
+        _panel?.OnDragEnded();
     }
 
     #endregion
@@ -167,6 +167,6 @@ public class Resizer : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointe
     /// </summary>
     private void UpdatePanelScale()
     {
-        _panel?.WindowBehaviour.OnScaled();
+        _panel?.OnScaled();
     }
 }

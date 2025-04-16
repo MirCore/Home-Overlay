@@ -5,7 +5,6 @@ namespace UI
 {
     /// <summary>
     /// Manages fading effects for a canvas group and mesh renderer.
-    /// Fades the canvas group and mesh renderer in (onEnabled) and out. 
     /// </summary>
     public class CanvasFader : MonoBehaviour
     {
@@ -35,15 +34,30 @@ namespace UI
         private static readonly int Alpha = Shader.PropertyToID("_Alpha");
 
         /// <summary>
-        /// The duration of the fade effect.
+        /// The duration of the fade effect for spawning.
         /// </summary>
-        private const float FadeDuration = 0.5f;
+        [Header("(De)spawn values")]
+        private const float SpawnFadeDuration = 0.2f;
+
+        /// <summary>
+        /// The duration of the fade effect for movement.
+        /// </summary>
+        [Header("Movement values")]
+        private const float MovementFadeDuration = 0.2f;
+
+        /// <summary>
+        /// The alpha value to use when the object is moving.
+        /// </summary>
+        private const float MovementAlpha = 0.5f;
 
         /// <summary>
         /// The coroutine for handling the fade effect.
         /// </summary>
         private Coroutine _fadeRoutine;
 
+        /// <summary>
+        /// Initializes the CanvasFader components when the object is awakened.
+        /// </summary>
         private void Awake()
         {
             // Initialize the CanvasGroup if not assigned
@@ -71,41 +85,30 @@ namespace UI
         private void OnEnable()
         {
             SetAlpha(0f);
-            StartFadeIn();
+            FadeIn();
         }
 
         /// <summary>
         /// Starts the fade-in effect.
         /// </summary>
-        private void StartFadeIn()
+        private void FadeIn()
         {
-            // Check if the GameObject is active in the hierarchy
-            if (!gameObject.activeInHierarchy)
-                return;
-
-            // Stop any existing fade routine
-            if (_fadeRoutine != null)
-                StopCoroutine(_fadeRoutine);
+            if (!IsReady()) return;
 
             // Start the fade-in coroutine
-            _fadeRoutine = StartCoroutine(Fade(0f, 1f));
+            _fadeRoutine = StartCoroutine(Fade(1f, SpawnFadeDuration));
         }
 
         /// <summary>
         /// Starts the fade-out effect.
         /// </summary>
-        public void FadeOut()
+        /// <param name="disableGameObject">Whether to deactivate the GameObject after fading out.</param>
+        public void FadeOut(bool disableGameObject)
         {
-            // Check if the GameObject is active in the hierarchy
-            if (!gameObject.activeInHierarchy)
-                return;
-
-            // Stop any existing fade routine
-            if (_fadeRoutine != null)
-                StopCoroutine(_fadeRoutine);
+            if (!IsReady()) return;
 
             // Start the fade-out coroutine
-            _fadeRoutine = StartCoroutine(Fade(1f, 0f));
+            _fadeRoutine = StartCoroutine(Fade(0f, SpawnFadeDuration, disableGameObject));
         }
 
         /// <summary>
@@ -115,26 +118,31 @@ namespace UI
         public void FadeOut(GameObject go)
         {
             GameObject = go;
-            FadeOut();
+            FadeOut(true);
         }
 
         /// <summary>
         /// Coroutine to handle the fade effect between start and end alpha values.
         /// </summary>
-        /// <param name="start">The starting alpha value.</param>
         /// <param name="end">The ending alpha value.</param>
-        private IEnumerator Fade(float start, float end)
+        /// <param name="duration">The duration of the fade effect.</param>
+        /// <param name="disableGameObject">Whether to deactivate the GameObject after fading out.</param>
+        private IEnumerator Fade(float end, float duration, bool disableGameObject = false)
         {
             float elapsed = 0f;
+            float start = CanvasGroup.alpha;
 
-            // Waits for one frame for layout to settle, to avoid a jumping layout
+            // Wait one frame for layout to settle, to avoid a jumping layout
             if (start == 0f) yield return null;
 
+            // Multiply the duration by the delta, to ensure a correct fade speed, if the coroutine starts mid-fade
+            duration *= Mathf.Abs(start - end);
+
             // Gradually change the alpha value over the fade duration
-            while (elapsed < FadeDuration)
+            while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / FadeDuration);
+                float t = Mathf.Clamp01(elapsed / duration);
                 float alpha = Mathf.Lerp(start, end, t);
 
                 SetAlpha(alpha);
@@ -144,8 +152,8 @@ namespace UI
             // Ensure the final alpha value is set
             SetAlpha(end);
 
-            // Deactivate the GameObject if the end alpha is 0
-            if (end == 0f)
+            // Deactivate the GameObject if requested
+            if (disableGameObject)
                 GameObject.SetActive(false);
         }
 
@@ -159,8 +167,6 @@ namespace UI
             if (CanvasGroup)
             {
                 CanvasGroup.alpha = value;
-                CanvasGroup.interactable = value > 0.99f;
-                CanvasGroup.blocksRaycasts = value > 0.99f;
             }
 
             // Set the alpha value for the MeshRenderer if the material has the alpha property
@@ -168,6 +174,48 @@ namespace UI
             {
                 MeshRenderer.material.SetFloat(Alpha, value);
             }
+        }
+
+        /// <summary>
+        /// Fades in or out based on the visibility flag.
+        /// </summary>
+        /// <param name="makeVisible">Whether the object should be visible.</param>
+        public void FadeInOut(bool makeVisible)
+        {
+            if (makeVisible)
+                FadeIn();
+            else
+                FadeOut(false);
+        }
+
+        /// <summary>
+        /// Adjusts the alpha value of the window background based on whether it is moving.
+        /// </summary>
+        /// <param name="isMoving">True if the window is moving, false otherwise.</param>
+        public void WindowIsMoving(bool isMoving)
+        {
+            if (!IsReady()) return;
+
+            float alpha = isMoving ? MovementAlpha : 1f;
+
+            // Start the fade-out coroutine
+            _fadeRoutine = StartCoroutine(Fade(alpha, MovementFadeDuration));
+        }
+
+        /// <summary>
+        /// Checks if the CanvasFader is ready to perform fade operations.
+        /// </summary>
+        /// <returns>True if the CanvasFader is ready, false otherwise.</returns>
+        private bool IsReady()
+        {
+            // Check if the GameObject is active in the hierarchy
+            if (!gameObject.activeInHierarchy)
+                return false;
+
+            // Stop any existing fade routine
+            if (_fadeRoutine != null)
+                StopCoroutine(_fadeRoutine);
+            return true;
         }
     }
 }

@@ -45,7 +45,7 @@ public class WindowGrabber : MonoBehaviour, IDragHandler, IEndDragHandler
 
         // Notify the panel that it is being moved
         if (_panel)
-            _panel.WindowBehaviour.OnDragStarted();
+            _panel.OnDragStarted();
     }
 
     /// <summary>
@@ -59,6 +59,6 @@ public class WindowGrabber : MonoBehaviour, IDragHandler, IEndDragHandler
             return;
 
         // Notify the panel that it has stopped moving
-        _panel.WindowBehaviour.OnDragEnded();
+        _panel.OnDragEnded();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Panels;
 using UI;
 using UnityEngine;
 using Utils;
@@ -16,15 +17,15 @@ namespace Managers
         /// <summary>
         /// List of all Panel Settings Windows.
         /// </summary>
-        private readonly List<PanelSettingsUI> _entitySettingsWindows = new();
+        private readonly List<PanelSettingsUI> _settingsWindows = new();
 
         /// <summary>
         /// Toggles the Panel Settings Window for the given panel.
         /// </summary>
         /// <param name="panel">The panel to toggle the settings window for.</param>
-        public void ToggleSettingsWindow(Panels.Panel panel)
+        public void ToggleSettingsWindow(Panel panel)
         {
-            PanelSettingsUI panelSettingsUI = _entitySettingsWindows.Find(w => w.Panel == panel);
+            PanelSettingsUI panelSettingsUI = _settingsWindows.Find(w => w.Panel == panel);
             if (panelSettingsUI)
             {
                 panelSettingsUI.SetActive(!panelSettingsUI.gameObject.activeSelf);
@@ -39,7 +40,7 @@ namespace Managers
         /// Spawns a new Panel Settings Window for the given panel.
         /// </summary>
         /// <param name="panel">The panel to spawn the settings window for.</param>
-        private void SpawnNewWindow(Panels.Panel panel)
+        private void SpawnNewWindow(Panel panel)
         {
             PanelSettingsUI newSettingsWindow = Instantiate(PanelSettingsWindowPrefab, panel.transform);
 
@@ -65,14 +66,14 @@ namespace Managers
                 Debug.Log("No Canvas found for panel: " + panel.name);
             }
 
-            _entitySettingsWindows.Add(newSettingsWindow);
+            _settingsWindows.Add(newSettingsWindow);
 
             newSettingsWindow.SetPanel(panel);
         }
 
-        public void UpdatePanelSettingsWindow(Panels.Panel panel)
+        public void UpdatePanelSettingsWindow(Panel panel)
         {
-            PanelSettingsUI panelSettingsUI = _entitySettingsWindows.Find(settingsUI => settingsUI.Panel == panel);
+            PanelSettingsUI panelSettingsUI = _settingsWindows.Find(settingsUI => settingsUI.Panel == panel);
             if (panelSettingsUI)
             {
                 panelSettingsUI.ReloadUI();
@@ -81,6 +82,13 @@ namespace Managers
             {
                 SpawnNewWindow(panel);
             }
+        }
+
+        public void PanelIsMoving(Panel panel, bool isMoving)
+        {
+            PanelSettingsUI panelSettingsUI = _settingsWindows.Find(settingsUI => settingsUI.Panel == panel);
+            if (panelSettingsUI)
+                panelSettingsUI.IsMoving(isMoving);
         }
     }
 }

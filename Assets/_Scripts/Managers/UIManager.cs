@@ -145,7 +145,7 @@ namespace Managers
         {
             if (!setActive && _canvasFader)
             {
-                _canvasFader.FadeOut();
+                _canvasFader.FadeOut(true);
                 return;
             }
             HomeButtonUI.SetActive(setActive);

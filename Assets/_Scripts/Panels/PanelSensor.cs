@@ -53,7 +53,7 @@ namespace Panels
             string sensorText = "";
 
             // If the device type is climate and the temperature unit is not empty, append the temperature unit
-            if (HassState.DeviceType == EDeviceType.CLIMATE && !string.IsNullOrEmpty(HassStates.GetHassConfig().unit_system.temperature))
+            if (HassState.DeviceType == EDeviceType.CLIMATE && HassStates.GetHassConfig() != null && !string.IsNullOrEmpty(HassStates.GetHassConfig().unit_system.temperature))
                 sensorText = $" {HassStates.GetHassConfig().unit_system.temperature}";
             else if (HassState.attributes != null)
                 sensorText = $" {HassState.attributes.unit_of_measurement}";
@@ -69,7 +69,7 @@ namespace Panels
             base.UpdatePanel();
 
             // Update the panel layout and sensor value
-            WindowBehaviour.UpdatePanelLayout();
+            UpdatePanelLayout();
             UpdateSensorValue();
             UpdateIcon();
         }

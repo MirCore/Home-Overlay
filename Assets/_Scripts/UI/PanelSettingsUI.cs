@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR.Interaction.Toolkit.UI;
+using Utils;
 
 namespace UI
 {
@@ -31,6 +32,7 @@ namespace UI
         [SerializeField] private Button DeleteButton;
         
         [SerializeField] private DynamicScrollRect DynamicScrollRect;
+        private WindowHighlighter _backgroundUtils;
         
         /// <summary>
         /// The currently selected device type.
@@ -40,6 +42,11 @@ namespace UI
         private HassState _hassState;
 
         public Panels.Panel Panel { get; private set; }
+
+        private void Awake()
+        {
+            _backgroundUtils = new WindowHighlighter(GetComponent<MeshRenderer>());
+        }
 
         private void OnEnable()
         {
@@ -83,7 +90,7 @@ namespace UI
 
         private void OnCloseButtonClicked()
         {
-            GetComponent<CanvasFader>().FadeOut();
+            GetComponent<CanvasFader>().FadeOut(true);
         }
 
         private void OnShowNameChanged(bool value)
@@ -101,7 +108,7 @@ namespace UI
         private void OnWindowControlToggleValueChanged(bool value)
         {
             Panel.PanelData.Settings.HideWindowControls = value;
-            Panel.WindowBehaviour.SetWindowControlVisibility(!Panel.PanelData.Settings.HideWindowControls);
+            Panel.SetWindowControlVisibility(!Panel.PanelData.Settings.HideWindowControls);
         }
         
         private void OnAlignToWallToggleValueChanged(bool value)
@@ -199,6 +206,11 @@ namespace UI
         public void ReloadUI()
         {
             LoadElements();
+        }
+
+        public void IsMoving(bool isMoving)
+        {
+            GetComponent<CanvasFader>().FadeInOut(!isMoving);
         }
     }
 }
