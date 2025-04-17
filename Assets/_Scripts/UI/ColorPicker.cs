@@ -42,6 +42,11 @@ namespace UI
     
         private bool _supportsColor;
         private bool _supportsTemperature;
+
+        private bool _hassResponsePending;
+        private Color? _pendingColor;
+        private float? _pendingBrightness;
+        private float? _pendingTemperature;
         
         // The Slider that is currently being changed
         private Slider _currentSlider;
@@ -78,7 +83,24 @@ namespace UI
         /// </summary>
         private void OnHassStatesChanged()
         {
-            UpdateSliderValues();
+            _hassResponsePending = false;
+            if (_pendingColor.HasValue)
+            {
+                ChangeColor(_pendingColor.Value);
+                _pendingColor = null;
+            }
+            else if (_pendingBrightness.HasValue)
+            {
+                ChangeBrightness(_pendingBrightness.Value);
+                _pendingBrightness = null;
+            }
+            else if (_pendingTemperature.HasValue)
+            {
+                ChangeTemperature(_pendingTemperature.Value);
+                _pendingTemperature = null;
+            }
+            else
+                UpdateSliderValues();
         }
 
         /// <summary>
@@ -92,9 +114,22 @@ namespace UI
             _currentSlider = HueSlider;
             _hue = (int)value;
             Color color = GetRGBColor();
-            RestHandler.SetLightColor(_entityID, color);
+            ChangeColor(color);
         }
-    
+
+        private void ChangeColor(Color color)
+        {
+            if (_hassResponsePending)
+            {
+                _pendingColor = color;
+            }
+            else
+            {
+                RestHandler.SetLightColor(_entityID, color);
+                _hassResponsePending = true;
+            }
+        }
+
         /// <summary>
         /// Handles changes to the saturation slider value.
         /// </summary>
@@ -106,7 +141,7 @@ namespace UI
             _currentSlider = SaturationSlider;
             _saturation = (int)value;
             Color color = GetRGBColor();
-            RestHandler.SetLightColor(_entityID, color);
+            ChangeColor(color);
         }
     
         /// <summary>
@@ -119,9 +154,22 @@ namespace UI
                 return;
             _currentSlider = BrightnessSlider;
             _brightness = (int)value;
-            RestHandler.SetLightBrightness(_entityID, (int)value);
+            ChangeBrightness(value);
         }
-        
+
+        private void ChangeBrightness(float value)
+        {
+            if (_hassResponsePending)
+            {
+                _pendingBrightness = value;
+            }
+            else
+            {
+                RestHandler.SetLightBrightness(_entityID, (int)value);
+                _hassResponsePending = true;
+            }
+        }
+
         /// <summary>
         /// Handles changes to the temperature slider value.
         /// </summary>
@@ -132,9 +180,22 @@ namespace UI
                 return;
             _currentSlider = TemperatureSlider;
             _temperature = (int)value;
-            RestHandler.SetLightTemperature(_entityID, _temperature);
+            ChangeTemperature(value);
         }
-    
+
+        private void ChangeTemperature(float value)
+        {
+            if (_hassResponsePending)
+            {
+                _pendingTemperature = value;
+            }
+            else
+            {
+                RestHandler.SetLightTemperature(_entityID, (int)value);
+                _hassResponsePending = true;
+            }
+        }
+
         /// <summary>
         /// Updates the sliders based on the panel state.
         /// </summary>
