@@ -115,7 +115,10 @@ namespace UI
         {
             Panel.PanelData.Settings.AlignWindowToWall = value;
             if (value == true)
+            {
                 Panel.PanelData.Settings.RotationEnabled = false;
+                Panel.AlignPanelToWall();
+            }
             Panel.OnSettingsChanged();
         }
         

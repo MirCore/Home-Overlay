@@ -31,8 +31,8 @@ namespace UI
         private static void OnConnectionTested(int status, Uri uri)
         {
             string message = status is 200 or 201 ? "Connection successful." : $"Connection error: {status}; {HttpStatusCodes.GetDescription(status)}";
-            
-            SetSwiftUIConnectionStatus(status, message, uri.ToString());
+            string url = uri == null ? "" : uri.ToString();
+            SetSwiftUIConnectionStatus(status, message, url);
         }
         
         private static void CloseSwiftMainUI()

@@ -90,7 +90,10 @@ namespace Managers
             // Read the saved panel data from a file
             PanelDataList = SaveFile.ReadFile();
             if (PanelDataList == null)
+            {
+                PanelDataList = new List<PanelData>();
                 return;
+            }
 
             // Initialize the list of panels to load
             _panelsToLoad = PanelDataList.ToList();
@@ -141,7 +144,8 @@ namespace Managers
             PanelData panelData = PanelDataList.FirstOrDefault(p => p.ID == panelID);
             if (panelData == null)
                 return;
-            Destroy(panelData.Panel.gameObject);
+            if (panelData.Panel.gameObject)
+                Destroy(panelData.Panel.gameObject);
             PanelDataList.Remove(panelData);
             SaveFile.SetPanelDataDirty();
         }

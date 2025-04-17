@@ -136,7 +136,7 @@ namespace Panels
         private void SetNoEventText()
         {
             // Show the current date and time if there are no upcoming events
-            Month.text = DateTime.Now.Month.ToString("MMM", CultureInfo.InvariantCulture).ToUpper();
+            Month.text = DateTime.Now.ToString("MMM", CultureInfo.InvariantCulture).ToUpper();
             Day.text = DateTime.Now.Day.ToString();
             Weekday.text = DateTime.Now.ToString("ddd", CultureInfo.InvariantCulture);
             Time.text = "";

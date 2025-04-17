@@ -127,10 +127,18 @@ namespace Utils
         {
             if (!IsAnchorSupportAvailable())
                 return;
-            
-            // Retrieve and remove the anchor if it exists
-            if (TryGetExistingAnchor(oldAnchorID, out ARAnchor anchor))
-                ARAnchorManager.TryRemoveAnchor(anchor);
+
+            try
+            {
+                // Retrieve and remove the anchor if it exists
+                if (TryGetExistingAnchor(oldAnchorID, out ARAnchor anchor))
+                    ARAnchorManager.TryRemoveAnchor(anchor);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
         
         /// <summary>
@@ -152,8 +160,9 @@ namespace Utils
         /// Sets the parent of a given transform to an ARAnchor.
         /// </summary>
         /// <param name="transform">The transform to attach.</param>
+        /// <param name="applyRotation">If the transform should copy the anchors rotation</param>
         /// <param name="anchor">The ARAnchor to attach to.</param>
-        private static void AttachTransformToAnchor(Transform transform, ARAnchor anchor)
+        private static void AttachTransformToAnchor(Transform transform, bool applyRotation, ARAnchor anchor)
         {
             if (anchor == null) 
                 return;
@@ -161,22 +170,24 @@ namespace Utils
             // Set the target's parent to the anchor and update its position and rotation
             transform.SetParent(anchor.transform, false);
             transform.position = anchor.transform.position;
-            transform.rotation = anchor.transform.rotation;
+            if (applyRotation)
+                transform.rotation = anchor.transform.rotation;
         }
-        
+
         /// <summary>
         /// Sets the parent of a given transform to an ARAnchor and removes the old anchor if it exists.
         /// </summary>
         /// <param name="transform">The transform to attach.</param>
+        /// <param name="applyRotation">If the transform should copy the anchors rotation</param>
         /// <param name="anchor">The ARAnchor to attach to.</param>
         /// <param name="oldAnchorID">The ID of the old anchor to remove.</param>
-        private static void AttachTransformToAnotherAnchor(Transform transform, ARAnchor anchor, string oldAnchorID)
+        private static void AttachTransformToAnotherAnchor(Transform transform, bool applyRotation, ARAnchor anchor, string oldAnchorID)
         {
             if (anchor == null) 
                 return;
             
             // Attach the target to the new anchor
-            AttachTransformToAnchor(transform, anchor);
+            AttachTransformToAnchor(transform, applyRotation, anchor);
             
             // Remove the old anchor if it exists
             if (!string.IsNullOrEmpty(oldAnchorID)) 
@@ -272,21 +283,21 @@ namespace Utils
         /// Tries to attach a transform to an existing ARAnchor.
         /// </summary>
         /// <param name="transform">The transform to attach.</param>
+        /// <param name="applyRotation">If the transform should copy the anchors rotation</param>
         /// <param name="anchorID">The ID of the anchor to attach to.</param>
-        public static void TryAttachToExistingAnchor(Transform transform, string anchorID)
+        public static void TryAttachToExistingAnchor(Transform transform, bool applyRotation, string anchorID)
         {
             if (TryGetExistingAnchor(anchorID, out ARAnchor anchor))
-                AttachTransformToAnchor(transform, anchor);
+                AttachTransformToAnchor(transform, applyRotation, anchor);
         }
-        
+
         /// <summary>
         /// Creates a new ARAnchor and attaches a transform to it, optionally attaching to the nearest plane.
         /// </summary>
         /// <param name="transform">The transform to attach.</param>
         /// <param name="attachToPlane">Whether to attach the anchor to the nearest plane.</param>
-        /// <param name="oldAnchor">The ID of the old anchor to remove.</param>
         /// <returns>The TrackableId of the created anchor, or null if anchors are not supported or creation fails.</returns>
-        public static async Task<string> CreateNewAnchor(Transform transform, bool attachToPlane, string oldAnchor)
+        private static async Task<ARAnchor> CreateNewAnchor(Transform transform, bool attachToPlane)
         {
             if (!IsAnchorSupportAvailable())
                 return null;
@@ -306,11 +317,7 @@ namespace Utils
                 return null;
             }
             
-            if (anchor == null)
-                return null;
-            
-            AttachTransformToAnotherAnchor(transform, anchor, oldAnchor);
-            return anchor.trackableId.ToString();
+            return anchor == null ? null : anchor;
         }
 
         #endregion
@@ -327,12 +334,19 @@ namespace Utils
 
         private static async Task CreateNewAnchorAsync(Panels.Panel panel)
         {
-            string anchorId = await CreateNewAnchor(panel.transform, panel.PanelData.Settings.AlignWindowToWall, panel.PanelData.AnchorID);
+            ARAnchor anchor = await CreateNewAnchor(panel.transform, panel.PanelData.Settings.AlignWindowToWall);
 
-            if (!string.IsNullOrEmpty(anchorId))
-                panel.PanelData.AnchorID = anchorId;
-            else if (panel.PanelData.Settings.AlignWindowToWall) 
-                panel.TurnOffAlignWindowToWall();
+            AttachTransformToAnotherAnchor(panel.transform, panel.PanelData.Settings.AlignWindowToWall, anchor, panel.PanelData.AnchorID);
+            
+            if (anchor)
+            {
+                panel.PanelData.AnchorID = anchor.trackableId.ToString();
+            }
+            else 
+            {
+                if (panel.PanelData.Settings.AlignWindowToWall)
+                    panel.TurnOffAlignWindowToWall();
+            }
         }
     }
 }

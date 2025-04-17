@@ -98,7 +98,7 @@ namespace Panels
             panelData.Panel = this;
 
             // Try to attach to the panels anchor
-            AnchorHelper.TryAttachToExistingAnchor(transform, PanelData.AnchorID);
+            AnchorHelper.TryAttachToExistingAnchor(transform, PanelData.Settings.AlignWindowToWall, PanelData.AnchorID);
             // Load the window state based on the panel settings
             LoadWindowState(PanelData.Settings.AlignWindowToWall, PanelData.Settings.RotationEnabled, !PanelData.Settings.HideWindowControls);
 
@@ -189,17 +189,6 @@ namespace Panels
             CanvasRectTransform.sizeDelta = expanded || compact ? ExpandedCanvasSize : CompactCanvasSize;
             base.UpdateWindowSize(expanded, compact);
         }
-
-
-        /// <inheritdoc />
-        protected override void LoadLazyFollowBehaviour(bool alignWindowToWall, bool rotationEnabled)
-        {
-            base.LoadLazyFollowBehaviour(alignWindowToWall, rotationEnabled);
-            if (alignWindowToWall || rotationEnabled)
-            {
-                AnchorHelper.CreateNewAnchor(this);
-            }
-        }
         
         /// <summary>
         /// Handles the event when the panel is scaled.
@@ -242,6 +231,11 @@ namespace Panels
             StateText?.gameObject.SetActive(showState);
 
             UpdateWindowSize(showName, showState);
+        }
+
+        public void AlignPanelToWall()
+        {
+            AnchorHelper.CreateNewAnchor(this);
         }
     }
 }

@@ -41,8 +41,13 @@ public abstract class RestHandler
     /// <param name="token">The authorization token of Home Assistant.</param>
     public static void TestConnection(string url, int port, string token)
     {    
-        Uri uri;
+        if (url == "" || port == 0 || token == "")
+        {
+            EventManager.InvokeOnConnectionTested(412); // 412 Precondition Failed
+            return;
+        }
 
+        Uri uri;
         // Validate and construct the URI
         try
         {
