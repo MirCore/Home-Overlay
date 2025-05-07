@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_AppMode: 1
   m_HandsTrackingUsageDescription: For Handtracking
-  m_WorldSensingUsageDescription: For Room Detection
+  m_WorldSensingUsageDescription: Home Overlay uses world sensing to place smart
+    home controls accurately in your space and remember their position.
   m_RuntimeSettings: {fileID: 11400000, guid: 93642c14e0ec4403491659baabe35e2e, type: 2}
   m_UpperLimbVisibility: 0
   m_FoveatedRendering: 1

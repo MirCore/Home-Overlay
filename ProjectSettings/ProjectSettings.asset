@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: mirCore
-  productName: HomeAssistantXR
+  productName: Home Overlay
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -144,9 +144,6 @@ PlayerSettings:
   preloadedAssets:
   - {fileID: 11400000, guid: f8a442de0c8906f4d9c00184993fc289, type: 2}
   - {fileID: 0}
-  - {fileID: 11400000, guid: 56a98106ce58f09459a9990007b50acb, type: 2}
-  - {fileID: 11400000, guid: 93642c14e0ec4403491659baabe35e2e, type: 2}
-  - {fileID: 1804403024690005938, guid: 1a4c68ca72a83449f938d669337cb305, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -169,8 +166,8 @@ PlayerSettings:
   androidMinAspectRatio: 1
   applicationIdentifier:
     Android: com.mirCore.HomeAssistantXR
-    Standalone: com.mirCore.HomeAssistantXR
-    VisionOS: com.mirCore.HomeAssistantXR
+    Standalone: com.mirCore.Home-Overlay
+    VisionOS: com.mirCore.Home-Overlay
   buildNumber:
     Standalone: 0
     VisionOS: 0
@@ -200,7 +197,7 @@ PlayerSettings:
   tvOSSimulatorArchitecture: 0
   tvOSRequireExtendedGameController: 0
   tvOSTargetOSVersionString: 13.0
-  VisionOSSdkVersion: 1
+  VisionOSSdkVersion: 0
   VisionOSTargetOSVersionString: 1.0
   uIPrerenderedIcon: 0
   uIRequiresPersistentWiFi: 0
@@ -531,8 +528,8 @@ PlayerSettings:
   - m_BuildTarget: VisionOS
     m_Icons:
     - m_Textures:
-      - {fileID: 2800000, guid: d91659cb97fdc614abb633e3c0930615, type: 3}
       - {fileID: 2800000, guid: bccadefdd7d7a574b904faba675a7bf9, type: 3}
+      - {fileID: 2800000, guid: d91659cb97fdc614abb633e3c0930615, type: 3}
       - {fileID: 2800000, guid: 04fe92c737032b44183b43dc7988124b, type: 3}
       m_Width: 1024
       m_Height: 1024
@@ -1010,7 +1007,7 @@ PlayerSettings:
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
-  platformRequiresReadableAssets: 1
+  platformRequiresReadableAssets: 0
   virtualTexturingSupportEnabled: 0
   insecureHttpOption: 2
   androidVulkanDenyFilterList: []

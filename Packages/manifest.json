@@ -2,7 +2,7 @@
   "dependencies": {
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.collab-proxy": "2.7.1",
-    "com.unity.ide.rider": "3.0.35",
+    "com.unity.ide.rider": "3.0.36",
     "com.unity.inputsystem": "1.13.1",
     "com.unity.learn.iet-framework.authoring": "1.2.2",
     "com.unity.multiplayer.center": "1.0.0",
@@ -12,7 +12,7 @@
     "com.unity.test-framework": "1.4.6",
     "com.unity.ugui": "2.0.0",
     "com.unity.xr.arfoundation": "6.0.5",
-    "com.unity.xr.hands": "1.5.0",
+    "com.unity.xr.hands": "1.5.1",
     "com.unity.xr.interaction.toolkit": "3.0.8",
     "com.unity.xr.management": "4.5.1",
     "com.unity.xr.visionos": "2.0.4",

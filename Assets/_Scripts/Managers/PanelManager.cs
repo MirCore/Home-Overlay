@@ -22,7 +22,7 @@ namespace Managers
         /// <summary>
         /// A list of Panels from the apps saved state that are not yet spawned
         /// </summary>
-        private List<PanelData> _panelsToLoad;
+        private List<PanelData> _panelsToLoad = new();
 
         private PanelSpawner _panelSpawner;
 
