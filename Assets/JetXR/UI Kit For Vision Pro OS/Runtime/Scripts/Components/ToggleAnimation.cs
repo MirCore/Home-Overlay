@@ -30,21 +30,30 @@ namespace JetXR.VisionUI
             CheckReferences();
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
         private void CheckReferences()
         {
-            if (toggle == null)
+            if (!toggle)
                 toggle = GetComponent<Toggle>();
 
-            if (animator == null)
+            if (!animator)
                 animator = GetComponent<Animator>();
         }
 
         private void OnToggleValueChanged(bool newValue)
         {
-            if (animator == null)
+            if (!animator)
                 return;
 
+            animator.Play(animator.GetCurrentAnimatorStateInfo(0).fullPathHash, 0, 0f);  // Reset the current animation state
             animator.SetBool(isOnID, newValue);
+        }
+
+        public void Changed()
+        {
+            if (!toggle || !animator)
+                CheckReferences();
+            OnToggleValueChanged(toggle.isOn);
         }
     }
 }

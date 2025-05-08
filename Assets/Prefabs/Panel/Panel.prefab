@@ -969,7 +969,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5721484454430622661, guid: fb5d9f342303d4dc3b6f10307f168749, type: 3}
       propertyPath: m_text
-      value: State
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5721484454430622661, guid: fb5d9f342303d4dc3b6f10307f168749, type: 3}
       propertyPath: m_fontSizeMax
@@ -1083,7 +1083,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5721484454430622661, guid: fb5d9f342303d4dc3b6f10307f168749, type: 3}
       propertyPath: m_text
-      value: FriendlyName
+      value: 'Error: Entity not loaded'
       objectReference: {fileID: 0}
     - target: {fileID: 5721484454430622661, guid: fb5d9f342303d4dc3b6f10307f168749, type: 3}
       propertyPath: m_fontSize

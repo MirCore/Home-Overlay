@@ -1152,12 +1152,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10d9b54d5c4216146802fef28bd7d602, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HighlightImage: {fileID: 0}
-  Icon: {fileID: 0}
-  NameText: {fileID: 0}
-  StateText: {fileID: 0}
-  SettingsButton: {fileID: 2146726319355691960}
   WindowControls: {fileID: 7947449285313135619}
+  Icon: {fileID: 0}
+  NameText: {fileID: 8508138814577745805}
+  StateText: {fileID: 5360323085427122013}
+  SettingsButton: {fileID: 2146726319355691960}
   CompactCanvasSize: {x: 120, y: 120}
   ExpandedCanvasSize: {x: 320, y: 120}
   Month: {fileID: 5200249035392254520}
@@ -1166,10 +1165,32 @@ MonoBehaviour:
   Time: {fileID: 7303152390625267817}
   Event: {fileID: 3503895238833822089}
   Location: {fileID: 2100485805265878836}
-  InspectorCalendarEvents: []
   CalendarRefreshRate: 600
+  InspectorCalendarEvents: []
+--- !u!114 &5360323085427122013 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4739012820647747626, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
+  m_PrefabInstance: {fileID: 839897688799362935}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7947449285313135619 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7344501811070057332, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
   m_PrefabInstance: {fileID: 839897688799362935}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8508138814577745805 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9058165273740189946, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
+  m_PrefabInstance: {fileID: 839897688799362935}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

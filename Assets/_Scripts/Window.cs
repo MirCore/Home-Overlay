@@ -82,13 +82,13 @@ public class Window : MonoBehaviour
     /// <summary>
     /// Handles the event when dragging starts.
     /// </summary>
-    /// <param name="eventData">The event data for the drag entered event.</param>
+    /// <param name="eventData">The event data for the drag-entered event.</param>
     private void OnDragEntered(SelectEnterEventArgs eventData) => OnDragStarted();
 
     /// <summary>
     /// Handles the event when dragging ends.
     /// </summary>
-    /// <param name="eventData">The event data for the drag exited event.</param>
+    /// <param name="eventData">The event data for the drag-exited event.</param>
     private void OnDragExited(SelectExitEventArgs eventData) => OnDragEnded();
 
     /// <summary>
@@ -137,6 +137,12 @@ public class Window : MonoBehaviour
     /// <param name="rotationEnabled">Whether rotation is enabled.</param>
     private void LoadLazyFollowBehaviour(bool alignWindowToWall, bool rotationEnabled)
     {
+        if (!_lazyFollow)
+        {
+            // Get the LazyFollow component from the window
+            _lazyFollow = GetComponent<LazyFollow>();
+        }
+        
         // Toggle the LazyFollow component on/off
         if (alignWindowToWall || !rotationEnabled)
         {

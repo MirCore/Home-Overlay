@@ -1,14 +1,17 @@
-using System;
 using System.Collections;
+using JetXR.VisionUI;
 using Managers;
+using Structs;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR.Interaction.Toolkit.UI;
-using Utils;
 
 namespace UI
 {
+    /// <summary>
+    /// Manages the settings UI for a panel.
+    /// </summary>
     public class PanelSettingsUI : MonoBehaviour
     {
         [Header("Header")]
@@ -19,35 +22,92 @@ namespace UI
         [Header("Color Picker")]
         [SerializeField] private ColorPicker ColorPicker;
         
+        /// <summary>
+        /// Toggle for showing/hiding the panel name.
+        /// </summary>
         [Header("Panel Settings")]
         [SerializeField] private Toggle ShowNameToggle;
+        
+        /// <summary>
+        /// Toggle for showing/hiding the panel state.
+        /// </summary>
         [SerializeField] private Toggle ShowStateToggle;
+        
+        /// <summary>
+        /// Toggle for enabling/disabling panels' window controls.
+        /// </summary>
         [SerializeField] private Toggle WindowControlToggle;
+        
+        /// <summary>
+        /// Toggle for aligning the window to the wall.
+        /// </summary>
         [SerializeField] private Toggle AlignWindowToWallToggle;
+        
+        /// <summary>
+        /// Toggle for enabling/disabling rotation.
+        /// </summary>
         [SerializeField] private Toggle RotationToggle;
         
         /// <summary>
-        /// The Button that deletes the Panel.
+        /// Button that deletes the Panel.
         /// </summary>
         [SerializeField] private Button DeleteButton;
         
+        /// <summary>
+        /// ScrollRect component for dynamic content sizing of the settings UI.
+        /// </summary>
         [SerializeField] private DynamicScrollRect DynamicScrollRect;
-        private WindowHighlighter _backgroundUtils;
         
         /// <summary>
         /// The currently selected device type.
         /// </summary>
         private EDeviceType _selectedEDeviceType;
         
-        private HassState _hassState;
+        /// <summary>
+        /// Animation component for the show name toggle.
+        /// </summary>
+        private ToggleAnimation _showNameToggleAnimation;
+        
+        /// <summary>
+        /// Animation component for the show state toggle.
+        /// </summary>
+        private ToggleAnimation _showStateToggleAnimation;
+        
+        /// <summary>
+        /// Animation component for the window control toggle.
+        /// </summary>
+        private ToggleAnimation _windowControlToggleAnimation;
+        
+        /// <summary>
+        /// Animation component for the align-window-to-wall toggle.
+        /// </summary>
+        private ToggleAnimation _alignWindowToWallToggleAnimation;
+        
+        /// <summary>
+        /// Animation component for the rotation toggle.
+        /// </summary>
+        private ToggleAnimation _rotationToggleAnimation;
 
+        /// <summary>
+        /// The panel associated with this settings UI.
+        /// </summary>
         public Panels.Panel Panel { get; private set; }
 
+        /// <summary>
+        /// Initializes toggle animation components.
+        /// </summary>
         private void Awake()
         {
-            _backgroundUtils = new WindowHighlighter(GetComponent<MeshRenderer>());
+            _rotationToggleAnimation = RotationToggle.GetComponent<ToggleAnimation>();
+            _alignWindowToWallToggleAnimation = AlignWindowToWallToggle.GetComponent<ToggleAnimation>();
+            _windowControlToggleAnimation = WindowControlToggle.GetComponent<ToggleAnimation>();
+            _showStateToggleAnimation = ShowStateToggle.GetComponent<ToggleAnimation>();
+            _showNameToggleAnimation = ShowNameToggle.GetComponent<ToggleAnimation>();
         }
 
+        /// <summary>
+        /// Sets up event listeners and initializes UI elements when enabled.
+        /// </summary>
         private void OnEnable()
         {
             UpdateHeader();
@@ -62,9 +122,11 @@ namespace UI
             WindowControlToggle.onValueChanged.AddListener(OnWindowControlToggleValueChanged);
             AlignWindowToWallToggle.onValueChanged.AddListener(OnAlignToWallToggleValueChanged);
             RotationToggle.onValueChanged.AddListener(OnRotationToggleValueChanged);
-            EventManager.OnHassStatesChanged += OnHassStatesChanged;
         }
 
+        /// <summary>
+        /// Makes the panel face the main camera. To avoid LazyFollow slowly rotating towards the user.
+        /// </summary>
         private void LookAtCamera()
         {
             if (Camera.main == null) return;
@@ -76,6 +138,9 @@ namespace UI
             lazyFollow.enabled = true;
         }
 
+        /// <summary>
+        /// Removes event listeners when disabled.
+        /// </summary>
         private void OnDisable()
         {
             CloseButton.onClick.RemoveListener(OnCloseButtonClicked);
@@ -85,36 +150,54 @@ namespace UI
             WindowControlToggle.onValueChanged.RemoveListener(OnWindowControlToggleValueChanged);
             AlignWindowToWallToggle.onValueChanged.RemoveListener(OnAlignToWallToggleValueChanged);
             RotationToggle.onValueChanged.RemoveListener(OnRotationToggleValueChanged);
-            EventManager.OnHassStatesChanged -= OnHassStatesChanged;
         }
 
+        /// <summary>
+        /// Handles the close button click event.
+        /// </summary>
         private void OnCloseButtonClicked()
         {
             GetComponent<CanvasFader>().FadeOut(true);
         }
 
+        /// <summary>
+        /// Handles changes to the show name toggle.
+        /// </summary>
+        /// <param name="value">New toggle value</param>
         private void OnShowNameChanged(bool value)
         {
             Panel.PanelData.Settings.ShowName = value;
             Panel.OnSettingsChanged();
         }
 
+        /// <summary>
+        /// Handles changes to the show state toggle.
+        /// </summary>
+        /// <param name="value">New toggle value</param>
         private void OnShowStateChanged(bool value)
         {
             Panel.PanelData.Settings.ShowState = value;
             Panel.OnSettingsChanged();
         }
 
+        /// <summary>
+        /// Handles changes to the window control toggle.
+        /// </summary>
+        /// <param name="value">New toggle value</param>
         private void OnWindowControlToggleValueChanged(bool value)
         {
             Panel.PanelData.Settings.HideWindowControls = value;
             Panel.SetWindowControlVisibility(!Panel.PanelData.Settings.HideWindowControls);
         }
         
+        /// <summary>
+        /// Handles changes to the align-to-wall toggle.
+        /// </summary>
+        /// <param name="value">New toggle value</param>
         private void OnAlignToWallToggleValueChanged(bool value)
         {
             Panel.PanelData.Settings.AlignWindowToWall = value;
-            if (value == true)
+            if (value)
             {
                 Panel.PanelData.Settings.RotationEnabled = false;
                 Panel.AlignPanelToWall();
@@ -122,82 +205,110 @@ namespace UI
             Panel.OnSettingsChanged();
         }
         
+        /// <summary>
+        /// Handles changes to the rotation toggle.
+        /// </summary>
+        /// <param name="value">New toggle value</param>
         private void OnRotationToggleValueChanged(bool value)
         {
-            Panel.PanelData.Settings.RotationEnabled = value;
-            if (value == true)
+            Panel.PanelData.Settings.RotationEnabled = !value;
+            if (value == false)
                 Panel.PanelData.Settings.AlignWindowToWall = false;
             Panel.OnSettingsChanged();
         }
  
+        /// <summary>
+        /// Handles the delete button click event.
+        /// </summary>
         private void OnDeleteButtonClicked()
         {
             PanelManager.Instance.DeletePanel(Panel.PanelData.ID);
         }
 
         /// <summary>
-        /// Updates the EntityDropdown when the HassStates are changed
+        /// Updates the header text elements based on the current panel's data.
         /// </summary>
-        private void OnHassStatesChanged()
-        {
-            UpdateHeader();
-            LoadElements();
-        }
-
         private void UpdateHeader()
         {
-            if (LoadEntityState()) return;
+            if (!Panel)
+                return;
+            
+            if (Panel.PanelData.IsDemoPanel)
+            {
+                TitleText.text = "Demo " + Panel.PanelData.EntityID.Split('.')[0];
+                SubtitleText.text = Panel.PanelData.EntityID;
+                return;
+            }
 
-            TitleText.text = _hassState.attributes.friendly_name;
-            SubtitleText.text = _hassState.entity_id;
+            HassState hassState = HassStates.GetHassState(Panel.PanelData.EntityID);
+            if (hassState != null)
+                TitleText.text = hassState.attributes.friendly_name;
+            SubtitleText.text = Panel.PanelData.EntityID;
         }
 
         /// <summary>
-        /// Loads the panel state associated with the current panel.
-        /// If the panel state is null, returns true.
+        /// Sets the panel associated with this settings UI.
         /// </summary>
-        /// <returns>True if the panel state is null, false otherwise.</returns>
-        private bool LoadEntityState()
-        {
-            if (Panel)
-                _hassState = HassStates.GetHassState(Panel.PanelData.EntityID);
-            return _hassState == null;
-        }
-
+        /// <param name="panel">Panel to associate with the settings UI</param>
         public void SetPanel(Panels.Panel panel)
         {
             Panel = panel;
-            ColorPicker.SetEntityID(Panel.PanelData.EntityID);
+            ColorPicker.SetPanelData(Panel.PanelData);
             UpdateHeader();
             LoadElements();
             
             LookAtCamera();
         }
 
+        /// <summary>
+        /// Loads and updates UI elements based on panel settings.
+        /// </summary>
         private void LoadElements()
         {
-            if (LoadEntityState()) 
+            if (!Panel)
                 return;
-
-            if (_hassState.DeviceType == EDeviceType.LIGHT && _hassState.attributes.supported_color_modes.Length != 0)
+            
+            EDeviceType deviceType = HassStates.GetDeviceType(Panel.PanelData.EntityID);
+            
+            if (deviceType is EDeviceType.WEATHER or EDeviceType.CALENDAR)
             {
-                ColorPicker.gameObject.SetActive(true);
-                ColorPicker.SetMode(_hassState.attributes.supported_color_modes);
+                ShowNameToggle.transform.parent.gameObject.SetActive(false);
+                ShowStateToggle.transform.parent.gameObject.SetActive(false);
             }
             else
             {
-                ColorPicker.gameObject.SetActive(false);
+                ShowNameToggle.transform.parent.gameObject.SetActive(true);
+                ShowStateToggle.transform.parent.gameObject.SetActive(true);
+                ShowNameToggle.SetIsOnWithoutNotify(Panel.PanelData.Settings.ShowName);
+                _showNameToggleAnimation.Changed();
+                ShowStateToggle.SetIsOnWithoutNotify(Panel.PanelData.Settings.ShowState);
+                _showStateToggleAnimation.Changed();
             }
 
-            ShowNameToggle.SetIsOnWithoutNotify(Panel.PanelData.Settings.ShowName);
-            ShowStateToggle.SetIsOnWithoutNotify(Panel.PanelData.Settings.ShowState);
             WindowControlToggle.SetIsOnWithoutNotify(Panel.PanelData.Settings.HideWindowControls);
+            _windowControlToggleAnimation.Changed();
             AlignWindowToWallToggle.SetIsOnWithoutNotify(Panel.PanelData.Settings.AlignWindowToWall);
-            RotationToggle.SetIsOnWithoutNotify(Panel.PanelData.Settings.RotationEnabled);
+            _alignWindowToWallToggleAnimation.Changed();
+            RotationToggle.SetIsOnWithoutNotify(!Panel.PanelData.Settings.RotationEnabled);
+            _rotationToggleAnimation.Changed();
             
             DynamicScrollRect?.OnContentSizeChanged();
         }
+        
+        /// <summary>
+        /// Reloads the UI after a one-frame delay, to prevent Toggles visuals getting stuck.
+        /// </summary>
+        /// <returns>Coroutine IEnumerator</returns>
+        public IEnumerator DelayedReloadUI()
+        {
+            yield return null;  // Wait for one frame
+            LoadElements();
+        }
 
+        /// <summary>
+        /// Sets the active state of the settings UI.
+        /// </summary>
+        /// <param name="setActive">Whether to set the UI active or inactive</param>
         public void SetActive(bool setActive)
         {
             if (setActive)
@@ -206,11 +317,10 @@ namespace UI
                 OnCloseButtonClicked();
         }
 
-        public void ReloadUI()
-        {
-            LoadElements();
-        }
-
+        /// <summary>
+        /// Handles panel movement state changes.
+        /// </summary>
+        /// <param name="isMoving">Whether the panel is currently moving</param>
         public void IsMoving(bool isMoving)
         {
             GetComponent<CanvasFader>().FadeInOut(!isMoving);

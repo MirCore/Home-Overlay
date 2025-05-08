@@ -1092,7 +1092,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6054794236535040577, guid: 40628cb64b4a790429543e5b362b36fe, type: 3}
       propertyPath: m_text
-      value: Window rotation
+      value: Lock window rotation
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2110,11 +2110,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3878924148041608015, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}
       propertyPath: m_Size
-      value: 0.99999183
+      value: 0.9999803
       objectReference: {fileID: 0}
     - target: {fileID: 3878924148041608015, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}
       propertyPath: m_Value
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4738655456974142442, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}
       propertyPath: m_AnchorMax.x
@@ -2162,7 +2162,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8185954209503414733, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.0025514422
+      value: -0.019466266
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7289379686559040912, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}

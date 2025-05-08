@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Managers;
+using Structs;
 using TMPro;
 using UI;
 using UnityEngine;
@@ -102,7 +103,7 @@ public class EntityPicker : MonoBehaviour
         string selectedEntityID = _selectedEntityID;
 
         // Spawn a new panel at the position of the CreatePanelButton with the selected panel ID
-        PanelManager.Instance.SpawnNewEntity(selectedEntityID);
+        PanelManager.Instance.SpawnNewPanel(selectedEntityID);
 
         UIManager.Instance.CloseMainMenu();
     }

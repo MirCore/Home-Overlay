@@ -1407,6 +1407,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7344501811070057332, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
   m_PrefabInstance: {fileID: 7299118124748671706}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1801083678258014752 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9058165273740189946, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
+  m_PrefabInstance: {fileID: 7299118124748671706}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5065124057832072275 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2522370098298039945, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
@@ -1424,14 +1435,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 027d37d9e8fb44f4b8be649f612cb38c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WindowControls: {fileID: 47081332350235054}
   Icon: {fileID: 4016058435295100767}
-  NameText: {fileID: 0}
+  NameText: {fileID: 1801083678258014752}
   StateText: {fileID: 1779759598034595140}
   SettingsButton: {fileID: 8297586591055066645}
-  WindowControls: {fileID: 47081332350235054}
   CompactCanvasSize: {x: 120, y: 120}
   ExpandedCanvasSize: {x: 320, y: 120}
-  State: {fileID: 1779759598034595140}
   Temperature: {fileID: 6099263789454769517}
   ForecastField: {fileID: 5669456847920794739}
   MaxForecastPanels: 5

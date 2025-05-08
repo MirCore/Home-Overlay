@@ -17,7 +17,7 @@ namespace Managers
         /// <summary>
         /// The list of panel data representing the panels in the scene.
         /// </summary>
-        public List<PanelData> PanelDataList { get; private set; } = new ();
+        [field:SerializeField] public List<PanelData> PanelDataList { get; private set; } = new ();
 
         /// <summary>
         /// A list of Panels from the apps saved state that are not yet spawned
@@ -127,12 +127,12 @@ namespace Managers
         }
 
         /// <summary>
-        /// Spawns a new entity at the current position of the PanelManager.
+        /// Spawns a new panel at the current position of the PanelManager.
         /// </summary>
         /// <param name="selectedEntityID">The ID of the entity to spawn.</param>
-        public void SpawnNewEntity(string selectedEntityID)
+        public void SpawnNewPanel(string selectedEntityID)
         {
-            _panelSpawner.SpawnNewEntity(selectedEntityID, transform.position);
+            _panelSpawner.SpawnNewPanel(selectedEntityID, transform.position);
         }
 
         /// <summary>
@@ -158,6 +158,14 @@ namespace Managers
         {
             PanelData panelData = PanelDataList.FirstOrDefault(p => p.ID == panelID);
             panelData?.Panel.WindowHighlighter.HighlightWindow(panelData.Panel);
+        }
+
+        /// <summary>
+        /// Creates and spawns demo panels.
+        /// </summary>
+        public void CreateDemoPanels()
+        {
+            _panelSpawner.SpawnDemoPanels(transform);
         }
     }
 }

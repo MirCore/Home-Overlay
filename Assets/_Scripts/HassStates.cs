@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Managers;
 using Proyecto26;
+using Structs;
 using UnityEngine;
 
 public static class HassStates
@@ -68,12 +68,8 @@ public static class HassStates
             }
             else
             {
-                // Get the type from the entityID
-                string type = entity.entity_id.Split('.')[0];
-
                 // Try to parse the type as an EDeviceType and set the device type if it was parsed successfully
-                if (Enum.TryParse(type, true, out EDeviceType deviceType))
-                    entity.DeviceType = deviceType;
+                entity.DeviceType = GetDeviceType(entity.entity_id);
 
                 // Update or add the entity
                 HassStatesDict[entity.entity_id] = entity;
@@ -89,135 +85,59 @@ public static class HassStates
 #endif
     }
 
+    /// <summary>
+    /// Retrieves the device type for a given entity ID based on its prefix.
+    /// </summary>
+    /// <param name="entityID">The entity ID whose device type is to be determined.</param>
+    /// <returns>The device type as an EDeviceType enumeration.</returns>
+    public static EDeviceType GetDeviceType(string entityID)
+    {
+        // Get the type from the entityID
+        string type = entityID.Split('.')[0];
+
+        Enum.TryParse(type, true, out EDeviceType deviceType);
+            
+        return deviceType;
+    }
+
+    /// <summary>
+    /// Handles the response from the Home Assistant configuration endpoint and updates the internal configuration data.
+    /// </summary>
+    /// <param name="responseText">The JSON response containing the configuration data from Home Assistant.</param>
     public static void OnHassConfigResponse(string responseText)
     {
         _hassConfig = JsonUtility.FromJson<HassConfig>(responseText);
     }
-    
+
+    /// <summary>
+    /// Converts the response text from the Home Assistant weather service into a list of WeatherForecast objects.
+    /// </summary>
+    /// <param name="responseText">The JSON response string containing weather forecast data.</param>
+    /// <returns>A list of WeatherForecast objects if parsing is successful; otherwise, null.</returns>
     public static List<WeatherForecast> ConvertHassWeatherResponse(string responseText)
     {
         Match match = Regex.Match(responseText, @"""forecast"":(\[.*?\])", RegexOptions.Singleline);
         return match.Success ? JsonHelper.ArrayFromJson<WeatherForecast>(match.Groups[1].Value)?.ToList() : null;
     }
 
+    /// <summary>
+    /// Converts a JSON string containing calendar event data returned from Home Assistant into a list of CalendarEvent objects.
+    /// </summary>
+    /// <param name="calendarResponse">The JSON string containing the calendar events.</param>
+    /// <returns>A list of CalendarEvent objects derived from the parsed JSON.</returns>
     public static List<CalendarEvent> ConvertHassCalendarResponse(string calendarResponse)
     {
         CalendarEvent[] events = JsonHelper.ArrayFromJson<CalendarEvent>(calendarResponse);
         return events.ToList();
     }
 
+    /// <summary>
+    /// Retrieves the configuration data for Home Assistant.
+    /// </summary>
+    /// <returns>A HassConfig object containing Home Assistant configuration details.</returns>
     public static HassConfig GetHassConfig()
     {
         return _hassConfig;
     }
 }
     
-[Serializable]
-[SuppressMessage("ReSharper", "InconsistentNaming")]
-public class HassState
-{
-    public string entity_id;
-    public string state = "";
-    public HassEntityAttributes attributes;
-    public EDeviceType DeviceType;
-
-    [Serializable]
-    public class HassEntityAttributes
-    {
-        public string unit_of_measurement;
-        public string device_class;
-        public int min_color_temp_kelvin;
-        public int max_color_temp_kelvin;
-        public string[] supported_color_modes;
-        public string color_mode;
-        public int brightness;
-        public int color_temp_kelvin;
-        public int color_temp;
-        public int[] rgb_color;
-        public float[] hs_color;
-        public string icon;
-        public string friendly_name;
-        public float current_temperature;
-        public float temperature;
-        public string temperature_unit;
-    }
-}
-
-[Serializable]
-[SuppressMessage("ReSharper", "InconsistentNaming")]
-public class HassConfig
-{
-    //public List<string> components;
-    public string country;
-    public string currency;
-    //public int elevation;
-    public string language;
-    //public double latitude;
-    //public string location_name;
-    //public double longitude;
-    //public int radius;
-    public string time_zone;
-    public UnitSystem unit_system;
-    public string version;
-    
-    [Serializable]
-    public class UnitSystem
-    {
-        public string length;
-        public string accumulated_precipitation;
-        public string area;
-        public string mass;
-        public string pressure;
-        public string temperature;
-        public string volume;
-        public string wind_speed;
-    }
-}
-
-[Serializable]
-[SuppressMessage("ReSharper", "InconsistentNaming")]
-public class WeatherForecast
-{
-    public string condition;
-    public double precipitation_probability;
-    public string datetime;
-    public double wind_bearing;
-    public double uv_index;
-    public double temperature;
-    public double templow;
-    public double wind_gust_speed;
-    public double wind_speed;
-    public double precipitation;
-    public int humidity;
-}
-
-[Serializable]
-[SuppressMessage("ReSharper", "InconsistentNaming")]
-public class CalendarEvent
-{
-    public EventDate start;
-    public EventDate end;
-    public string summary;
-    public string description;
-    public string location;
-    
-    [Serializable]
-    public class EventDate
-    {
-        public string date;
-        public string dateTime;
-
-        // Converts to a DateTime object for easier use
-        public DateTime? GetDateTime()
-        {
-            if (!string.IsNullOrEmpty(dateTime))
-                return DateTime.Parse(dateTime);
-            if (!string.IsNullOrEmpty(date))
-                return DateTime.Parse(date);
-            return null;
-        }
-    }
-}
-
-
-

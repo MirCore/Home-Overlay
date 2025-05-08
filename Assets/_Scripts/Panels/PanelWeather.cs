@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using Structs;
 using TMPro;
 using UI;
 using UnityEngine;
 using Utils;
+using Random = UnityEngine.Random;
 
 namespace Panels
 {
@@ -58,6 +61,12 @@ namespace Panels
         private void Start()
         {
             _forecastFields.Add(ForecastField);
+            
+            if (PanelData.IsDemoPanel)
+            {
+                LoadDemoValues();
+                return;
+            }
 
             if (!PanelIsReady())
                 return;
@@ -114,10 +123,36 @@ namespace Panels
         }
 
         /// <summary>
+        /// Populates the weather panel with predefined demo values.
+        /// Sets static weather information including state, temperature, and icon.
+        /// Activates and updates multiple forecast fields with randomized weather predictions for demonstration purposes.
+        /// </summary>
+        private void LoadDemoValues()
+        {
+            StateText.text = "Cloudy";
+            Temperature.text = "21 °C";
+            Icon.text = MaterialDesignIcons.GetWeatherIcon("cloudy");
+            
+            ActivateFields(5);
+            for (int i = 0; i < 5; i++)
+            {
+                _forecastFields[i].UpdateForecast(new WeatherForecast
+                {
+                    condition = "sunny",
+                    datetime = DateTime.Now.AddDays(i).ToString(CultureInfo.InvariantCulture),
+                    temperature = Random.Range(20, 30),
+                    templow = Random.Range(10, 20),
+                });
+            }
+        }
+
+        /// <summary>
         /// Updates the current weather state.
         /// </summary>
         private void UpdateCurrentWeather()
         {
+            if (PanelData.IsDemoPanel)
+                return;
             StateText.text = StringManipulation.CapitalizeFirstLetter(HassState.state);
             Temperature.text = $"{HassState.attributes.temperature} {HassState.attributes.temperature_unit}";
             Icon.text = MaterialDesignIcons.GetWeatherIcon(HassState.state);
@@ -188,6 +223,8 @@ namespace Panels
         /// </summary>
         private void StartFetchLoop()
         {
+            if (PanelData.IsDemoPanel)
+                return;
             _cancellationTokenSource = new CancellationTokenSource();
             _ = GetHassWeatherForecast(_cancellationTokenSource.Token);
         }

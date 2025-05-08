@@ -71,12 +71,16 @@ namespace Managers
             newSettingsWindow.SetPanel(panel);
         }
 
+        /// <summary>
+        /// Updates the Panel Settings Window for the specified panel. If the settings window exists for the panel, it reloads its UI; otherwise, it spawns a new settings window.
+        /// </summary>
+        /// <param name="panel">The panel whose settings window needs to be updated.</param>
         public void UpdatePanelSettingsWindow(Panel panel)
         {
             PanelSettingsUI panelSettingsUI = _settingsWindows.Find(settingsUI => settingsUI.Panel == panel);
             if (panelSettingsUI)
             {
-                panelSettingsUI.ReloadUI();
+                StartCoroutine(panelSettingsUI.DelayedReloadUI());
             }
             else
             {
@@ -84,6 +88,11 @@ namespace Managers
             }
         }
 
+        /// <summary>
+        /// Updates the moving state of the specified panel.
+        /// </summary>
+        /// <param name="panel">The panel whose moving state is being updated.</param>
+        /// <param name="isMoving">Indicates whether the panel is currently moving.</param>
         public void PanelIsMoving(Panel panel, bool isMoving)
         {
             PanelSettingsUI panelSettingsUI = _settingsWindows.Find(settingsUI => settingsUI.Panel == panel);

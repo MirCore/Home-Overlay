@@ -30,7 +30,7 @@ namespace Panels
         {
             base.OnEnable();
 
-            // Subscribe to the button click event
+            // Subscribe to the button-click event
             Button.onClick.AddListener(OnButtonClicked);
 
             // Get the IncrementalSlider component attached to the button and subscribe to its event
@@ -55,6 +55,9 @@ namespace Panels
         {
             base.UpdatePanel();
 
+            if (PanelData.IsDemoPanel)
+                LoadDemoText();
+            
             if (!PanelIsReady())
                 return;
 
@@ -69,10 +72,24 @@ namespace Panels
         }
 
         /// <summary>
+        /// Loads and updates the demo text for the panel's name, state, and icon.
+        /// </summary>
+        /// <param name="on">Determines whether the state text reflects the panel as active ("on") or inactive ("off").</param>
+        private void LoadDemoText(bool on = true)
+        {
+            NameText.text = "Demo Light";
+            StateText.text = on ? "90%" : "off";
+            Icon.text = MaterialDesignIcons.GetIcon("lightbulb");
+            Icon.color = StateText.text == "off" ? Color.black : Color.white;
+        }
+
+        /// <summary>
         /// Toggles the entity associated with the entityID.
         /// </summary>
         private void OnButtonClicked()
         {
+            if (PanelData.IsDemoPanel)
+                LoadDemoText(StateText.text == "off");
             if (!PanelIsReady())
                 return;
 
@@ -114,17 +131,17 @@ namespace Panels
         /// </summary>
         private void UpdateIcon()
         {
-            if (!PanelIsReady())
+            if (!PanelIsReady() || PanelData.IsDemoPanel)
                 return;
 
             Icon.text = MaterialDesignIcons.GetIcon(HassState);
 
-            // Set the icon color based on the entities state and brightness
+            // Set the icon color based on the entity state and brightness
             Icon.color = DetermineIconColor();
         }
 
         /// <summary>
-        /// Determines the icon color based on the entities state and brightness.
+        /// Determines the icon color based on the entity state and brightness.
         /// </summary>
         /// <returns>The color to set for the icon.</returns>
         private Color DetermineIconColor()

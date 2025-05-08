@@ -1,4 +1,7 @@
-﻿namespace Utils
+﻿using System;
+using UnityEngine;
+
+namespace Utils
 {
     public static class SecurePlayerPrefs
     {
@@ -9,7 +12,7 @@
             ZPlayerPrefs.SetString(key, value);
         }
     
-        // Sets a int value in PlayerPrefs
+        // Sets an int value in PlayerPrefs
         public static void SetInt(string key, int value)
         {
             // Store the value
@@ -28,8 +31,16 @@
         // Retrieves a string value from PlayerPrefs
         public static int GetInt(string key, int defaultValue = 0)
         {
+            int value = 0;
             // Get the value
-            int value = ZPlayerPrefs.GetInt(key, defaultValue);
+            try
+            {
+                value = ZPlayerPrefs.GetInt(key, defaultValue);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning("Failed to decrypt PlayerPrefs key: " + e.Message);
+            }
 
             return value;
         }

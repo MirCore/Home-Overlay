@@ -1,7 +1,6 @@
 ﻿using Managers;
 using Structs;
 using TMPro;
-using UI;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils;
@@ -65,10 +64,6 @@ namespace Panels
             // Get the MeshRenderer component from the window
             Renderer meshRenderer = GetComponentInChildren<MeshRenderer>();
             WindowHighlighter = new WindowHighlighter(meshRenderer);
-            
-            // Clear the name and state text
-            if (NameText) NameText.text = "";
-            if (StateText) StateText.text = "";
 
             // Subscribe to the settings button click event
             SettingsButton.onClick.AddListener(OnSettingsButtonClicked);
@@ -97,8 +92,11 @@ namespace Panels
             transform.localScale = panelData.Scale;
             panelData.Panel = this;
 
-            // Try to attach to the panels anchor
-            AnchorHelper.TryAttachToExistingAnchor(transform, PanelData.Settings.AlignWindowToWall, PanelData.AnchorID);
+            // Initialize panel position - either create a new anchor or attach to an existing anchor
+            if (string.IsNullOrEmpty(PanelData.AnchorID))
+                SetNewPanelPose();
+            else
+                AnchorHelper.TryAttachToExistingAnchor(transform, PanelData.Settings.AlignWindowToWall, PanelData.AnchorID);
             // Load the window state based on the panel settings
             LoadWindowState(PanelData.Settings.AlignWindowToWall, PanelData.Settings.RotationEnabled, !PanelData.Settings.HideWindowControls);
 
@@ -111,11 +109,11 @@ namespace Panels
         /// </summary>
         protected virtual void UpdatePanel()
         {
-            if (!PanelIsReady())
-                return;
-
             // Update the panel layout
             UpdatePanelLayout();
+            
+            if (!PanelIsReady())
+                return;
             
             // Update the name text with the friendly name of the entity
             if (NameText) NameText.text = HassState.attributes.friendly_name;
@@ -130,7 +128,7 @@ namespace Panels
         }
 
         /// <summary>
-        /// Turns off the align window to wall setting and updates the panel.
+        /// Turns off the align-window-to-wall setting and updates the panel.
         /// </summary>
         public void TurnOffAlignWindowToWall()
         {
@@ -220,6 +218,8 @@ namespace Panels
         /// </summary>
         protected void UpdatePanelLayout()
         {
+            if (PanelData.EntityID == null) return;
+            
             bool showName = PanelData.Settings.ShowName;
             bool showState = PanelData.Settings.ShowState;
 
@@ -233,6 +233,9 @@ namespace Panels
             UpdateWindowSize(showName, showState);
         }
 
+        /// <summary>
+        /// Aligns the panel to the nearest wall by creating a new anchor for the panel.
+        /// </summary>
         public void AlignPanelToWall()
         {
             AnchorHelper.CreateNewAnchor(this);

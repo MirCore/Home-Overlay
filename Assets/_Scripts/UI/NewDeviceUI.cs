@@ -1,9 +1,11 @@
-using Managers;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI
 {
+    /// <summary>
+    /// Manages the UI for creating new panels.
+    /// </summary>
     public class NewDeviceUI : MonoBehaviour
     {
         /// <summary>

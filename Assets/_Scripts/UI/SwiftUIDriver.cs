@@ -4,6 +4,7 @@ using System.Linq;
 using AOT;
 using Managers;
 using Proyecto26;
+using Structs;
 using UnityEngine;
 using Utils;
 
@@ -14,6 +15,9 @@ using System.Runtime.InteropServices;
 
 namespace UI
 {
+    /// <summary>
+    /// Handles communication between Unity and SwiftUI, managing UI windows and data exchange.
+    /// </summary>
     public class SwiftUIDriver : Singleton<SwiftUIDriver>
     {
         private static SettingsUI _settingsUI;
@@ -77,7 +81,7 @@ namespace UI
                         CloseSwiftMainUI();
                         return;
                     case "createEntity":
-                        PanelManager.Instance.SpawnNewEntity(arg0);
+                        PanelManager.Instance.SpawnNewPanel(arg0);
                         CloseSwiftMainUI();
                         return;
                     case "getPanels":
@@ -89,6 +93,10 @@ namespace UI
                         return;
                     case "highlightPanel":
                         PanelManager.Instance.HighlightPanel(arg0);
+                        return;
+                    case "createDemoPanels":
+                        PanelManager.Instance.CreateDemoPanels();
+                        CloseSwiftMainUI();
                         return;
                     default:
                         Debug.Log(

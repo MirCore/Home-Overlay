@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Utils;
+// ReSharper disable InconsistentNaming
 
 namespace Structs
 {
@@ -45,6 +46,11 @@ namespace Structs
         /// The settings for the panel.
         /// </summary>
         [SerializeField] private PanelSettings _settings = new();
+        
+        /// <summary>
+        /// If the Panel is a demo panel
+        /// </summary>
+        [SerializeField] private bool _isDemoPanel = false;
 
         /// <summary>
         /// The panel object associated with this data.
@@ -57,11 +63,13 @@ namespace Structs
         /// <param name="id">The unique ID of the panel.</param>
         /// <param name="entityID">The entity ID associated with the panel.</param>
         /// <param name="transformPosition">The position of the panel in the environment.</param>
-        public PanelData(string id, string entityID, Vector3 transformPosition)
+        /// <param name="isDemo">Whether the panel is a demo panel</param>
+        public PanelData(string id, string entityID, Vector3 transformPosition, bool isDemo = false)
         {
             _id = id;
             EntityID = entityID;
             Position = transformPosition;
+            IsDemoPanel = isDemo;
         }
 
         /// <summary>
@@ -116,6 +124,15 @@ namespace Structs
         {
             get => _scale == Vector3.zero ? Vector3.one : _scale;
             set => SetField(ref _scale, value);
+        }
+
+        /// <summary>
+        /// Indicates whether the panel is a demo panel.
+        /// </summary>
+        public bool IsDemoPanel
+        {
+            get => _isDemoPanel;
+            set => SetField(ref _isDemoPanel, value);
         }
 
         /// <summary>

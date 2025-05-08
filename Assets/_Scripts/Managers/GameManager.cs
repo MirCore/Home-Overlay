@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Structs;
 using UnityEngine;
 using Utils;
 
@@ -165,6 +166,7 @@ namespace Managers
             if (HassURL == "" || HassPort == 0 || HassToken == "")
             {
                 UIManager.Instance.ShowSettingsTab();
+                EventManager.OnConnectionTested += OnInitialConnectionTested;
                 EventManager.InvokeOnConnectionTested(412); // 412 Precondition Failed
             }
             else

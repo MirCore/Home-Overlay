@@ -1,22 +1,27 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Globalization;
 using System.Linq;
-using Managers;
+using Structs;
 using UnityEngine;
-using UnityEngine.UI;
 
 public abstract class MaterialDesignIcons
 {
     private static CodepointData[] _codepointsCollection;
 
+    /// <summary>
+    /// Retrieves the icon corresponding to the provided Home Assistant entity.
+    /// The method uses the properties of the entity, including its device type and state, to determine the most appropriate Material Design Icon.
+    /// If an icon is explicitly specified within the entity attributes, that icon will be used.
+    /// </summary>
+    /// <param name="entity">The Home Assistant entity from which the icon is determined.</param>
+    /// <returns>The Material Design Icon codepoint as a string corresponding to the entity's characteristics.</returns>
     public static string GetIcon(HassState entity)
     {
         if (_codepointsCollection == null)
             InitiateCodepointsCollection();
         if (entity.attributes == null)
-            return GetIconByName("help");
+            return GetIcon("help");
 
         string iconName;
 
@@ -62,15 +67,25 @@ public abstract class MaterialDesignIcons
 
         return (from data in _codepointsCollection where data.Name == iconName select data.Code).FirstOrDefault();
     }
-
-    public static string GetIconByName(string mdiName)
+    
+    /// <summary>
+    /// Retrieves the Material Design Icon codepoint for the specified icon name.
+    /// </summary>
+    /// <param name="mdiName">The name of the Material Design Icon to retrieve.</param>
+    /// <returns>The Unicode codepoint for the specified icon as a string. Returns null if the icon name is not found.</returns>
+    public static string GetIcon(string mdiName)
     {
         if (_codepointsCollection == null)
             InitiateCodepointsCollection();
         return (from data in _codepointsCollection where data.Name == mdiName select data.Code).FirstOrDefault();
     }
-    
 
+
+    /// <summary>
+    /// Initializes the collection of Material Design Icon codepoints by loading data from a resource.
+    /// This method reads a text file containing the icon codepoints, processes them into a usable format,
+    /// and stores the result in an internal collection for later access.
+    /// </summary>
     private static void InitiateCodepointsCollection()
     {
         TextAsset mdi = Resources.Load<TextAsset>("codepoints");
@@ -80,8 +95,12 @@ public abstract class MaterialDesignIcons
             .Where(data => data.Code != null) // Exclude invalid entries
             .ToArray();
     }
-    
-    [System.Serializable]
+
+    /// <summary>
+    /// Represents a data record for a Material Design Icon codepoint.
+    /// Contains information about the icon's name, its hexadecimal Unicode value, and its corresponding character code.
+    /// </summary>
+    [Serializable]
     public class CodepointData
     {
         public string Name { get; private set; }
@@ -95,15 +114,20 @@ public abstract class MaterialDesignIcons
             Hex = data[1];
 
             // Convert hex to a Unicode character using \U escape sequence
-            int unicodeValue = int.Parse(Hex, System.Globalization.NumberStyles.HexNumber);
+            int unicodeValue = int.Parse(Hex, NumberStyles.HexNumber);
             Code = char.ConvertFromUtf32(unicodeValue); // Supports supplementary planes
         }
     }
 
+    /// <summary>
+    /// Retrieves the Material Design weather icon name corresponding to the provided forecast condition and returns its icon representation.
+    /// </summary>
+    /// <param name="forecastCondition">The weather condition string (e.g., "cloudy", "sunny") to map to a Material Design icon name.</param>
+    /// <returns>A string representing the weather icon. Returns an empty string if no mapping is found for the provided condition.</returns>
     public static string GetWeatherIcon(string forecastCondition)
     {
         string iconName = WeatherIcons.GetValueOrDefault(forecastCondition, "");
-        return GetIconByName(iconName);
+        return GetIcon(iconName);
     }
     
     /// <summary>

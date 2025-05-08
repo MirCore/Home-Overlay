@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Managers;
+using Structs;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,7 +11,14 @@ namespace UI
     /// </summary>
     public class ColorPicker : MonoBehaviour
     {
+        /// <summary>
+        /// Static shader property ID for the end color.
+        /// </summary>
         private static readonly int ColorEnd = Shader.PropertyToID("_Color_End");
+
+        /// <summary>
+        /// Static shader property ID for alpha transparency.
+        /// </summary>
         private static readonly int Alpha = Shader.PropertyToID("_Alpha");
     
         [Header("Hue")]
@@ -33,19 +41,65 @@ namespace UI
         [SerializeField] private GameObject TemperatureSliderObject;
         [SerializeField] private Image TemperatureSliderBackground;
 
+        /// <summary>
+        /// Current hue value (0-360).
+        /// </summary>
         private int _hue;
+
+        /// <summary>
+        /// Current saturation value (0-100).
+        /// </summary>
         private int _saturation = 100;
+
+        /// <summary>
+        /// Current brightness value (0-255).
+        /// </summary>
         private int _brightness = 255;
+
+        /// <summary>
+        /// Current color temperature value.
+        /// </summary>
         private int _temperature;
-        private bool _turnedOn;
+
+        /// <summary>
+        /// Whether the light is currently turned on.
+        /// </summary>
+        private bool _turnedOn = true;
+
+        /// <summary>
+        /// Entity ID of the light being controlled.
+        /// </summary>
         private string _entityID;
+        private PanelData _panelData;
     
-        private bool _supportsColor;
+        /// <summary>
+        /// Whether the light supports color adjustment.
+        /// </summary>
+        private bool _supportsColor = true;
+
+        /// <summary>
+        /// Whether the light supports temperature adjustment.
+        /// </summary>
         private bool _supportsTemperature;
 
+        /// <summary>
+        /// Whether there's a pending response from Home Assistant.
+        /// </summary>
         private bool _hassResponsePending;
+
+        /// <summary>
+        /// Pending color change to be applied after response.
+        /// </summary>
         private Color? _pendingColor;
+
+        /// <summary>
+        /// Pending brightness change to be applied after response.
+        /// </summary>
         private float? _pendingBrightness;
+
+        /// <summary>
+        /// Pending temperature change to be applied after response.
+        /// </summary>
         private float? _pendingTemperature;
         
         // The Slider that is currently being changed
@@ -54,6 +108,7 @@ namespace UI
         private void OnEnable()
         {
             EventManager.OnHassStatesChanged += OnHassStatesChanged;
+            SetMode();
         }
 
         private void Start()
@@ -117,19 +172,6 @@ namespace UI
             ChangeColor(color);
         }
 
-        private void ChangeColor(Color color)
-        {
-            if (_hassResponsePending)
-            {
-                _pendingColor = color;
-            }
-            else
-            {
-                RestHandler.SetLightColor(_entityID, color);
-                _hassResponsePending = true;
-            }
-        }
-
         /// <summary>
         /// Handles changes to the saturation slider value.
         /// </summary>
@@ -157,19 +199,6 @@ namespace UI
             ChangeBrightness(value);
         }
 
-        private void ChangeBrightness(float value)
-        {
-            if (_hassResponsePending)
-            {
-                _pendingBrightness = value;
-            }
-            else
-            {
-                RestHandler.SetLightBrightness(_entityID, (int)value);
-                _hassResponsePending = true;
-            }
-        }
-
         /// <summary>
         /// Handles changes to the temperature slider value.
         /// </summary>
@@ -183,17 +212,85 @@ namespace UI
             ChangeTemperature(value);
         }
 
-        private void ChangeTemperature(float value)
+        /// <summary>
+        /// Changes the color of the light or demo panel based on the given color.
+        /// </summary>
+        /// <param name="color">The new color to set for the light or demo panel.</param>
+        private void ChangeColor(Color color)
         {
-            if (_hassResponsePending)
+            if (_panelData.IsDemoPanel)
             {
-                _pendingTemperature = value;
+                SetDemoColor(color);
+            }
+            else if (_hassResponsePending)
+            {
+                _pendingColor = color;
             }
             else
             {
-                RestHandler.SetLightTemperature(_entityID, (int)value);
+                RestHandler.SetLightColor(_entityID, color);
                 _hassResponsePending = true;
             }
+        }
+
+        /// <summary>
+        /// Changes the brightness of the light or demo panel based on the provided value.
+        /// </summary>
+        /// <param name="value">The brightness value to set, typically between 0 and 255.</param>
+        private void ChangeBrightness(float value)
+        {
+            if (_panelData.IsDemoPanel)
+            {
+                SetDemoColor(GetRGBColor());
+            }
+            else if (_hassResponsePending)
+            {
+                _pendingBrightness = value;
+            }
+            else
+            {
+                RestHandler.SetLightBrightness(_entityID, (int)value);
+                _hassResponsePending = true;
+            }
+        }
+
+        /// <summary>
+        /// Changes the light temperature of the light or demo color based on the temperature value.
+        /// </summary>
+        /// <param name="temp">The desired temperature value in Kelvin.</param>
+        private void ChangeTemperature(float temp)
+        {
+            if (_panelData.IsDemoPanel)
+            {
+                SetDemoColor(Mathf.CorrelatedColorTemperatureToRGB((int)temp));
+            }
+            else if (_hassResponsePending)
+            {
+                _pendingTemperature = temp;
+            }
+            else
+            {
+                RestHandler.SetLightTemperature(_entityID, (int)temp);
+                _hassResponsePending = true;
+            }
+        }
+
+        /// <summary>
+        /// Updates the demo panel's color and adjusts related slider values for hue, saturation, and brightness.
+        /// </summary>
+        /// <param name="color">The color to be set on the demo panel.</param>
+        private void SetDemoColor(Color color)
+        {
+            _panelData.Panel.Icon.color = color;
+            Color.RGBToHSV(color, out float hue, out float saturation, out float value);
+            _panelData.Panel.StateText.text = value == 0 ? "off" : (int)(value * 100) + "%";
+            if (value > 0 && saturation > 0)
+                SaturationSlider.SetValueWithoutNotify(saturation*100);
+            if (value > 0 && saturation > 0)
+                BrightnessSlider.SetValueWithoutNotify(value*255);
+            if (value > 0 && saturation > 0)
+                HueSlider.SetValueWithoutNotify(hue*360);
+            UpdateSliderBackgrounds();
         }
 
         /// <summary>
@@ -201,7 +298,7 @@ namespace UI
         /// </summary>
         /// <remarks>
         /// If the panel is off, it sets the state to false.
-        /// If the panel is on, it updates the Temperature slider bounds, and sets the Brightness, Saturation and Hue sliders to the current value of the panel.
+        /// If the panel is on, it updates the Temperature slider bounds and sets the Brightness, Saturation, and Hue sliders to the current value of the panel.
         /// </remarks>
         private void UpdateSliderValues()
         {
@@ -292,30 +389,33 @@ namespace UI
         }
 
         /// <summary>
-        /// Sets the entity ID for the color picker.
+        /// Sets the panel data for the color picker, updates internal properties, and refreshes slider values.
         /// </summary>
-        /// <param name="entityID">The entity ID.</param>
-        public void SetEntityID(string entityID)
+        /// <param name="panelData">The data object containing panel information.</param>
+        public void SetPanelData(PanelData panelData)
         {
-            _entityID = entityID;
+            _panelData = panelData;
+            _entityID = panelData.EntityID;
+            SetMode();
             UpdateSliderValues();
         }
-    
+
         /// <summary>
         /// Toggles the color picker sliders based on the supported color modes of the panel.
         /// </summary>
-        /// <param name="supportedColorModes">The supported color modes of the panel.</param>
-        public void SetMode(string[] supportedColorModes)
+        private void SetMode()
         { 
-            HashSet<string> modes = new (supportedColorModes);
-        
-            // If the panel only supports the onoff mode, hide the color picker
-            if (modes.Count == 1 && modes.Contains("onoff") || modes.Contains("unknown"))
+            if (_panelData == null)
+                return;
+
+            if (!CheckColorSupport(out HashSet<string> modes))
             {
                 gameObject.SetActive(false);
                 return;
             }
-        
+            if (_panelData.IsDemoPanel)
+                return;
+
             // All remaining cases support the brightness mode, so it can stay on
         
             // If the panel supports the color_temp mode, show the temperature slider
@@ -326,6 +426,35 @@ namespace UI
             _supportsColor = modes.Overlaps(new[] { "hs", "rgb", "rgbw", "rgbww", "white", "xy" });
             HueSliderObject.SetActive(_supportsColor);
             SaturationSliderObject.SetActive(_supportsColor);
+        }
+
+        /// <summary>
+        /// Checks if the color picker supports color and temperature modes for the given panel data entity.
+        /// </summary>
+        /// <param name="modes">
+        /// An output parameter that will contain the set of supported color modes if the device supports them.
+        /// </param>
+        /// <returns>
+        /// A boolean value indicating whether the device supports any color or temperature modes.
+        /// </returns>
+        private bool CheckColorSupport(out HashSet<string> modes)
+        {
+            modes = new HashSet<string>();
+            
+            if (HassStates.GetDeviceType(_panelData.EntityID) != EDeviceType.LIGHT)
+                return false;
+            if (_panelData.IsDemoPanel)
+                return true;
+            if (HassStates.GetHassState(_panelData.EntityID) == null)
+                return false;
+            
+            modes = new HashSet<string>(HassStates.GetHassState(_panelData.EntityID).attributes.supported_color_modes);
+        
+            // If the panel only supports the onoff mode, hide the color picker
+            if (modes.Count == 0 || modes.Count == 1 && modes.Contains("onoff") || modes.Contains("unknown"))
+                return false;
+
+            return true;
         }
     }
 }

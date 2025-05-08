@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using UI;
 using UnityEngine;
@@ -40,11 +39,16 @@ namespace Managers
         {
             HideMainMenu();
             _canvasFader = HomeButtonUI.GetComponent<CanvasFader>();
-            OverviewButton.onClick.AddListener(ShowOverviewTab);
-            NewDeviceButton.onClick.AddListener(ShowNewDeviceTab);
-            SettingsButton.onClick.AddListener(ShowSettingsTab);
-            HomeButton.onClick.AddListener(OnHomeButtonClicked);
-            CloseMainUIButton.onClick.AddListener(HideMainMenu);
+            if (OverviewButton)
+                OverviewButton.onClick.AddListener(ShowOverviewTab);
+            if (NewDeviceButton)
+                NewDeviceButton.onClick.AddListener(ShowNewDeviceTab);
+            if (SettingsButton)
+                SettingsButton.onClick.AddListener(ShowSettingsTab);
+            if (HomeButton)
+                HomeButton.onClick.AddListener(OnHomeButtonClicked);
+            if (CloseMainUIButton)
+                CloseMainUIButton.onClick.AddListener(HideMainMenu);
         }
 
         private void Start()
@@ -54,11 +58,16 @@ namespace Managers
 
         private void OnDisable()
         {
-            OverviewButton.onClick.RemoveListener(ShowOverviewTab);
-            NewDeviceButton.onClick.RemoveListener(ShowNewDeviceTab);
-            SettingsButton.onClick.RemoveListener(ShowSettingsTab);
-            HomeButton.onClick.RemoveListener(OnHomeButtonClicked);
-            CloseMainUIButton.onClick.RemoveListener(HideMainMenu);
+            if (OverviewButton)
+                OverviewButton.onClick.RemoveListener(ShowOverviewTab);
+            if (NewDeviceButton)
+                NewDeviceButton.onClick.RemoveListener(ShowNewDeviceTab);
+            if (SettingsButton)
+                SettingsButton.onClick.RemoveListener(ShowSettingsTab);
+            if (HomeButton)
+                HomeButton.onClick.RemoveListener(OnHomeButtonClicked);
+            if (CloseMainUIButton)
+                CloseMainUIButton.onClick.RemoveListener(HideMainMenu);
         }
 
         private void OnHomeButtonClicked()
@@ -68,8 +77,10 @@ namespace Managers
             HomeButtonUI.SetActive(false);
             return;
 #endif
+            if (!MainUI)
+                return;
             
-            if (Camera.main != null)
+            if (Camera.main)
             {
                 MainUI.transform.LookAt(Camera.main.transform.position, Vector3.up);
                 MainUI.transform.forward = -MainUI.transform.forward;
@@ -157,6 +168,12 @@ namespace Managers
         /// </summary>
         private void HideMainMenu()
         {
+            if (!MainUI)
+            {
+                HomeButtonSetActive(true);
+                return;
+            }
+            
             MainUI.SetActive(false);
             HomeButtonSetActive(true);
             

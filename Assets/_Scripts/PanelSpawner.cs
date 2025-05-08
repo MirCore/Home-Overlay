@@ -27,6 +27,8 @@ public class PanelSpawner : MonoBehaviour
     /// Prefab for the calendar panel.
     /// </summary>
     [SerializeField] private Panels.Panel PanelCalendarPrefab;
+    
+    [SerializeField] private DemoPanelsManager DemoPanelPrefab;
 
     /// <summary>
     /// Spawns a saved panel using the provided panel data.
@@ -46,7 +48,7 @@ public class PanelSpawner : MonoBehaviour
     /// </summary>
     /// <param name="selectedEntityID">The ID of the panel to be assigned.</param>
     /// <param name="position">The position at which the panel will be spawned.</param>
-    public void SpawnNewEntity(string selectedEntityID, Vector3 position)
+    public void SpawnNewPanel(string selectedEntityID, Vector3 position)
     {
         Panels.Panel prefab = GetPanelPrefab(selectedEntityID);
         Panels.Panel newPanel = Instantiate(prefab);
@@ -83,5 +85,16 @@ public class PanelSpawner : MonoBehaviour
             EDeviceType.CALENDAR => PanelCalendarPrefab,
             _ => PanelSensorPrefab // Default fallback
         } : PanelSensorPrefab; // Default fallback if parsing fails
+    }
+
+    /// <summary>
+    /// Spawns demo panels at the specified transform position and rotation.
+    /// </summary>
+    /// <param name="pos">The transform specifying the position and rotation for the demo panels.</param>
+    public void SpawnDemoPanels(Transform pos)
+    {
+        DemoPanelsManager demoPanelsManager = Instantiate(DemoPanelPrefab);
+        demoPanelsManager.transform.position = pos.position;
+        demoPanelsManager.transform.rotation = pos.rotation;
     }
 }

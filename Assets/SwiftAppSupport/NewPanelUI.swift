@@ -10,7 +10,7 @@ import PolySpatialRealityKit
 
 struct NewPanel: View {
     @State private var searchText: String = ""
-    @State private var selectedEntityId: String = ""
+    @State private var selectedEntityId: String? = nil
     @State private var filteredEntities: [Item] = []
 
     @State var entityTypes = ["All types", "Light", "Sensor", "Switch", "Camera"]
@@ -59,8 +59,9 @@ struct NewPanel: View {
 
             HStack{
                 Button("Create selected entity"){
-                    createEntity(selectedEntityId)
+                    createEntity(selectedEntityId ?? "")
                 }
+                .disabled(selectedEntityId == nil)
             }
             Spacer()
         }
@@ -84,4 +85,8 @@ struct NewPanel: View {
     private func createEntity(_ entityId: String) {
         CallCSharpCallback("createEntity", entityId)
     }
+}
+
+#Preview(windowStyle: .automatic) {
+    MainMenu(initialTab: "NewPanel")
 }

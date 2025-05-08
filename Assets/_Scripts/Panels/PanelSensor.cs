@@ -62,7 +62,7 @@ namespace Panels
         }
 
         /// <summary>
-        /// Updates the panels UI elements based on the current state.
+        /// Updates the panels' UI elements based on the current state.
         /// </summary>
         protected override void UpdatePanel()
         {
@@ -70,16 +70,30 @@ namespace Panels
 
             // Update the panel layout and sensor value
             UpdatePanelLayout();
+
             UpdateSensorValue();
             UpdateIcon();
+
+            if (PanelData.IsDemoPanel)
+                LoadDemoText();
         }
 
         /// <summary>
-        /// Updates the icon color based on the entities state and attributes.
+        /// Loads default text, icon, and state values to represent a demo sensor panel layout.
+        /// </summary>
+        private void LoadDemoText()
+        {
+            NameText.text = "Demo Sensor";
+            StateText.text = "on";
+            Icon.text = MaterialDesignIcons.GetIcon("check-circle");
+        }
+
+        /// <summary>
+        /// Updates the icon color based on the entity state and attributes.
         /// </summary>
         private void UpdateIcon()
         {
-            if (!PanelIsReady())
+            if (!PanelIsReady() || PanelData.IsDemoPanel)
                 return;
 
             // Update the icon based on the entities state
