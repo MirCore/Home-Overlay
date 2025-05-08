@@ -32,6 +32,28 @@ public class Resizer : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointe
     /// </summary>
     private float _startDistance;
 
+    /// <summary>
+    /// The multiplier value applied to scaling calculations to adjust the magnitude of resizing.
+    /// </summary>
+    [SerializeField] private float scalingMultiplier = 1.0f;
+
+    /// <summary>
+    /// A multiplier that determines the sensitivity of the scaling operation when resizing the object.
+    /// Higher values make resizing more responsive to input changes.
+    /// </summary>
+    [SerializeField] private float scalingSensitivity = 4.0f;
+
+    /// <summary>
+    /// The minimum allowable scale value to prevent the object from being resized too small.
+    /// </summary>
+    [SerializeField] private float minScale = 0.5f;
+    
+    /// <summary>
+    /// The maximum allowable scale value to prevent the object from being resized too large.
+    /// </summary>
+    [SerializeField] private float maxScale = 10f;
+
+    
     private void OnEnable()
     {
         _panel = ObjectToTransform.GetComponent<Panels.Panel>();
@@ -150,15 +172,25 @@ public class Resizer : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointe
     }
 
     /// <summary>
-    /// Updates the object's scale based on the current distance from the interactor.
+    /// Updates the scale of the object based on the distance between the interactor and the object.
     /// </summary>
-    /// <param name="interactorPosition">The position of the interactor.</param>
+    /// <param name="interactorPosition">The current position of the interactor, used to calculate the scaling factor.</param>
     private void UpdateObjectScale(Vector3 interactorPosition)
     {
-        // Calculate the current distance between the object and the interactor
+        // Calculate the current distance between object and interactor
         float currentDistance = Vector3.Distance(_panel.transform.position, interactorPosition);
-        // Update the object's scale based on the ratio of the current distance to the initial distance
-        _panel.transform.localScale = _startScale * (currentDistance / _startDistance);
+    
+        // Calculate the change in distance, adjusted by sensitivity
+        float deltaDistance = (currentDistance - _startDistance) * scalingSensitivity;
+    
+        // Calculate the scale ratio based on the delta, adding to a base scale of 1
+        float scaleRatio = 1f + (deltaDistance / _startDistance) * scalingMultiplier;
+    
+        // Apply the scale ratio and clamp between min/max values
+        float newScale = Mathf.Clamp(_startScale.x * scaleRatio, minScale, maxScale);
+    
+        // Apply the same scale to all axes to maintain proportions
+        _panel.transform.localScale = Vector3.one * newScale;
     }
 
     /// <summary>
