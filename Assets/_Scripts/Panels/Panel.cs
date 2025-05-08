@@ -125,6 +125,7 @@ namespace Panels
         private void OnSettingsButtonClicked()
         {
             PanelSettingsWindowManager.Instance.ToggleSettingsWindow(this);
+            SoundManager.OnUIPressed();
         }
 
         /// <summary>

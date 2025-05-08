@@ -1,4 +1,5 @@
 using System;
+using Managers;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
@@ -26,6 +27,7 @@ namespace UI
         /// <param name="args">Event arguments.</param>
         protected override void OnSelectEntered(SelectEnterEventArgs args)
         {
+            SoundManager.OnUIPressed();
             base.OnSelectEntered(args);
             _currentDelta = 0;
             _interactor = args.interactorObject;
@@ -38,6 +40,7 @@ namespace UI
         /// <param name="args">Event arguments.</param>
         protected override void OnSelectExited(SelectExitEventArgs args)
         {
+            SoundManager.OnUIPressed();
             base.OnSelectExited(args);
             
             // Reset interactor and isDragging

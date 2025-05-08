@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Managers;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
@@ -71,6 +72,8 @@ public class Resizer : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointe
     /// <param name="eventData">The event data for the select entered event.</param>
     private void OnSelectEntered(SelectEnterEventArgs eventData)
     {
+        SoundManager.OnUIPressed();
+        
         // Cache the interactors transform
         _interactor = eventData.interactorObject.transform;
 
@@ -87,6 +90,8 @@ public class Resizer : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointe
     /// <param name="eventData">The event data for the select exited event.</param>
     private void OnSelectExited(SelectExitEventArgs eventData)
     {
+        SoundManager.OnUIPressed();
+        
         if (!_panel) return;
 
         // Update the panel's scale
@@ -97,7 +102,7 @@ public class Resizer : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointe
     }
 
     /// <summary>
-    /// Updates the object's scale based on the interactors position.
+    /// Updates the object's scale based on the interactor position.
     /// </summary>
     private void Update()
     {
@@ -135,6 +140,8 @@ public class Resizer : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointe
         if (XRSettings.enabled)
             return;
 
+        SoundManager.OnUIPressed();
+        
         // Cache the initial scale and distance
         CacheInitialScaleAndDistance(eventData.position);
 
@@ -152,6 +159,8 @@ public class Resizer : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointe
         if (XRSettings.enabled)
             return;
 
+        SoundManager.OnUIPressed();
+        
         // Update the panel's scale
         UpdatePanelScale();
 

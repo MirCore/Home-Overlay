@@ -167,6 +167,7 @@ namespace UI
         /// </summary>
         private void OnCloseButtonClicked()
         {
+            SoundManager.OnUIPressed();
             GetComponent<CanvasFader>().FadeOut(true);
         }
 
@@ -176,6 +177,7 @@ namespace UI
         /// <param name="value">New toggle value</param>
         private void OnShowNameChanged(bool value)
         {
+            SoundManager.OnUIPressed();
             Panel.PanelData.Settings.ShowName = value;
             Panel.OnSettingsChanged();
         }
@@ -186,6 +188,7 @@ namespace UI
         /// <param name="value">New toggle value</param>
         private void OnShowStateChanged(bool value)
         {
+            SoundManager.OnUIPressed();
             Panel.PanelData.Settings.ShowState = value;
             Panel.OnSettingsChanged();
         }
@@ -196,6 +199,7 @@ namespace UI
         /// <param name="value">New toggle value</param>
         private void OnWindowControlToggleValueChanged(bool value)
         {
+            SoundManager.OnUIPressed();
             Panel.PanelData.Settings.HideWindowControls = value;
             Panel.SetWindowControlVisibility(!Panel.PanelData.Settings.HideWindowControls);
         }
@@ -206,6 +210,7 @@ namespace UI
         /// <param name="value">New toggle value</param>
         private void OnAlignToWallToggleValueChanged(bool value)
         {
+            SoundManager.OnUIPressed();
             Panel.PanelData.Settings.AlignWindowToWall = value;
             _tryingToAttachToWall = value;
             if (value)
@@ -222,6 +227,7 @@ namespace UI
         /// <param name="value">New toggle value</param>
         private void OnRotationToggleValueChanged(bool value)
         {
+            SoundManager.OnUIPressed();
             Panel.PanelData.Settings.RotationEnabled = !value;
             if (value == false)
                 Panel.PanelData.Settings.AlignWindowToWall = false;
@@ -233,6 +239,7 @@ namespace UI
         /// </summary>
         private void OnDeleteButtonClicked()
         {
+            SoundManager.OnUIPressed();
             PanelManager.Instance.DeletePanel(Panel.PanelData.ID);
         }
 

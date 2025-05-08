@@ -1,4 +1,5 @@
-﻿using UI;
+﻿using Managers;
+using UI;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
@@ -96,6 +97,7 @@ public class Window : MonoBehaviour
     /// </summary>
     public virtual void OnDragStarted()
     {
+        SoundManager.OnUIPressed();
         _canvasFader.WindowIsMoving(true);
     }
 
@@ -104,6 +106,7 @@ public class Window : MonoBehaviour
     /// </summary>
     public virtual void OnDragEnded()
     {
+        SoundManager.OnUIPressed();
         _canvasFader.WindowIsMoving(false);
     }
 

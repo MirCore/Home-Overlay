@@ -1,102 +1,205 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1024 1024">
-  <!-- Generator: Adobe Illustrator 29.2.1, SVG Export Plug-In . SVG Version: 2.1.0 Build 116)  -->
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1280 520">
+  <!-- Generator: Adobe Illustrator 29.5.0, SVG Export Plug-In . SVG Version: 2.1.0 Build 137)  -->
   <defs>
     <style>
       .st0 {
-        fill: #18bcf2;
+        filter: url(#drop-shadow-2);
       }
 
       .st1 {
-        fill: url(#radial-gradient4);
-      }
-
-      .st1, .st2 {
-        opacity: .5;
-      }
-
-      .st3 {
         fill: url(#radial-gradient1);
       }
 
-      .st3, .st4, .st5, .st6, .st7, .st8 {
+      .st1, .st2, .st3, .st4, .st5, .st6, .st7, .st8, .st9, .st10, .st11, .st12 {
+        isolation: isolate;
+      }
+
+      .st1, .st2, .st5, .st6, .st7, .st9, .st10, .st11, .st12 {
         opacity: .4;
       }
 
-      .st9 {
-        fill: #fff;
+      .st2 {
+        fill: url(#radial-gradient9);
+      }
+
+      .st3 {
+        fill: url(#radial-gradient);
+      }
+
+      .st3, .st4, .st8 {
+        opacity: .5;
+      }
+
+      .st13 {
+        fill: #18bcf2;
       }
 
       .st4 {
-        fill: url(#radial-gradient6);
+        fill: url(#radial-gradient4);
       }
 
       .st5 {
         fill: url(#radial-gradient3);
       }
 
+      .st14, .st15, .st16 {
+        fill: #fff;
+      }
+
+      .st15 {
+        filter: url(#drop-shadow-3);
+      }
+
       .st6 {
-        fill: url(#radial-gradient5);
+        fill: url(#radial-gradient7);
+      }
+
+      .st17 {
+        filter: url(#drop-shadow-1);
       }
 
       .st7 {
-        fill: url(#radial-gradient2);
+        fill: url(#radial-gradient6);
       }
 
-      .st2 {
-        fill: url(#radial-gradient);
+      .st16 {
+        filter: url(#drop-shadow-4);
+        font-family: SFProDisplay-Regular, 'SF Pro Display';
+        font-size: 200px;
       }
 
       .st8 {
-        fill: url(#radial-gradient7);
+        fill: url(#radial-gradient8);
+      }
+
+      .st9 {
+        fill: url(#radial-gradient5);
+      }
+
+      .st10 {
+        fill: url(#radial-gradient10);
+      }
+
+      .st11 {
+        fill: url(#radial-gradient2);
+      }
+
+      .st12 {
+        fill: url(#radial-gradient11);
       }
     </style>
-    <radialGradient id="radial-gradient" cx="502.6" cy="607.5" fx="502.6" fy="607.5" r="265.6" gradientTransform="translate(0 281.5) scale(1 .5)" gradientUnits="userSpaceOnUse">
+    <radialGradient id="radial-gradient" cx="1674.6" cy="-1399" fx="1674.6" fy="-1399" r="265.6" gradientTransform="translate(0 -2185.8) scale(1 -.5)" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#fff" stop-opacity=".9"/>
       <stop offset="1" stop-color="#fff"/>
     </radialGradient>
-    <radialGradient id="radial-gradient1" cx="509.1" cy="595.4" fx="509.1" fy="595.4" r="132.8" gradientTransform="translate(0 233.7) scale(1 .6)" gradientUnits="userSpaceOnUse">
+    <radialGradient id="radial-gradient1" cx="1681.1" cy="-1472.2" fx="1681.1" fy="-1472.2" r="132.8" gradientTransform="translate(0 -2363.9) scale(1 -.6)" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#fff" stop-opacity=".5"/>
       <stop offset="1" stop-color="#fff"/>
     </radialGradient>
-    <radialGradient id="radial-gradient2" cx="502.6" cy="698.3" fx="502.6" fy="698.3" r="238.7" gradientTransform="translate(0 274.1) scale(1 .6)" xlink:href="#radial-gradient1"/>
-    <radialGradient id="radial-gradient3" cx="503" cy="636.9" fx="503" fy="636.9" r="217.1" gradientTransform="translate(0 250) scale(1 .6)" gradientUnits="userSpaceOnUse">
+    <radialGradient id="radial-gradient2" cx="1674.6" cy="-1575.1" fx="1674.6" fy="-1575.1" r="238.7" gradientTransform="translate(0 -2323.5) scale(1 -.6)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#fff"/>
+    </radialGradient>
+    <radialGradient id="radial-gradient3" cx="1675" cy="-1513.7" fx="1675" fy="-1513.7" r="217.1" gradientTransform="translate(0 -2347.6) scale(1 -.6)" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#fff" stop-opacity="0"/>
       <stop offset="1" stop-color="#fff"/>
     </radialGradient>
-    <radialGradient id="radial-gradient4" cx="2590.6" fx="2590.6" r="265.6" xlink:href="#radial-gradient"/>
-    <radialGradient id="radial-gradient5" cx="2597.1" fx="2597.1" xlink:href="#radial-gradient1"/>
-    <radialGradient id="radial-gradient6" cx="2590.6" cy="698.3" fx="2590.6" fy="698.3" r="238.7" gradientTransform="translate(0 274.1) scale(1 .6)" xlink:href="#radial-gradient1"/>
-    <radialGradient id="radial-gradient7" cx="2591" fx="2591" xlink:href="#radial-gradient3"/>
+    <radialGradient id="radial-gradient4" cx="3762.6" cy="-1655" fx="3762.6" fy="-1655" r="265.6" gradientTransform="translate(0 -3119) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#fff"/>
+    </radialGradient>
+    <radialGradient id="radial-gradient5" cx="3769.1" cy="-1642.9" fx="3769.1" fy="-1642.9" r="132.8" gradientTransform="translate(0 -3119) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#fff"/>
+    </radialGradient>
+    <radialGradient id="radial-gradient6" cx="3762.6" cy="-1575.1" fx="3762.6" fy="-1575.1" r="238.7" gradientTransform="translate(0 -2323.5) scale(1 -.6)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#fff"/>
+    </radialGradient>
+    <radialGradient id="radial-gradient7" cx="3763" cy="-1684.4" fx="3763" fy="-1684.4" r="217.1" gradientTransform="translate(0 -3119) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#fff"/>
+    </radialGradient>
+    <filter id="drop-shadow-1" x="-15" y="-14.5" width="550" height="549" filterUnits="userSpaceOnUse">
+      <feOffset dx="0" dy="0"/>
+      <feGaussianBlur result="blur" stdDeviation="25"/>
+      <feFlood flood-color="#000" flood-opacity=".2"/>
+      <feComposite in2="blur" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="drop-shadow-2" x="51" y="189.5" width="413" height="275" filterUnits="userSpaceOnUse">
+      <feOffset dx="0" dy="0"/>
+      <feGaussianBlur result="blur1" stdDeviation="25"/>
+      <feFlood flood-color="#000" flood-opacity="0"/>
+      <feComposite in2="blur1" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <radialGradient id="radial-gradient8" cx="256.3" cy="-3416.2" fx="256.3" fy="-3416.2" r="103.4" gradientTransform="translate(0 -3107.3) scale(1 -1)" xlink:href="#radial-gradient4"/>
+    <radialGradient id="radial-gradient9" cx="258.9" cy="-3411.5" fx="258.9" fy="-3411.5" r="51.7" gradientTransform="translate(0 -3107.3) scale(1 -1)" xlink:href="#radial-gradient5"/>
+    <radialGradient id="radial-gradient10" cx="256.3" cy="-4423.3" fx="256.3" fy="-4423.3" r="92.9" gradientTransform="translate(0 -2314.6) scale(1 -.6)" xlink:href="#radial-gradient6"/>
+    <radialGradient id="radial-gradient11" cx="256.5" cy="-3427.6" fx="256.5" fy="-3427.6" r="84.5" gradientTransform="translate(0 -3107.3) scale(1 -1)" xlink:href="#radial-gradient7"/>
+    <filter id="drop-shadow-3" x="138" y="110.5" width="244" height="207" filterUnits="userSpaceOnUse">
+      <feOffset dx="0" dy="0"/>
+      <feGaussianBlur result="blur2" stdDeviation="5"/>
+      <feFlood flood-color="#000" flood-opacity=".2"/>
+      <feComposite in2="blur2" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="drop-shadow-4" filterUnits="userSpaceOnUse">
+      <feOffset dx="0" dy="0"/>
+      <feGaussianBlur result="blur3" stdDeviation="25"/>
+      <feFlood flood-color="#000" flood-opacity="0"/>
+      <feComposite in2="blur3" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
   </defs>
-  <g id="Layer_1">
-    <rect id="BG" class="st0" x="-1044" width="1024" height="1024"/>
+  <g id="Layer_11" data-name="Layer_1">
+    <rect id="BG" class="st13" x="128" y="-2071.5" width="1024" height="1024"/>
+  </g>
+  <g id="Layer_12" data-name="Layer_1">
+    <rect id="BG1" data-name="BG" class="st13" width="1280" height="520"/>
   </g>
   <g id="Layer_2">
     <g id="Layers">
-      <path class="st2" d="M816.2,589.4l-103.4-61.4,1.7,61.9c0,11.3-11.1,20.4-24.7,20.4h-358.2c-13.6.1-24.7-9-24.7-20.3l.5-65.3-113.8,64.7c-34,16.1-34,42.1,0,58.2l249.7,117.9c34,16.1,89.2,16.1,123.2,0l249.7-117.9c34-16.1,34-42.1,0-58.2Z"/>
+      <path class="st3" d="M1988.2-1482.1l-103.4-61.4,1.7,61.9c0,11.3-11.1,20.4-24.7,20.4h-358.2c-13.6,0-24.7-9-24.7-20.3l.5-65.3-113.8,64.7c-34,16.1-34,42.1,0,58.2l249.7,117.9c34,16.1,89.2,16.1,123.2,0l249.7-117.9c34-16.1,34-42.1,0-58.2h0Z"/>
       <g>
-        <path class="st3" d="M307.1,591.9c1.2,10.4,11.7,18.5,24.6,18.5h358.2c12-.1,21.9-7.1,24.2-16.4l-5.6-3.4-400.9,1.1-.4.2Z"/>
-        <path class="st7" d="M816.2,656.4l-8.1-5-241.6,114c-34,16.1-89.2,16.1-123.2,0l-241.2-113.9-8.4,4.8c-34,16.1-34,42.1,0,58.2l249.7,117.9c34,16.1,89.2,16.1,123.2,0l249.7-117.9c34-16.1,34-42.1,0-58.2Z"/>
+        <path class="st1" d="M1479.1-1479.6c1.2,10.4,11.7,18.5,24.6,18.5h358.2c12,0,21.9-7.1,24.2-16.4l-5.6-3.4-400.9,1.1-.4.2h-.1Z"/>
+        <path class="st11" d="M1988.2-1415.1l-8.1-5-241.6,114c-34,16.1-89.2,16.1-123.2,0l-241.2-113.9-8.4,4.8c-34,16.1-34,42.1,0,58.2l249.7,117.9c34,16.1,89.2,16.1,123.2,0l249.7-117.9c34-16.1,34-42.1,0-58.2h0Z"/>
       </g>
-      <path class="st5" d="M443.4,765.5c34,16.1,89.2,16.1,123.2,0l241.6-114-94.1-57.5c-2.3,9.3-12.3,16.3-24.2,16.3h-358.2c-12.9.1-23.4-8-24.6-18.4l-104.9,59.7,241.2,113.9Z"/>
+      <path class="st5" d="M1615.4-1306c34,16.1,89.2,16.1,123.2,0l241.6-114-94.1-57.5c-2.3,9.3-12.3,16.3-24.2,16.3h-358.2c-12.9,0-23.4-8-24.6-18.4l-104.9,59.7,241.2,113.9h0Z"/>
     </g>
   </g>
   <g id="Layer_3">
-    <path id="House" class="st9" d="M1540.8,172l-249.8,220.3c-15.6,13.7-5.9,39.5,14.9,39.5h35v165.5c0,12.5,10.1,22.5,22.5,22.5h386c12.5,0,22.5-10.1,22.5-22.5v-165.5h34.2c20.8,0,30.5-25.7,14.9-39.5l-250.4-220.3c-8.5-7.5-21.3-7.5-29.8,0ZM1697,567.4h-86.2v-104.9c0-10-8.1-18-18-18h-73c-10,0-18,8.1-18,18v104.9h-87.3c-12.5,0-22.5-10.1-22.5-22.5v-164.1l164.2-147.7,163.5,147.7v164.1c0,12.5-10.1,22.5-22.5,22.5Z"/>
+    <path id="House" class="st14" d="M2712.8-1899.5l-249.8,220.3c-15.6,13.7-5.9,39.5,14.9,39.5h35v165.5c0,12.5,10.1,22.5,22.5,22.5h386c12.5,0,22.5-10.1,22.5-22.5v-165.5h34.2c20.8,0,30.5-25.7,14.9-39.5l-250.4-220.3c-8.5-7.5-21.3-7.5-29.8,0h0ZM2869-1504.1h-86.2v-104.9c0-10-8.1-18-18-18h-73c-10,0-18,8.1-18,18v104.9h-87.3c-12.5,0-22.5-10.1-22.5-22.5v-164.1l164.2-147.7,163.5,147.7v164.1c0,12.5-10.1,22.5-22.5,22.5h-.2Z"/>
   </g>
   <g id="Layer_4">
-    <circle id="BG1" data-name="BG" class="st0" cx="2600" cy="512" r="512"/>
+    <circle id="BG1" class="st13" cx="3772" cy="-1559.5" r="512"/>
     <g>
-      <g id="Layers1" data-name="Layers">
-        <path class="st1" d="M2904.2,589.4l-103.4-61.4,1.7,61.9c0,11.3-11.1,20.4-24.7,20.4h-358.2c-13.6.1-24.7-9-24.7-20.3l.5-65.3-113.8,64.7c-34,16.1-34,42.1,0,58.2l249.7,117.9c34,16.1,89.2,16.1,123.2,0l249.7-117.9c34-16.1,34-42.1,0-58.2Z"/>
+      <g id="Layers1">
+        <path class="st4" d="M4076.2-1482.1l-103.4-61.4,1.7,61.9c0,11.3-11.1,20.4-24.7,20.4h-358.2c-13.6,0-24.7-9-24.7-20.3l.5-65.3-113.8,64.7c-34,16.1-34,42.1,0,58.2l249.7,117.9c34,16.1,89.2,16.1,123.2,0l249.7-117.9c34-16.1,34-42.1,0-58.2h0Z"/>
         <g>
-          <path class="st6" d="M2395.1,591.9c1.2,10.4,11.7,18.5,24.6,18.5h358.2c12-.1,21.9-7.1,24.2-16.4l-5.6-3.4-400.9,1.1-.4.2Z"/>
-          <path class="st4" d="M2904.2,656.4l-8.1-5-241.6,114c-34,16.1-89.2,16.1-123.2,0l-241.2-113.9-8.4,4.8c-34,16.1-34,42.1,0,58.2l249.7,117.9c34,16.1,89.2,16.1,123.2,0l249.7-117.9c34-16.1,34-42.1,0-58.2Z"/>
+          <path class="st9" d="M3567.1-1479.6c1.2,10.4,11.7,18.5,24.6,18.5h358.2c12,0,21.9-7.1,24.2-16.4l-5.6-3.4-400.9,1.1-.4.2h-.1Z"/>
+          <path class="st7" d="M4076.2-1415.1l-8.1-5-241.6,114c-34,16.1-89.2,16.1-123.2,0l-241.2-113.9-8.4,4.8c-34,16.1-34,42.1,0,58.2l249.7,117.9c34,16.1,89.2,16.1,123.2,0l249.7-117.9c34-16.1,34-42.1,0-58.2h0Z"/>
         </g>
-        <path class="st8" d="M2531.4,765.5c34,16.1,89.2,16.1,123.2,0l241.6-114-94.1-57.5c-2.3,9.3-12.3,16.3-24.2,16.3h-358.2c-12.9.1-23.4-8-24.6-18.4l-104.9,59.7,241.2,113.9Z"/>
+        <path class="st6" d="M3703.4-1306c34,16.1,89.2,16.1,123.2,0l241.6-114-94.1-57.5c-2.3,9.3-12.3,16.3-24.2,16.3h-358.2c-12.9,0-23.4-8-24.6-18.4l-104.9,59.7,241.2,113.9Z"/>
       </g>
-      <path id="House1" data-name="House" class="st9" d="M2584.8,172l-249.8,220.3c-15.6,13.7-5.9,39.5,14.9,39.5h35v165.5c0,12.5,10.1,22.5,22.5,22.5h386c12.5,0,22.5-10.1,22.5-22.5v-165.5h34.2c20.8,0,30.5-25.7,14.9-39.5l-250.4-220.3c-8.5-7.5-21.3-7.5-29.8,0ZM2741,567.4h-86.2v-104.9c0-10-8.1-18-18-18h-73c-10,0-18,8.1-18,18v104.9h-87.3c-12.5,0-22.5-10.1-22.5-22.5v-164.1l164.2-147.7,163.5,147.7v164.1c0,12.5-10.1,22.5-22.5,22.5Z"/>
+      <path id="House1" class="st14" d="M3756.8-1899.5l-249.8,220.3c-15.6,13.7-5.9,39.5,14.9,39.5h35v165.5c0,12.5,10.1,22.5,22.5,22.5h386c12.5,0,22.5-10.1,22.5-22.5v-165.5h34.2c20.8,0,30.5-25.7,14.9-39.5l-250.4-220.3c-8.5-7.5-21.3-7.5-29.8,0h0ZM3913-1504.1h-86.2v-104.9c0-10-8.1-18-18-18h-73c-10,0-18,8.1-18,18v104.9h-87.3c-12.5,0-22.5-10.1-22.5-22.5v-164.1l164.2-147.7,163.5,147.7v164.1c0,12.5-10.1,22.5-22.5,22.5h-.2Z"/>
     </g>
   </g>
+  <g id="Layer_41" data-name="Layer_4" class="st17">
+    <ellipse id="BG11" data-name="BG1" class="st13" cx="260" cy="260" rx="199.2" ry="198.5"/>
+    <g>
+      <g id="Layers11" data-name="Layers1" class="st0">
+        <path class="st8" d="M378.4,290l-40.2-23.8.7,24c0,4.4-4.3,7.9-9.6,7.9h-139.4c-5.3,0-9.6-3.5-9.6-7.9l.2-25.3-44.3,25.1c-13.2,6.2-13.2,16.3,0,22.6l97.2,45.7c13.2,6.2,34.7,6.2,47.9,0l97.2-45.7c13.2-6.2,13.2-16.3,0-22.6h0Z"/>
+        <g>
+          <path class="st2" d="M180.3,291c.5,4,4.6,7.2,9.6,7.2h139.4c4.7,0,8.5-2.8,9.4-6.4l-2.2-1.3-156,.4h-.2c0,0,0,0,0,0Z"/>
+          <path class="st10" d="M378.4,316l-3.2-1.9-94,44.2c-13.2,6.2-34.7,6.2-47.9,0l-93.9-44.2-3.3,1.9c-13.2,6.2-13.2,16.3,0,22.6l97.2,45.7c13.2,6.2,34.7,6.2,47.9,0l97.2-45.7c13.2-6.2,13.2-16.3,0-22.6h0Z"/>
+        </g>
+        <path class="st12" d="M233.3,358.3c13.2,6.2,34.7,6.2,47.9,0l94-44.2-36.6-22.3c-.9,3.6-4.8,6.3-9.4,6.3h-139.4c-5,0-9.1-3.1-9.6-7.1l-40.8,23.2,93.9,44.2Z"/>
+      </g>
+      <path id="House11" data-name="House1" class="st15" d="M254.1,128.2l-97.2,85.4c-6.1,5.3-2.3,15.3,5.8,15.3h13.6v64.2c0,4.8,3.9,8.7,8.8,8.7h150.2c4.9,0,8.8-3.9,8.8-8.7v-64.2h13.3c8.1,0,11.9-10,5.8-15.3l-97.4-85.4c-3.3-2.9-8.3-2.9-11.6,0h0ZM314.9,281.5h-33.5v-40.7c0-3.9-3.2-7-7-7h-28.4c-3.9,0-7,3.1-7,7v40.7h-34c-4.9,0-8.8-3.9-8.8-8.7v-63.6l63.9-57.3,63.6,57.3v63.6c0,4.8-3.9,8.7-8.8,8.7h0Z"/>
+    </g>
+  </g>
+  <text class="st16" transform="translate(529.7 244.8)"><tspan x="0" y="0">Home</tspan><tspan x="0" y="170">Overlay</tspan></text>
 </svg>

@@ -1,4 +1,5 @@
 ﻿using System;
+using Managers;
 using UI;
 using UnityEngine;
 using UnityEngine.UI;
@@ -88,6 +89,8 @@ namespace Panels
         /// </summary>
         private void OnButtonClicked()
         {
+            SoundManager.OnUIPressed();
+            
             if (PanelData.IsDemoPanel)
                 LoadDemoText(StateText.text == "off");
             if (!PanelIsReady())

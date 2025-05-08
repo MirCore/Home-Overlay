@@ -119,6 +119,7 @@ namespace Managers
 #if UNITY_VISIONOS && !UNITY_EDITOR
             SwiftUIDriver.OpenSwiftUIWindow("MainMenu", "Settings");
             HomeButtonSetActive(false);
+            SoundManager.OnUIPressed();
             return;
 #endif
             ShowTab(SettingsTab);
@@ -132,7 +133,9 @@ namespace Managers
         /// </summary>
         /// <param name="tab">The tab to show.</param>
         private void ShowTab(GameObject tab)
-        {
+        {            
+            SoundManager.OnUIPressed();
+
             // Hide all other tabs
             OverviewTab.SetActive(false);
             SettingsTab.SetActive(false);

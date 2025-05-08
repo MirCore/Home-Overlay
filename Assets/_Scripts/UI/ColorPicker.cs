@@ -131,7 +131,6 @@ namespace UI
             TemperatureSlider.onValueChanged.RemoveListener(OnTemperatureSliderValueChanged);
             EventManager.OnHassStatesChanged -= OnHassStatesChanged;
         }
-
         
         /// <summary>
         /// Updates the slider values when the Hass states change.
