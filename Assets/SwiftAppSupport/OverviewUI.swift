@@ -14,12 +14,14 @@ struct Overview: View {
     
     var connectionStatus: String {
         if let message = statusModel.message {
+            let trimmedURI = message.uri.replacingOccurrences(of: "api/", with: "")
+            
             if (message.uri == "") {
                 return "No connection settings found. Please set them in the settings menu."
             } else if (message.status == 200 || message.status == 201) {
-                return "Successfully connected to: \(message.uri)"
+                return "Successfully connected to: \(trimmedURI)"
             } else {
-                return "Failed to connect to: \(message.uri)"
+                return "Failed to connect to: \(trimmedURI)"
             }
         } else {
             return "Waiting for connection status..."

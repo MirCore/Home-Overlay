@@ -132,7 +132,6 @@ namespace Panels
         /// </summary>
         public void TurnOffAlignWindowToWall()
         {
-            Debug.Log("AlignWindowToWall failed, turning off AlignWindowToWall");
             PanelData.Settings.AlignWindowToWall = false;
             OnSettingsChanged();
         }

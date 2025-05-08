@@ -47,6 +47,11 @@ namespace UI
         /// Toggle for enabling/disabling rotation.
         /// </summary>
         [SerializeField] private Toggle RotationToggle;
+
+        /// <summary>
+        /// Label for the AlignToWall toggle
+        /// </summary>
+        [SerializeField] private TMP_Text AlignToWallText;
         
         /// <summary>
         /// Button that deletes the Panel.
@@ -89,7 +94,12 @@ namespace UI
         private ToggleAnimation _rotationToggleAnimation;
 
         /// <summary>
-        /// The panel associated with this settings UI.
+        /// Indicates whether the panel is currently attempting to align itself to a nearby wall.
+        /// </summary>
+        private bool _tryingToAttachToWall;
+
+        /// <summary>
+        /// The panel associated with this settingsUI.
         /// </summary>
         public Panels.Panel Panel { get; private set; }
 
@@ -197,6 +207,7 @@ namespace UI
         private void OnAlignToWallToggleValueChanged(bool value)
         {
             Panel.PanelData.Settings.AlignWindowToWall = value;
+            _tryingToAttachToWall = value;
             if (value)
             {
                 Panel.PanelData.Settings.RotationEnabled = false;
@@ -303,6 +314,17 @@ namespace UI
         {
             yield return null;  // Wait for one frame
             LoadElements();
+
+            // Show an alert that AlignToWall failed
+            if (!_tryingToAttachToWall || AlignWindowToWallToggle.isOn)
+                yield break;
+            _tryingToAttachToWall = false;
+            string originalText = AlignToWallText.text;
+            AlignToWallText.text = "No wall detected. Locking rotation instead.";
+            AlignToWallText.fontStyle = FontStyles.Italic;
+            yield return new WaitForSeconds(3);
+            AlignToWallText.text = originalText;
+            AlignToWallText.fontStyle = FontStyles.Normal;
         }
 
         /// <summary>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Panels;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
@@ -18,9 +19,6 @@ namespace Utils
         private static readonly ARPlaneManager PlaneMeshManager;
         public static readonly ARAnchorManager ARAnchorManager;
         
-        // Directions to cast rays for detecting planes
-        private static readonly Vector3[] Directions = { Vector3.forward, Vector3.back, Vector3.left, Vector3.right }; // Directions to cast rays
-
         /// <summary>
         /// Static constructor to initialize AR managers.
         /// </summary>
@@ -78,7 +76,7 @@ namespace Utils
                 return null;
             
             // Find the nearest plane to the transform
-            ARPlane nearestPlane = FindNearestPlane(transform.position);
+            ARPlane nearestPlane = FindNearestPlane(transform);
             if (nearestPlane == null)
                 return null;
 
@@ -159,7 +157,7 @@ namespace Utils
         /// Sets the parent of a given transform to an ARAnchor.
         /// </summary>
         /// <param name="transform">The transform to attach.</param>
-        /// <param name="applyRotation">If the transform should copy the anchors rotation</param>
+        /// <param name="applyRotation">If the transform should copy the anchor rotation</param>
         /// <param name="anchor">The ARAnchor to attach to.</param>
         private static void AttachTransformToAnchor(Transform transform, bool applyRotation, ARAnchor anchor)
         {
@@ -177,7 +175,7 @@ namespace Utils
         /// Sets the parent of a given transform to an ARAnchor and removes the old anchor if it exists.
         /// </summary>
         /// <param name="transform">The transform to attach.</param>
-        /// <param name="applyRotation">If the transform should copy the anchors rotation</param>
+        /// <param name="applyRotation">If the transform should copy the anchor rotation</param>
         /// <param name="anchor">The ARAnchor to attach to.</param>
         /// <param name="oldAnchorID">The ID of the old anchor to remove.</param>
         private static void AttachTransformToAnotherAnchor(Transform transform, bool applyRotation, ARAnchor anchor, string oldAnchorID)
@@ -196,72 +194,62 @@ namespace Utils
         #endregion
 
         #region Plane Detection
-        
+
         /// <summary>
-        /// Finds the nearest ARPlane to a given position by casting rays in predefined directions.
+        /// Finds the nearest ARPlane to a given transform by performing raycasts in specific directions.
         /// </summary>
-        /// <param name="position">The position from which to cast rays.</param>
-        /// <returns>The nearest ARPlane, or null if none is found.</returns>
-        private static ARPlane FindNearestPlane(Vector3 position)
+        /// <param name="transform">The transform from which to determine the nearest plane based on position and orientation.</param>
+        /// <returns>The nearest ARPlane, or null if no suitable plane is found.</returns>
+        private static ARPlane FindNearestPlane(Transform transform)
         {
             ARPlane nearestPlane = RaycastManager.descriptor is { supportsWorldBasedRaycast: true }
-                ? FindNearestPlaneUsingWorldBasedRaycast(position)
-                : FindNearestPlaneUsingPhysicsRaycast(position);
+                ? FindNearestPlaneUsingWorldBasedRaycast(transform)
+                : FindNearestPlaneUsingPhysicsRaycast(transform);
 
             return nearestPlane;
         }
 
         /// <summary>
-        /// Finds the nearest ARPlane using world-based raycasting.
+        /// Finds the nearest ARPlane using world-based ray-casting.
         /// </summary>
-        /// <param name="origin">The origin position from which to cast rays.</param>
-        /// <returns>The nearest ARPlane, or null if none is found.</returns>
-        private static ARPlane FindNearestPlaneUsingWorldBasedRaycast(Vector3 origin)
+        /// <param name="transform">The transform from which the raycast originates.</param>
+        /// <returns>The nearest ARPlane, or null if no plane is detected.</returns>
+        private static ARPlane FindNearestPlaneUsingWorldBasedRaycast(Transform transform)
         {
             ARPlane nearestPlane = null;
             float shortestDistance = float.MaxValue;
             List<ARRaycastHit> raycastHits = new();
+            Vector3 direction = transform.forward;
+            direction.y = 0;
             
-            // Iterate through the predefined directions to cast rays
-            foreach (Vector3 direction in Directions)
+            // Perform raycast in the current direction
+            RaycastManager.Raycast(new Ray(transform.position, direction), raycastHits, TrackableType.Planes);
+            
+            // Find the nearest hit within the shortest distance
+            foreach (ARRaycastHit hit in raycastHits.Where(hit => hit.distance < shortestDistance))
             {
-                // Perform raycast in the current direction
-                if (!RaycastManager.Raycast(new Ray(origin, direction), raycastHits, TrackableType.Planes))
-                    continue;
-                
-                // Find the nearest hit within the shortest distance
-                foreach (ARRaycastHit hit in raycastHits.Where(hit => hit.distance < shortestDistance))
-                {
-                    shortestDistance = hit.distance;
-                    nearestPlane = hit.trackable as ARPlane;
-                }
+                shortestDistance = hit.distance;
+                nearestPlane = hit.trackable as ARPlane;
+            
             }
             return nearestPlane;
         }
 
 
         /// <summary>
-        /// Finds the nearest ARPlane using physics-based raycasting.
+        /// Finds the nearest ARPlane using physics-based ray-casting.
         /// </summary>
-        /// <param name="origin">The origin position from which to cast rays.</param>
-        /// <returns>The nearest ARPlane, or null if none is found.</returns>
-        private static ARPlane FindNearestPlaneUsingPhysicsRaycast(Vector3 origin)
+        /// <param name="transform">The transform representing the position and direction from which the raycast originates.</param>
+        /// <returns>The nearest ARPlane if found, otherwise null.</returns>
+        private static ARPlane FindNearestPlaneUsingPhysicsRaycast(Transform transform)
         {
-            ARPlane nearestPlane = null;
-            float shortestDistance = float.MaxValue;
+            Vector3 direction = transform.forward;
+            direction.y = 0;
+
+            // Perform a physics raycast, filtered by shortestDistance
+            Physics.Raycast(transform.position, direction, out RaycastHit hit, 2f, LayerMask.GetMask("ARPlane"));
             
-            // Iterate through the predefined directions to cast rays
-            foreach (Vector3 direction in Directions)
-            {
-                // Perform a physics raycast, filtered by shortestDistance
-                if (!Physics.Raycast(origin, direction, out RaycastHit hit, shortestDistance))
-                    continue;
-                
-                // Update the shortest distance and nearest plane if a hit is detected
-                shortestDistance = hit.distance;
-                nearestPlane = hit.collider.GetComponent<ARPlane>();
-            }
-            return nearestPlane;
+            return hit.collider.GetComponent<ARPlane>();
         }
 
         #endregion
@@ -282,7 +270,7 @@ namespace Utils
         /// Tries to attach a transform to an existing ARAnchor.
         /// </summary>
         /// <param name="transform">The transform to attach.</param>
-        /// <param name="applyRotation">If the transform should copy the anchors rotation</param>
+        /// <param name="applyRotation">If the transform should copy the anchor rotation</param>
         /// <param name="anchorID">The ID of the anchor to attach to.</param>
         public static void TryAttachToExistingAnchor(Transform transform, bool applyRotation, string anchorID)
         {
@@ -291,24 +279,22 @@ namespace Utils
         }
 
         /// <summary>
-        /// Creates a new ARAnchor and attaches a transform to it, optionally attaching to the nearest plane.
+        /// Creates a new ARAnchor and attaches a transform to it using the specified panel.
         /// </summary>
-        /// <param name="transform">The transform to attach.</param>
-        /// <param name="attachToPlane">Whether to attach the anchor to the nearest plane.</param>
-        /// <returns>The TrackableId of the created anchor, or null if anchors are not supported or creation fails.</returns>
-        private static async Task<ARAnchor> CreateNewAnchor(Transform transform, bool attachToPlane)
+        /// <param name="panel">The panel containing the transform and settings for anchor creation.</param>
+        private static async Task<ARAnchor> CreateAnchorAsync(Panel panel)
         {
             if (!IsAnchorSupportAvailable())
                 return null;
-            
+
             ARAnchor anchor;
-            
+
             try
             {
-                if (attachToPlane)
-                    anchor = TryCreateAnchorOnNearestPlane(transform);
+                if (panel.PanelData.Settings._alignPanelToWall)
+                    anchor = TryCreateAnchorOnNearestPlane(panel.transform);
                 else
-                    anchor = await TryAddAnchorAsync(transform);
+                    anchor = await TryAddAnchorAsync(panel.transform);
             }
             catch (Exception e)
             {
@@ -321,7 +307,7 @@ namespace Utils
 
         #endregion
 
-        public static void CreateNewAnchor(Panels.Panel panel)
+        public static void CreateNewAnchor(Panel panel)
         {
             // Run async with explicit error handling
             _ = CreateNewAnchorAsync(panel).ContinueWith(task =>
@@ -331,9 +317,9 @@ namespace Utils
             }, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
-        private static async Task CreateNewAnchorAsync(Panels.Panel panel)
+        private static async Task CreateNewAnchorAsync(Panel panel)
         {
-            ARAnchor anchor = await CreateNewAnchor(panel.transform, panel.PanelData.Settings.AlignWindowToWall);
+            ARAnchor anchor = await CreateAnchorAsync(panel);
 
             AttachTransformToAnotherAnchor(panel.transform, panel.PanelData.Settings.AlignWindowToWall, anchor, panel.PanelData.AnchorID);
             

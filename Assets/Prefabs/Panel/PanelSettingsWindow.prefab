@@ -903,6 +903,7 @@ MonoBehaviour:
   WindowControlToggle: {fileID: 3608013511797819209}
   AlignWindowToWallToggle: {fileID: 9188933136653755623}
   RotationToggle: {fileID: 5608876548983523684}
+  AlignToWallText: {fileID: 7501053462609831933}
   DeleteButton: {fileID: 7624958802344449694}
   DynamicScrollRect: {fileID: 5388459528821541161}
 --- !u!114 &232526554742748450
@@ -1832,6 +1833,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2960670057371846675, guid: 40628cb64b4a790429543e5b362b36fe, type: 3}
   m_PrefabInstance: {fileID: 4332439917156257212}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7501053462609831933 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6054794236535040577, guid: 40628cb64b4a790429543e5b362b36fe, type: 3}
+  m_PrefabInstance: {fileID: 4332439917156257212}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &9188933136653755623 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4871290773427087707, guid: 40628cb64b4a790429543e5b362b36fe, type: 3}
@@ -2110,11 +2122,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3878924148041608015, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}
       propertyPath: m_Size
-      value: 0.9999803
+      value: 0.95237374
       objectReference: {fileID: 0}
     - target: {fileID: 3878924148041608015, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}
       propertyPath: m_Value
-      value: 1
+      value: 0.99937755
       objectReference: {fileID: 0}
     - target: {fileID: 4738655456974142442, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}
       propertyPath: m_AnchorMax.x
@@ -2162,7 +2174,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8185954209503414733, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.019466266
+      value: -0.0020335317
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7289379686559040912, guid: 4f3273c76ded8f54b91ab1d5467849ed, type: 3}
