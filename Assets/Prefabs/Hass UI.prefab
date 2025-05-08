@@ -1219,14 +1219,6 @@ PrefabInstance:
       value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 927843850423426830, guid: 038180d60eafa99499500eeeab5ea0b8, type: 3}
-      propertyPath: m_MaxDistanceAllowed
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 927843850423426830, guid: 038180d60eafa99499500eeeab5ea0b8, type: 3}
-      propertyPath: m_MinDistanceAllowed
-      value: 0.05
-      objectReference: {fileID: 0}
-    - target: {fileID: 927843850423426830, guid: 038180d60eafa99499500eeeab5ea0b8, type: 3}
       propertyPath: m_MovementSpeedVariancePercentage
       value: 0.2
       objectReference: {fileID: 0}

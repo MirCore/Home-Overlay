@@ -717,15 +717,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Target: {fileID: 0}
-  m_TargetOffset: {x: 0, y: -0.3, z: 1}
+  m_TargetOffset: {x: 0, y: -0.7, z: 1}
   m_FollowInLocalSpace: 0
   m_ApplyTargetInLocalSpace: 0
-  m_MovementSpeed: 2
+  m_MovementSpeed: 1
   m_MovementSpeedVariancePercentage: 0.25
   m_SnapOnEnable: 1
   m_PositionFollowMode: 1
-  m_MinDistanceAllowed: 0.01
-  m_MaxDistanceAllowed: 0.3
+  m_MinDistanceAllowed: 0.1
+  m_MaxDistanceAllowed: 1
   m_TimeUntilThresholdReachesMaxDistance: 3
   m_RotationFollowMode: 1
   m_MinAngleAllowed: 0.1
