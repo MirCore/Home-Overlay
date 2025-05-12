@@ -72,6 +72,7 @@ namespace Managers
 
         private void OnHomeButtonClicked()
         {
+            SoundManager.OnUIPressed();
 #if UNITY_VISIONOS && !UNITY_EDITOR
             SwiftUIDriver.OpenSwiftUIWindow("MainMenu");
             HomeButtonUI.SetActive(false);

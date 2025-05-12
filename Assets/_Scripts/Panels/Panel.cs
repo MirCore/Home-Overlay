@@ -96,9 +96,9 @@ namespace Panels
             if (string.IsNullOrEmpty(PanelData.AnchorID))
                 SetNewPanelPose();
             else
-                AnchorHelper.TryAttachToExistingAnchor(transform, PanelData.Settings.AlignWindowToWall, PanelData.AnchorID);
+                AnchorHelper.TryAttachToExistingAnchor(transform, !PanelData.Settings._rotationEnabled, PanelData.AnchorID);
             // Load the window state based on the panel settings
-            LoadWindowState(PanelData.Settings.AlignWindowToWall, PanelData.Settings.RotationEnabled, !PanelData.Settings.HideWindowControls);
+            LoadWindowState(PanelData.Settings.RotationEnabled, !PanelData.Settings.HideWindowControls);
 
             // Update the panel to reflect the current state of the entity
             UpdatePanel();
@@ -125,16 +125,6 @@ namespace Panels
         private void OnSettingsButtonClicked()
         {
             PanelSettingsWindowManager.Instance.ToggleSettingsWindow(this);
-            SoundManager.OnUIPressed();
-        }
-
-        /// <summary>
-        /// Turns off the align-window-to-wall setting and updates the panel.
-        /// </summary>
-        public void TurnOffAlignWindowToWall()
-        {
-            PanelData.Settings.AlignWindowToWall = false;
-            OnSettingsChanged();
         }
 
         /// <summary>
@@ -143,7 +133,7 @@ namespace Panels
         public void OnSettingsChanged()
         {
             // Load the window state based on the updated panel settings
-            LoadWindowState(PanelData.Settings.AlignWindowToWall, PanelData.Settings.RotationEnabled, !PanelData.Settings.HideWindowControls);
+            LoadWindowState(PanelData.Settings.RotationEnabled, !PanelData.Settings.HideWindowControls);
 
             // Update the panel to reflect the current state of the entity
             UpdatePanel();
@@ -238,7 +228,17 @@ namespace Panels
         /// </summary>
         public void AlignPanelToWall()
         {
-            AnchorHelper.CreateNewAnchor(this);
+            AnchorHelper.CreateNewAnchor(this, true);
+            PanelData.Position = transform.position;
+            PanelData.Rotation = transform.rotation;
+        }
+
+        /// <summary>
+        /// Invoked when the panel fails to align to a wall.
+        /// </summary>
+        public void OnAlignToWallFailed()
+        {
+            PanelSettingsWindowManager.Instance.OnAlignToWallFailed(this);
         }
     }
 }

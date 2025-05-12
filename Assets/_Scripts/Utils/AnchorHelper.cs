@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Panels;
+using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
@@ -15,6 +16,7 @@ namespace Utils
     /// </summary>
     public abstract class AnchorHelper
     {
+        private const float MaxRayCastDistance = 2f;
         private static readonly ARRaycastManager RaycastManager;
         private static readonly ARPlaneManager PlaneMeshManager;
         public static readonly ARAnchorManager ARAnchorManager;
@@ -45,23 +47,20 @@ namespace Utils
         }
         
         #region Anchor Creation and Management
-        
+
         /// <summary>
-        /// Asynchronously creates an ARAnchor at the specified transform's current pose.
+        /// Asynchronously adds an ARAnchor at a specified pose.
         /// </summary>
-        /// <param name="transform">The transform to use for positioning the anchor.</param>
-        /// <param name="anchorRotation">Optional rotation for the anchor.</param>
-        /// <returns>The created ARAnchor, or null if anchors are not supported.</returns>
-        private static async Task<ARAnchor> TryAddAnchorAsync(Transform transform, Quaternion anchorRotation = default)
+        /// <param name="pose">The pose to position the anchor, including position and rotation.</param>
+        /// <returns>A task representing the asynchronous operation that returns the created ARAnchor if successful; otherwise null.</returns>
+        private static async Task<ARAnchor> TryAddAnchorAsync(Pose pose)
         {
             if (!IsAnchorSupportAvailable())
                 return null;
-            
-            // Determine the rotation for the anchor
-            Quaternion rotation = anchorRotation != default ? anchorRotation : Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
+
             // Attempt to add a new anchor at the current position and rotation
-            Result<ARAnchor> result = await ARAnchorManager.TryAddAnchorAsync(new Pose(transform.position, rotation));
-            
+            Result<ARAnchor> result = await ARAnchorManager.TryAddAnchorAsync(pose);
+
             return result.value;
         }
         
@@ -84,11 +83,12 @@ namespace Utils
             
             // Attach the anchor to the plane if supported, otherwise create a new anchor, with the planes normal as rotation
             Quaternion anchorRotation = Quaternion.LookRotation(-nearestPlane.normal, Vector3.up);
+            Pose pose = new(transform.position, anchorRotation);
             if (ARAnchorManager.descriptor.supportsTrackableAttachments)
-                anchor = ARAnchorManager.AttachAnchor(nearestPlane, new Pose(transform.position, anchorRotation));
+                anchor = ARAnchorManager.AttachAnchor(nearestPlane, pose);
             else
             {
-                Task<ARAnchor> result = TryAddAnchorAsync(transform, anchorRotation);
+                Task<ARAnchor> result = TryAddAnchorAsync(pose);
                 anchor = result.Result;
             }
             
@@ -163,12 +163,13 @@ namespace Utils
         {
             if (anchor == null) 
                 return;
+
+            Quaternion rotation = applyRotation ? anchor.transform.rotation : transform.rotation;
             
             // Set the target's parent to the anchor and update its position and rotation
             transform.SetParent(anchor.transform, false);
             transform.position = anchor.transform.position;
-            if (applyRotation)
-                transform.rotation = anchor.transform.rotation;
+            transform.rotation = rotation;
         }
 
         /// <summary>
@@ -210,28 +211,25 @@ namespace Utils
         }
 
         /// <summary>
-        /// Finds the nearest ARPlane using world-based ray-casting.
+        /// Finds the nearest ARPlane using a world-based raycast.
         /// </summary>
-        /// <param name="transform">The transform from which the raycast originates.</param>
-        /// <returns>The nearest ARPlane, or null if no plane is detected.</returns>
+        /// <param name="transform">The transform from which the raycast is initiated.</param>
+        /// <returns>The nearest ARPlane if one is found within the defined range; otherwise, null.</returns>
         private static ARPlane FindNearestPlaneUsingWorldBasedRaycast(Transform transform)
         {
-            ARPlane nearestPlane = null;
-            float shortestDistance = float.MaxValue;
             List<ARRaycastHit> raycastHits = new();
             Vector3 direction = transform.forward;
             direction.y = 0;
+            Vector3 origin = transform.position - direction.normalized;
             
-            // Perform raycast in the current direction
-            RaycastManager.Raycast(new Ray(transform.position, direction), raycastHits, TrackableType.Planes);
-            
-            // Find the nearest hit within the shortest distance
-            foreach (ARRaycastHit hit in raycastHits.Where(hit => hit.distance < shortestDistance))
-            {
-                shortestDistance = hit.distance;
-                nearestPlane = hit.trackable as ARPlane;
-            
-            }
+            // Perform raycast in the forward direction
+            RaycastManager.Raycast(new Ray(origin, direction), raycastHits, TrackableType.Planes);
+            ARPlane nearestPlane = raycastHits
+                .Where(hit => hit.distance < MaxRayCastDistance)
+                .OrderBy(hit => hit.distance)
+                .Select(hit => hit.trackable as ARPlane)
+                .FirstOrDefault();
+
             return nearestPlane;
         }
 
@@ -245,9 +243,10 @@ namespace Utils
         {
             Vector3 direction = transform.forward;
             direction.y = 0;
+            int layerMask = LayerMask.GetMask("ARPlane");
 
-            // Perform a physics raycast, filtered by shortestDistance
-            Physics.Raycast(transform.position, direction, out RaycastHit hit, 2f, LayerMask.GetMask("ARPlane"));
+            Vector3 origin = transform.position - direction.normalized;
+            Physics.Raycast(origin, direction, out RaycastHit hit, MaxRayCastDistance, layerMask);
             
             return hit.collider.GetComponent<ARPlane>();
         }
@@ -279,10 +278,11 @@ namespace Utils
         }
 
         /// <summary>
-        /// Creates a new ARAnchor and attaches a transform to it using the specified panel.
+        /// Asynchronously creates a new ARAnchor and attaches a transform to it using the specified panel.
         /// </summary>
         /// <param name="panel">The panel containing the transform and settings for anchor creation.</param>
-        private static async Task<ARAnchor> CreateAnchorAsync(Panel panel)
+        /// <param name="aligned"> If true, attempts to align the anchor with the nearest AR plane. If false, creates a freestanding anchor.</param>
+        private static async Task<ARAnchor> CreateAnchorAsync(Panel panel, bool aligned)
         {
             if (!IsAnchorSupportAvailable())
                 return null;
@@ -291,10 +291,10 @@ namespace Utils
 
             try
             {
-                if (panel.PanelData.Settings._alignPanelToWall)
+                if (aligned)
                     anchor = TryCreateAnchorOnNearestPlane(panel.transform);
                 else
-                    anchor = await TryAddAnchorAsync(panel.transform);
+                    anchor = await TryAddAnchorAsync(panel.transform.GetWorldPose());
             }
             catch (Exception e)
             {
@@ -307,31 +307,27 @@ namespace Utils
 
         #endregion
 
-        public static void CreateNewAnchor(Panel panel)
+        public static void CreateNewAnchor(Panel panel, bool aligned = false)
         {
             // Run async with explicit error handling
-            _ = CreateNewAnchorAsync(panel).ContinueWith(task =>
+            _ = CreateNewAnchorAsync(panel, aligned).ContinueWith(task =>
             {
                 if (task.IsFaulted)
                     Debug.LogError($"CreateNewAnchor encountered an error: {task.Exception}");
             }, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
-        private static async Task CreateNewAnchorAsync(Panel panel)
+        private static async Task CreateNewAnchorAsync(Panel panel, bool aligned)
         {
-            ARAnchor anchor = await CreateAnchorAsync(panel);
+            ARAnchor anchor = await CreateAnchorAsync(panel, aligned);
 
-            AttachTransformToAnotherAnchor(panel.transform, panel.PanelData.Settings.AlignWindowToWall, anchor, panel.PanelData.AnchorID);
-            
+            AttachTransformToAnotherAnchor(panel.transform, aligned, anchor, panel.PanelData.AnchorID);
+
             if (anchor)
-            {
                 panel.PanelData.AnchorID = anchor.trackableId.ToString();
-            }
             else 
-            {
-                if (panel.PanelData.Settings.AlignWindowToWall)
-                    panel.TurnOffAlignWindowToWall();
-            }
+            if (aligned)
+                panel.OnAlignToWallFailed();
         }
     }
 }

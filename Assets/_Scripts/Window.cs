@@ -124,21 +124,19 @@ public class Window : MonoBehaviour
     /// <summary>
     /// Loads the window state based on the panel's settings.
     /// </summary>
-    /// <param name="alignWindowToWall">Whether to align the window to the wall.</param>
     /// <param name="rotationEnabled">Whether rotation is enabled.</param>
     /// <param name="showWindowControls">Whether to show the window controls.</param>
-    protected void LoadWindowState(bool alignWindowToWall, bool rotationEnabled, bool showWindowControls)
+    protected void LoadWindowState(bool rotationEnabled, bool showWindowControls)
     {
         SetWindowControlVisibility(showWindowControls);
-        LoadLazyFollowBehaviour(alignWindowToWall, rotationEnabled);
+        LoadLazyFollowBehaviour(rotationEnabled);
     }
         
     /// <summary>
     /// Loads the lazy follow behavior based on the panel's settings.
     /// </summary>
-    /// <param name="alignWindowToWall">Whether to align the window to the wall.</param>
     /// <param name="rotationEnabled">Whether rotation is enabled.</param>
-    private void LoadLazyFollowBehaviour(bool alignWindowToWall, bool rotationEnabled)
+    private void LoadLazyFollowBehaviour(bool rotationEnabled)
     {
         if (!_lazyFollow)
         {
@@ -147,7 +145,7 @@ public class Window : MonoBehaviour
         }
         
         // Toggle the LazyFollow component on/off
-        if (alignWindowToWall || !rotationEnabled)
+        if (!rotationEnabled)
         {
             _lazyFollow.enabled = false;
         }

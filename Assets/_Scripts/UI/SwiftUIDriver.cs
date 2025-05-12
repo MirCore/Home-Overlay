@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using AOT;
@@ -43,6 +44,7 @@ namespace UI
         {
             CloseSwiftUIWindow("MainMenu");
             UIManager.Instance.ShowHomeButton();
+            SoundManager.Instance.ResetAudio();
         }
         
         #region Swift Callbacks

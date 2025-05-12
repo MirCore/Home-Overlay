@@ -41,7 +41,7 @@ namespace UI
         /// <summary>
         /// Toggle for aligning the window to the wall.
         /// </summary>
-        [SerializeField] private Toggle AlignWindowToWallToggle;
+        [SerializeField] private Button AlignWindowToWallToggle;
         
         /// <summary>
         /// Toggle for enabling/disabling rotation.
@@ -84,19 +84,9 @@ namespace UI
         private ToggleAnimation _windowControlToggleAnimation;
         
         /// <summary>
-        /// Animation component for the align-window-to-wall toggle.
-        /// </summary>
-        private ToggleAnimation _alignWindowToWallToggleAnimation;
-        
-        /// <summary>
         /// Animation component for the rotation toggle.
         /// </summary>
         private ToggleAnimation _rotationToggleAnimation;
-
-        /// <summary>
-        /// Indicates whether the panel is currently attempting to align itself to a nearby wall.
-        /// </summary>
-        private bool _tryingToAttachToWall;
 
         /// <summary>
         /// The panel associated with this settingsUI.
@@ -108,8 +98,8 @@ namespace UI
         /// </summary>
         private void Awake()
         {
+            
             _rotationToggleAnimation = RotationToggle.GetComponent<ToggleAnimation>();
-            _alignWindowToWallToggleAnimation = AlignWindowToWallToggle.GetComponent<ToggleAnimation>();
             _windowControlToggleAnimation = WindowControlToggle.GetComponent<ToggleAnimation>();
             _showStateToggleAnimation = ShowStateToggle.GetComponent<ToggleAnimation>();
             _showNameToggleAnimation = ShowNameToggle.GetComponent<ToggleAnimation>();
@@ -130,7 +120,7 @@ namespace UI
             ShowNameToggle.onValueChanged.AddListener(OnShowNameChanged);
             ShowStateToggle.onValueChanged.AddListener(OnShowStateChanged);
             WindowControlToggle.onValueChanged.AddListener(OnWindowControlToggleValueChanged);
-            AlignWindowToWallToggle.onValueChanged.AddListener(OnAlignToWallToggleValueChanged);
+            AlignWindowToWallToggle.onClick.AddListener(OnAlignToWallPressed);
             RotationToggle.onValueChanged.AddListener(OnRotationToggleValueChanged);
         }
 
@@ -158,7 +148,7 @@ namespace UI
             ShowNameToggle.onValueChanged.RemoveListener(OnShowNameChanged);
             ShowStateToggle.onValueChanged.RemoveListener(OnShowStateChanged);
             WindowControlToggle.onValueChanged.RemoveListener(OnWindowControlToggleValueChanged);
-            AlignWindowToWallToggle.onValueChanged.RemoveListener(OnAlignToWallToggleValueChanged);
+            AlignWindowToWallToggle.onClick.RemoveListener(OnAlignToWallPressed);
             RotationToggle.onValueChanged.RemoveListener(OnRotationToggleValueChanged);
         }
 
@@ -167,7 +157,7 @@ namespace UI
         /// </summary>
         private void OnCloseButtonClicked()
         {
-            SoundManager.OnUIPressed();
+            SoundManager.OnUIDeleted();
             GetComponent<CanvasFader>().FadeOut(true);
         }
 
@@ -205,19 +195,13 @@ namespace UI
         }
         
         /// <summary>
-        /// Handles changes to the align-to-wall toggle.
+        /// Handles changes to the align-to-wall button.
         /// </summary>
-        /// <param name="value">New toggle value</param>
-        private void OnAlignToWallToggleValueChanged(bool value)
+        private void OnAlignToWallPressed()
         {
             SoundManager.OnUIPressed();
-            Panel.PanelData.Settings.AlignWindowToWall = value;
-            _tryingToAttachToWall = value;
-            if (value)
-            {
-                Panel.PanelData.Settings.RotationEnabled = false;
-                Panel.AlignPanelToWall();
-            }
+            Panel.PanelData.Settings.RotationEnabled = false;
+            Panel.AlignPanelToWall();
             Panel.OnSettingsChanged();
         }
         
@@ -229,8 +213,6 @@ namespace UI
         {
             SoundManager.OnUIPressed();
             Panel.PanelData.Settings.RotationEnabled = !value;
-            if (value == false)
-                Panel.PanelData.Settings.AlignWindowToWall = false;
             Panel.OnSettingsChanged();
         }
  
@@ -239,7 +221,7 @@ namespace UI
         /// </summary>
         private void OnDeleteButtonClicked()
         {
-            SoundManager.OnUIPressed();
+            SoundManager.OnUIDeleted();
             PanelManager.Instance.DeletePanel(Panel.PanelData.ID);
         }
 
@@ -305,8 +287,6 @@ namespace UI
 
             WindowControlToggle.SetIsOnWithoutNotify(Panel.PanelData.Settings.HideWindowControls);
             _windowControlToggleAnimation.Changed();
-            AlignWindowToWallToggle.SetIsOnWithoutNotify(Panel.PanelData.Settings.AlignWindowToWall);
-            _alignWindowToWallToggleAnimation.Changed();
             RotationToggle.SetIsOnWithoutNotify(!Panel.PanelData.Settings.RotationEnabled);
             _rotationToggleAnimation.Changed();
             
@@ -321,17 +301,6 @@ namespace UI
         {
             yield return null;  // Wait for one frame
             LoadElements();
-
-            // Show an alert that AlignToWall failed
-            if (!_tryingToAttachToWall || AlignWindowToWallToggle.isOn)
-                yield break;
-            _tryingToAttachToWall = false;
-            string originalText = AlignToWallText.text;
-            AlignToWallText.text = "No wall detected. Locking rotation instead.";
-            AlignToWallText.fontStyle = FontStyles.Italic;
-            yield return new WaitForSeconds(3);
-            AlignToWallText.text = originalText;
-            AlignToWallText.fontStyle = FontStyles.Normal;
         }
 
         /// <summary>
@@ -353,6 +322,19 @@ namespace UI
         public void IsMoving(bool isMoving)
         {
             GetComponent<CanvasFader>().FadeInOut(!isMoving);
+        }
+
+        /// <summary>
+        /// Displays a temporary alert when the AlignToWall operation fails,
+        /// and updates the UI layout to reflect changes.
+        /// </summary>
+        public IEnumerator OnAlignToWallFailed()
+        {
+            // Show an alert that AlignToWall failed
+            AlignToWallText.gameObject.SetActive(true);
+            yield return new WaitForSeconds(3);
+            AlignToWallText.gameObject.SetActive(false);
+            DynamicScrollRect?.OnContentSizeChanged();
         }
     }
 }

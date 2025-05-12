@@ -1,5 +1,6 @@
 using System;
 using Managers;
+using Structs;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
@@ -22,13 +23,22 @@ namespace UI
         private Vector3 _lastInteractorPosition; // Last position of the interactor
         
         /// <summary>
+        /// Event triggered when the slider value changes.
+        /// The first parameter is the intensity delta, and the second parameter indicates if this is the first drag event.
+        /// </summary>
+        public event Action<float, bool> OnSliderValueChanged;
+
+        public event Action OnClick;
+
+        /// <summary>
         /// Called when the interactor starts selecting this interactable.
         /// </summary>
         /// <param name="args">Event arguments.</param>
         protected override void OnSelectEntered(SelectEnterEventArgs args)
         {
-            SoundManager.OnUIPressed();
             base.OnSelectEntered(args);
+            
+            OnClick?.Invoke();
             _currentDelta = 0;
             _interactor = args.interactorObject;
             _lastInteractorPosition = _interactor.transform.position;
@@ -40,19 +50,13 @@ namespace UI
         /// <param name="args">Event arguments.</param>
         protected override void OnSelectExited(SelectExitEventArgs args)
         {
-            SoundManager.OnUIPressed();
             base.OnSelectExited(args);
             
+            OnClick?.Invoke();
             // Reset interactor and isDragging
             _interactor = null;
             _isDragging = false;
         }
-        
-        /// <summary>
-        /// Event triggered when the slider value changes.
-        /// The first parameter is the intensity delta, and the second parameter indicates if this is the first drag event.
-        /// </summary>
-        public event Action<float, bool> OnSliderValueChanged;
 
         private void Update()
         {

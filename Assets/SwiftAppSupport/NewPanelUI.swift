@@ -71,6 +71,7 @@ struct NewPanel: View {
             CallCSharpCallback("getEntities")
             entityTypes = entityTypesData
             filterEntities(searchText: "")
+            activeTab = "NewPanel"
         }
     }
     

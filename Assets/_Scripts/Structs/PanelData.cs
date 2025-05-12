@@ -199,11 +199,6 @@ namespace Structs
             public bool _hideWindowControls;
 
             /// <summary>
-            /// Whether to align the panel to the wall.
-            /// </summary>
-            public bool _alignPanelToWall;
-
-            /// <summary>
             /// Whether rotation is enabled for the panel.
             /// </summary>
             public bool _rotationEnabled = true;
@@ -233,15 +228,6 @@ namespace Structs
             {
                 get => _hideWindowControls;
                 set => SetField(ref _hideWindowControls, value);
-            }
-
-            /// <summary>
-            /// Gets or sets whether to align the panel to the wall.
-            /// </summary>
-            public bool AlignWindowToWall
-            {
-                get => _alignPanelToWall;
-                set => SetField(ref _alignPanelToWall, value);
             }
 
             /// <summary>

@@ -98,6 +98,9 @@ struct Settings: View {
             Spacer()
         }
         .padding([.leading, .bottom, .trailing], 26.0)
+        .onAppear {
+            activeTab = "Settings"
+        }
     }
 }
 

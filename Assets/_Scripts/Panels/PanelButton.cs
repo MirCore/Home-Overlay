@@ -36,8 +36,10 @@ namespace Panels
 
             // Get the IncrementalSlider component attached to the button and subscribe to its event
             _incrementalSlider = Button.GetComponent<IncrementalSlider>();
-            if (_incrementalSlider)
-                _incrementalSlider.OnSliderValueChanged += OnIncrementalSliderValueChanged;
+            
+            if (!_incrementalSlider) return;
+            _incrementalSlider.OnSliderValueChanged += OnIncrementalSliderValueChanged;
+            _incrementalSlider.OnClick += OnClicked;
         }
 
         protected override void OnDisable()
@@ -45,8 +47,9 @@ namespace Panels
             base.OnDisable();
 
             // Unsubscribe from the incremental slider event
-            if (_incrementalSlider)
-                _incrementalSlider.OnSliderValueChanged -= OnIncrementalSliderValueChanged;
+            if (!_incrementalSlider) return;
+            _incrementalSlider.OnSliderValueChanged -= OnIncrementalSliderValueChanged;
+            _incrementalSlider.OnClick += OnClicked;
         }
 
         /// <summary>
@@ -89,12 +92,16 @@ namespace Panels
         /// </summary>
         private void OnButtonClicked()
         {
-            SoundManager.OnUIPressed();
-            
             if (PanelData.IsDemoPanel)
+            {
                 LoadDemoText(StateText.text == "off");
+                PlayClickSound(StateText.text == "off");
+            }
+            
             if (!PanelIsReady())
                 return;
+
+            PlayClickSound(HassState.state != "off");
 
             // Send Toggle command based on the device type
             switch (HassState.DeviceType)
@@ -127,6 +134,22 @@ namespace Panels
             // Update the brightness value within the valid range
             _brightnessValue = Math.Clamp(_brightnessValue + (int)brightnessDelta, 0, 255);
             RestHandler.SetLightBrightness(PanelData.EntityID, _brightnessValue);
+        }
+
+        private void OnClicked()
+        {
+            if (PanelData.IsDemoPanel)
+                PlayClickSound(StateText.text == "off");
+            else
+                PlayClickSound(HassState.state != "off");
+        }
+
+        private static void PlayClickSound(bool turnedOff)
+        {
+            if (turnedOff)
+                SoundManager.OnUIDeleted();
+            else
+                SoundManager.OnUIClicked();
         }
 
         /// <summary>

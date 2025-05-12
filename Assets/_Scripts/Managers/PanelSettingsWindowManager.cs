@@ -29,6 +29,10 @@ namespace Managers
             if (panelSettingsUI)
             {
                 panelSettingsUI.SetActive(!panelSettingsUI.gameObject.activeSelf);
+                if (panelSettingsUI.gameObject.activeSelf)
+                    SoundManager.OnUIClicked();
+                else
+                    SoundManager.OnUIDeleted();
             }
             else
             {
@@ -98,6 +102,19 @@ namespace Managers
             PanelSettingsUI panelSettingsUI = _settingsWindows.Find(settingsUI => settingsUI.Panel == panel);
             if (panelSettingsUI)
                 panelSettingsUI.IsMoving(isMoving);
+        }
+
+        /// <summary>
+        /// Handles the event when aligning a panel to a wall fails.
+        /// </summary>
+        /// <param name="panel">The panel that failed to align to the wall.</param>
+        public void OnAlignToWallFailed(Panel panel)
+        {            
+            PanelSettingsUI panelSettingsUI = _settingsWindows.Find(settingsUI => settingsUI.Panel == panel);
+            if (panelSettingsUI)
+            {
+                StartCoroutine(panelSettingsUI.OnAlignToWallFailed());
+            }
         }
     }
 }

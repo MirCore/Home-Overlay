@@ -104,6 +104,9 @@ struct Overview: View {
                     .tint(.red)
                 }
             }
+            .onAppear {
+                activeTab = "Overview"
+            }
         }
     }
 }

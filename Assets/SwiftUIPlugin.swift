@@ -11,11 +11,11 @@ var connectionStatus = "Checking connection..."
 public var entitiesData: [Item] = []
 public var entityTypesData: [String] = []
 public var panelsData: [Item] = []
+public var activeTab: String = ""
 
 @_cdecl("SetNativeCallback")
 func setNativeCallback(_ delegate: CallbackDelegateType)
 {
-    print("############ SET NATIVE CALLBACK")
     callbackDelegate = delegate
 }
 
@@ -43,8 +43,8 @@ func openSwiftUIWindow(_ cWindow: UnsafePointer<CChar>, _ cTab: UnsafePointer<CC
     let openWindow = EnvironmentValues().openWindow
 
     let window = String(cString: cWindow)
-    let tab = String(cString: cTab)
-    print("############ OPEN WINDOW \(window), with tab \(tab)")
+    let tabCString = String(cString: cTab)
+    let tab = tabCString.isEmpty ? activeTab : tabCString
     openWindow(id: window, value: tab)
 }
 
