@@ -19,7 +19,7 @@ namespace UI
         /// <summary>
         /// Static shader property ID for alpha transparency.
         /// </summary>
-        private static readonly int Alpha = Shader.PropertyToID("_Alpha");
+        private static readonly int Alpha = Shader.PropertyToID("_Intensity");
     
         [Header("Hue")]
         [SerializeField] internal Slider HueSlider;
@@ -100,7 +100,7 @@ namespace UI
         /// <summary>
         /// Pending temperature change to be applied after response.
         /// </summary>
-        private float? _pendingTemperature;
+        private int? _pendingTemperature;
         
         // The Slider that is currently being changed
         private Slider _currentSlider;
@@ -208,7 +208,7 @@ namespace UI
                 return;
             _currentSlider = TemperatureSlider;
             _temperature = (int)value;
-            ChangeTemperature(value);
+            ChangeTemperature((int)value);
         }
 
         /// <summary>
@@ -217,11 +217,10 @@ namespace UI
         /// <param name="color">The new color to set for the light or demo panel.</param>
         private void ChangeColor(Color color)
         {
-            if (_panelData.IsDemoPanel)
-            {
-                SetDemoColor(color);
-            }
-            else if (_hassResponsePending)
+            UpdateSliderBackgrounds();
+            if (_panelData.IsDemoPanel) return;
+            
+            if (_hassResponsePending)
             {
                 _pendingColor = color;
             }
@@ -238,11 +237,10 @@ namespace UI
         /// <param name="value">The brightness value to set, typically between 0 and 255.</param>
         private void ChangeBrightness(float value)
         {
-            if (_panelData.IsDemoPanel)
-            {
-                SetDemoColor(GetRGBColor());
-            }
-            else if (_hassResponsePending)
+            UpdateSliderBackgrounds();
+            if (_panelData.IsDemoPanel) return;
+
+            if (_hassResponsePending)
             {
                 _pendingBrightness = value;
             }
@@ -257,39 +255,22 @@ namespace UI
         /// Changes the light temperature of the light or demo color based on the temperature value.
         /// </summary>
         /// <param name="temp">The desired temperature value in Kelvin.</param>
-        private void ChangeTemperature(float temp)
+        private void ChangeTemperature(int temp)
         {
-            if (_panelData.IsDemoPanel)
-            {
-                SetDemoColor(Mathf.CorrelatedColorTemperatureToRGB((int)temp));
-            }
-            else if (_hassResponsePending)
+            Color.RGBToHSV(Mathf.CorrelatedColorTemperatureToRGB(temp), out float hue, out float _, out float _);
+            _hue = (int)(hue * 360);
+            UpdateSliderBackgrounds();
+            if (_panelData.IsDemoPanel) return;
+
+            if (_hassResponsePending)
             {
                 _pendingTemperature = temp;
             }
             else
             {
-                RestHandler.SetLightTemperature(_entityID, (int)temp);
+                RestHandler.SetLightTemperature(_entityID, temp);
                 _hassResponsePending = true;
             }
-        }
-
-        /// <summary>
-        /// Updates the demo panel's color and adjusts related slider values for hue, saturation, and brightness.
-        /// </summary>
-        /// <param name="color">The color to be set on the demo panel.</param>
-        private void SetDemoColor(Color color)
-        {
-            _panelData.Panel.Icon.color = color;
-            Color.RGBToHSV(color, out float hue, out float saturation, out float value);
-            _panelData.Panel.StateText.text = value == 0 ? "off" : (int)(value * 100) + "%";
-            if (value > 0 && saturation > 0)
-                SaturationSlider.SetValueWithoutNotify(saturation*100);
-            if (value > 0 && saturation > 0)
-                BrightnessSlider.SetValueWithoutNotify(value*255);
-            if (value > 0 && saturation > 0)
-                HueSlider.SetValueWithoutNotify(hue*360);
-            UpdateSliderBackgrounds();
         }
 
         /// <summary>
@@ -368,16 +349,23 @@ namespace UI
         private void UpdateSliderBackgrounds()
         {
             // Update Saturation background color
-            Color hue = Color.HSVToRGB(_hue / 360f, 1f, 1f);
-            SaturationSliderBackground.materialForRendering.SetColor(ColorEnd, hue);
-        
-            // Update Brightness background color
-            if (!_supportsColor && _supportsTemperature)
-                BrightnessSliderBackground.materialForRendering.SetColor(ColorEnd, Mathf.CorrelatedColorTemperatureToRGB(_temperature));
-            else if (_supportsColor)
-                BrightnessSliderBackground.materialForRendering.SetColor(ColorEnd, hue);
-            else
-                BrightnessSliderBackground.materialForRendering.SetColor(ColorEnd, Color.white);
+            Color color = Color.HSVToRGB(_hue / 360f, 1f, _brightness / 255f);
+            SaturationSliderBackground.materialForRendering.SetColor(ColorEnd, color);
+
+            switch (_supportsColor)
+            {
+                // Update Brightness background color
+                case false when _supportsTemperature:
+                    BrightnessSliderBackground.materialForRendering.SetColor(ColorEnd, Mathf.CorrelatedColorTemperatureToRGB(_temperature));
+                    break;
+                case true:
+                    color = Color.HSVToRGB(_hue / 360f, _saturation / 100f, 1f);
+                    BrightnessSliderBackground.materialForRendering.SetColor(ColorEnd, color);
+                    break;
+                default:
+                    BrightnessSliderBackground.materialForRendering.SetColor(ColorEnd, Color.white);
+                    break;
+            }
         
             // Set the alpha to 0.5 if the panel is off
             float alpha = _turnedOn == false ? 0.5f : 1f;

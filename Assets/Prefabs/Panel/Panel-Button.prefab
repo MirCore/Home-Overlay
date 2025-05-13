@@ -362,8 +362,8 @@ MonoBehaviour:
   m_StartingHoverFilters: []
   m_StartingSelectFilters: []
   m_StartingInteractionStrengthFilters: []
-  DragAffordance: 0.01
-  StepSize: 2.55
+  DragAffordance: 0.005
+  StepSize: 1
   MaxDelta: 255
 --- !u!54 &873923218506468813
 Rigidbody:
@@ -372,10 +372,10 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1604910823182409458}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -663,20 +663,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe805125aa9f4538b6b3b1127660bac2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WindowControls: {fileID: 47081332350235054}
   Icon: {fileID: 5387678181099219516}
   NameText: {fileID: 1801083678258014752}
   StateText: {fileID: 2634595123110456048}
   SettingsButton: {fileID: 8297586591055066645}
-  WindowControls: {fileID: 47081332350235054}
-  MeshRenderer: {fileID: 5413729549613524431}
   CompactCanvasSize: {x: 120, y: 120}
   ExpandedCanvasSize: {x: 320, y: 120}
   Button: {fileID: 1870480753336769268}
---- !u!23 &5413729549613524431 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 3344700166324973333, guid: 56729b3eda175f046830741f79f8d92f, type: 3}
-  m_PrefabInstance: {fileID: 7299118124748671706}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &6516482965802746907 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4549937412642180801, guid: 56729b3eda175f046830741f79f8d92f, type: 3}

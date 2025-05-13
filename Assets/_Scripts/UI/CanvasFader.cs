@@ -1,5 +1,8 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace UI
 {
@@ -32,6 +35,11 @@ namespace UI
         /// The shader property ID for the alpha value.
         /// </summary>
         private static readonly int Alpha = Shader.PropertyToID("_Alpha");
+
+        /// <summary>
+        /// A collection of Images with shaders that will have their alpha values adjusted during fade operations.
+        /// </summary>
+        [SerializeField] private List<Image> Images;
 
         /// <summary>
         /// The duration of the fade effect for spawning.
@@ -173,6 +181,12 @@ namespace UI
             if (MeshRenderer && MeshRenderer.material.HasProperty(Alpha))
             {
                 MeshRenderer.material.SetFloat(Alpha, value);
+            }
+
+            foreach (Image image in Images)
+            {
+                //image.material.SetFloat(Alpha, value);
+                image.gameObject.SetActive(value > 0.2f);
             }
         }
 

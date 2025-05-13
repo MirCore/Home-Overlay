@@ -25,7 +25,9 @@ namespace Panels
         /// <summary>
         /// The current brightness value of the light, stored to avoid overrides by REST responses.
         /// </summary>
-        private int _brightnessValue;
+        private int _pendingBrightness;
+
+        private bool _pendingChange;
 
         protected override void OnEnable()
         {
@@ -36,7 +38,7 @@ namespace Panels
 
             // Get the IncrementalSlider component attached to the button and subscribe to its event
             _incrementalSlider = Button.GetComponent<IncrementalSlider>();
-            
+
             if (!_incrementalSlider) return;
             _incrementalSlider.OnSliderValueChanged += OnIncrementalSliderValueChanged;
             _incrementalSlider.OnClick += OnClicked;
@@ -61,15 +63,25 @@ namespace Panels
 
             if (PanelData.IsDemoPanel)
                 LoadDemoText();
-            
+
             if (!PanelIsReady())
                 return;
 
             // Update the state text based on brightness or state
-            if (HassState.attributes.brightness != 0)
+            if (_pendingChange && HassState.attributes.brightness != _pendingBrightness)
+            {
+                RestHandler.SetLightBrightness(PanelData.EntityID, _pendingBrightness);
+                StateText.text = _pendingBrightness == 0 ? "off" : Mathf.Round((float)_pendingBrightness / 255 * 100) + "%";
+            }
+            else if (HassState.attributes.brightness != 0)
+            {
                 StateText.text = Mathf.Round((float)HassState.attributes.brightness / 255 * 100) + "%";
+            }
             else
+            {
                 StateText.text = HassState.state;
+            }
+            _pendingChange = false;
 
             // Update the panel icon
             UpdateIcon();
@@ -97,7 +109,7 @@ namespace Panels
                 LoadDemoText(StateText.text == "off");
                 PlayClickSound(StateText.text == "off");
             }
-            
+
             if (!PanelIsReady())
                 return;
 
@@ -108,6 +120,7 @@ namespace Panels
             {
                 case EDeviceType.LIGHT:
                     RestHandler.ToggleLight(PanelData.EntityID);
+                    _pendingChange = false;
                     break;
                 case EDeviceType.SWITCH:
                     RestHandler.ToggleSwitch(PanelData.EntityID);
@@ -126,14 +139,19 @@ namespace Panels
         {
             if (!PanelIsReady() || HassState.DeviceType != EDeviceType.LIGHT)
                 return;
-
+            
             // Set the initial brightness value on the first drag
             if (firstDrag)
-                _brightnessValue = HassStates.GetHassState(PanelData.EntityID).attributes.brightness;
+                _pendingBrightness = HassStates.GetHassState(PanelData.EntityID).attributes.brightness;
 
             // Update the brightness value within the valid range
-            _brightnessValue = Math.Clamp(_brightnessValue + (int)brightnessDelta, 0, 255);
-            RestHandler.SetLightBrightness(PanelData.EntityID, _brightnessValue);
+            _pendingBrightness = Math.Clamp(_pendingBrightness + (int)brightnessDelta, 0, 255);
+            StateText.text = _pendingBrightness == 0 ? "off" : Mathf.Round((float)_pendingBrightness / 255 * 100) + "%";
+            if (!_pendingChange)
+            {
+                RestHandler.SetLightBrightness(PanelData.EntityID, _pendingBrightness);
+                _pendingChange = true;
+            }
         }
 
         private void OnClicked()

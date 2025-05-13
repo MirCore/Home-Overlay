@@ -14,8 +14,7 @@ namespace UI
     public class IncrementalSlider : XRBaseInteractable
     {
         [SerializeField] private float DragAffordance = 0.01f; // Distance threshold for a change
-        [SerializeField] private float StepSize = 255f / 100f; // Step size for changes
-        [SerializeField] private float MaxDelta = 255; // Maximum intensity delta
+        [SerializeField] private float StepSize = 1f; // Step size for changes
         private float _currentDelta; // Current intensity delta
         private bool _isDragging; // Flag to track if dragging is in progress
 
@@ -82,9 +81,13 @@ namespace UI
             
             // Determine the direction and calculate the new intensity delta based on the direction and step size
             int direction = Math.Sign(deltaY);
-            float newIntensity = Mathf.Clamp(_currentDelta + (direction * StepSize), -MaxDelta, MaxDelta);
+            float delta = _currentDelta + (direction * StepSize);
             
-            _currentDelta = newIntensity;
+            if (Mathf.Approximately(_currentDelta, delta) && delta <= StepSize)
+                return;
+            
+            _currentDelta = direction * StepSize;
+            
             
             // Invoke the event to notify listeners of the change in slider value
             OnSliderValueChanged?.Invoke(_currentDelta, !_isDragging);
