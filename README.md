@@ -5,6 +5,15 @@
 
 Home Overlay transforms your living space into an interactive smart home control center through the power of Apple Vision Pro's mixed reality capabilities. Control your lights, check the weather, and view your calendar - all seamlessly integrated into your physical environment.
 
+[![Download on the App Store](https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg)](https://apps.apple.com/us/app/home-overlay/id6744697516)
+
+## 📸 Screenshots
+
+<p float="left">
+  <img src="https://github.com/user-attachments/assets/3cf24074-24fa-4384-9dd7-2779d09792d3" width="49%" />
+  <img src="https://github.com/user-attachments/assets/c0e02a69-d08a-47f3-8422-88b883fddec5" width="49%" />
+</p>
+
 ## 🌟 Features
 
 ### 🎯 Spatial Smart Home Controls
@@ -41,6 +50,8 @@ Home Overlay transforms your living space into an interactive smart home control
 ---
 
 ## 🚀 Getting Started
+
+[Download Home Overlay](https://apps.apple.com/app/idYOURAPPID)  
 
 ### Demo Mode
 Want to try the app without a Home Assistant setup? No problem!
