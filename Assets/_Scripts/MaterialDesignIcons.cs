@@ -103,10 +103,25 @@ public abstract class MaterialDesignIcons
     [Serializable]
     public class CodepointData
     {
+        /// <summary>
+        /// Gets the name identifier of the Material Design Icon.
+        /// </summary>
         public string Name { get; private set; }
+
+        /// <summary>
+        /// Gets the hexadecimal Unicode value of the icon character.
+        /// </summary>
         public string Hex { get; private set; }
+
+        /// <summary>
+        /// Gets the actual Unicode character representation of the icon.
+        /// </summary>
         public string Code { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CodepointData"/> class.
+        /// </summary>
+        /// <param name="codepoint">A space-separated string containing the icon name and its hexadecimal Unicode value.</param>
         public CodepointData(string codepoint)
         {
             string[] data = codepoint.Split(' ');

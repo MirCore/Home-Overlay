@@ -19,7 +19,7 @@ struct MainMenu: View {
                 NavigationLink("Add new entity", destination: NewPanel())
                 NavigationLink("Settings", destination: Settings())
             }
-            .navigationTitle("HomeassistantXR")
+            .navigationTitle("Home Overlay")
         } detail: {
             switch initialTab {
             case "Overview":
